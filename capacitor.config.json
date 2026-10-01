@@ -1,0 +1,6 @@
+{
+  "appId": "com.pianotools.garden",
+  "appName": "Garden",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}
