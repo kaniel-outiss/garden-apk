@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.50 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.51 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -92,6 +92,16 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 /* v9.48 : degré écrit sur la touche allumée (clavier maître) */
 .kb .dlbl{position:absolute;bottom:30px;left:0;right:0;text-align:center;font-size:11px;font-weight:800;color:#141826;pointer-events:none;line-height:1}
 .kb .bk .dlbl{bottom:8px;color:#fff;font-size:10px}
+.kb .sc{background:linear-gradient(180deg,#e9f1ff,#b9cdf5)!important;border-color:#6f8ad0!important}
+.kb .bk.sc{background:linear-gradient(180deg,#5b6aa0,#2f3a66)!important}
+.kb .av{background:repeating-linear-gradient(135deg,#f3d4d4 0 4px,#e6a5a5 4px 8px)!important;border-color:#c04a4a!important}
+.kb .bk.av{background:repeating-linear-gradient(135deg,#7a3a3a 0 4px,#4a1f1f 4px 8px)!important}
+.schip.on{background:var(--or);color:#0C0E14;border-color:var(--or)}
+.scl-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.scl-modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.scl-mode{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--gris2);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13px}
+.scl-mode.cur{border-color:var(--or)}
+.scl-mode b{color:var(--blanc)}
 .kb .arp{filter:brightness(1.35);box-shadow:0 0 12px 3px rgba(255,255,255,.75)}
 .ivrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12.5px;color:var(--gris)}
 .ivrow .deg{font-weight:800;color:var(--blanc);letter-spacing:.03em}
@@ -350,6 +360,8 @@ body.ux-legend #trscLegend{display:block}
 .ux-drbar .ux-tg{min-height:46px;padding:0 14px;border-radius:12px;border:1px solid rgba(122,133,168,.4);background:transparent;color:#C9D2EA;font-size:14px;cursor:pointer}
 .ux-drbar .ux-tg.on{border-color:var(--bleu);background:rgba(79,158,255,.12);color:#BFD9FF}
 /* 🎯 v9.43 — mode concentration : pendant le drill, clavier + cible + stats, rien d'autre */
+body.ux-lite .hero .legend,body.ux-lite .hero>.hint,body.ux-lite #chVL{display:none}
+body.ux-lite .hero{padding-bottom:10px}
 body.ux-focus #fnBar,body.ux-focus .ux-gtabs,body.ux-focus .hero .chord-line,body.ux-focus .hero .legend,body.ux-focus .hero>.hint,body.ux-focus #bousInline,body.ux-focus #chIvs,body.ux-focus #chVL,
 body.ux-focus #pgDrill>h2,body.ux-focus #pgDrill>.csub,body.ux-focus #parcBox,body.ux-focus #pgDrill .dr-panel,body.ux-focus #histBox,body.ux-focus main>.card:not(#pgDrill),body.ux-focus main>.grid{display:none!important}
 body.ux-focus .hero{padding:10px 14px;margin-bottom:10px}
@@ -422,7 +434,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.50 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.51 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -437,7 +449,7 @@ body.ux-focus #uxStopBar{display:flex}
 </div>
 <div id="trscLegend" class="hint" style="margin:2px 0 6px;line-height:1.7">
   🎛 <b>Raccourcis clavier MIDI</b> (aigus, désactivables avec le bouton 🎛) :
-  <span class="kbd">C6</span> Panorama · <span class="kbd">C♯6</span> Prisme · <span class="kbd">D6</span> Répertoire ·
+  <span class="kbd">C6</span> Tout (Jouer) · <span class="kbd">C♯6</span> Prisme · <span class="kbd">D6</span> Répertoire ·
   <span class="kbd">E♭6</span> Boussole · <span class="kbd">E6</span> Stats · <span class="kbd">F6</span> Renversements ·
   <span class="kbd">F♯6</span> Voicings · <span class="kbd">G6</span> Formes de 7e · <span class="kbd">G♯6</span> Drill ·
   <span class="kbd">A6</span> Gammes · <span class="kbd">B♭6</span> Degrés ·
@@ -459,7 +471,6 @@ body.ux-focus #uxStopBar{display:flex}
   <button class="fchip" data-pg="sub">🪞 Substituts</button>
   <button class="fchip" data-pg="repert">📚 Répertoire<span class="kbd">D6</span></button>
   <button class="fchip" data-pg="bous">🧭 Boussole<span class="kbd">E♭6</span></button>
-  <button class="fchip" data-pg="pano">🌈 Panorama<span class="kbd">C6</span></button>
 </div>
 
 <main>
@@ -640,11 +651,13 @@ body.ux-focus #uxStopBar{display:flex}
       <div id="famBox" class="mgrid"><div class="empty">En attente d'un accord…</div></div>
     </div>
 
-    <div class="card" id="pgScales" style="display:none">
-      <h2>🎼 Gammes & Substitutions</h2>
-      <div class="csub">Chord-scales compatibles et substitutions classiques</div>
-      <div style="margin-bottom:12px"><div class="chips" id="scaleBox"><span class="empty">—</span></div></div>
-      <div id="subBox" class="sgrid"></div>
+    <div class="card" id="pgScales" style="display:none;grid-column:1/-1">
+      <h2>🎼 Gammes &amp; modes</h2>
+      <div class="csub">Les chord-scales de l'accord joué. Tape une gamme : elle s'allume sur le clavier maître — notes d'accord en couleur, autres notes de la gamme en bleu pâle, notes à éviter barrées. 🎧 pour l'entendre, 🏋️ pour la driller.</div>
+      <div class="chips" id="scaleBox"><span class="empty">En attente d'un accord…</span></div>
+      <div id="sclInfo"></div>
+      <details class="pano-sec" style="margin-top:12px" id="sclModes"><summary>🗺 Les 7 modes de la tonalité</summary><div id="sclModesBox" style="margin-top:8px"></div></details>
+      <div id="subBox" style="display:none"></div>
     </div>
 
     <div class="card" id="pgDeg" style="display:none;grid-column:1/-1">
@@ -1494,6 +1507,96 @@ function vlRender(prev,c){
   else if(!v.add.length&&!v.drop.length)h+=' · même accord';
   el.innerHTML=h;
 }
+/* ================= v9.51 — GAMMES & MODES sur l'accord joué ================= */
+/* chord-scales par qualité identifiée → id GAM + pourquoi */
+const CS_BY_Q={
+  maj7:[['ion','la gamme du I — la 4 (11) frotte avec la 3ce'],['lyd','♯11 : aucune note à éviter — couleur ouverte'],['pmaj','5 notes sûres, sans 4 ni 7'],['bebmaj','8 notes : les notes d’accord tombent sur les temps']],
+  '6':[['ion','la gamme du I'],['lyd','♯11, aucune note à éviter'],['pmaj','penta majeure = 6/9 étalé']],
+  '7':[['mix','la gamme du V — la 4 à éviter sauf en sus'],['lydb7','♯11 : dominante non résolutive (IV7, ♭VII7, subV)'],['alt','♭9 ♯9 ♭13 : V7 tendu vers le i ou le I'],['dimST','♭9 ♯9 ♯11 13 : la dominante ♭9'],['wt','7♯5 : par tons'],['bebdom','bebop : 7 et ♭7 de passage'],['blm','blues : la 3ce bleue sur le V']],
+  m7:[['dor','la gamme du ii — 6 naturelle = 13, rien à éviter'],['aeo','le vi : ♭6 à éviter'],['phr','le iii : ♭2 à éviter'],['pmin','penta mineure, sûre partout'],['bebdor','bebop dorienne']],
+  m6:[['dor','m6 = dorien étalé'],['mel','mineure mélodique : 7 majeure']],
+  mMaj7:[['mel','mineure mélodique — la gamme du m(maj7)'],['har','mineure harmonique']],
+  m7b5:[['loc','le vii : ♭2 à éviter'],['locn2','9 naturelle (6e mode mélodique) : rien à éviter']],
+  dim7:[['dimTS','ton / demi-ton : la gamme du °7']],
+  maj:[['ion','majeure'],['lyd','lydien'],['pmaj','penta majeure'],['blM','blues majeur']],
+  min:[['aeo','mineure naturelle'],['dor','dorien'],['pmin','penta mineure'],['blm','blues mineur'],['har','mineure harmonique']],
+  dim:[['loc','locrien'],['dimTS','diminuée ton / demi-ton']],
+  aug:[['wt','par tons'],['lydaug','lydien augmenté']]
+};
+/* gammes « de tension » : tout est couleur, aucune note à éviter */
+const CS_NOAVOID={alt:1,dimST:1,dimTS:1,wt:1,blm:1,blM:1,pmaj:1,pmin:1,phrdom:1,lydaug:1};
+function csAvoid(sid,chordIvs){
+  const G=GAM[sid];if(!G||CS_NOAVOID[sid])return [];
+  return G.iv.filter(function(x){return chordIvs.indexOf(x)<0&&chordIvs.indexOf((x+11)%12)>=0;});
+}
+let SCLV=null; /* {sid,rootPc,ivs} — gamme affichée sur le clavier maître */
+function buildScales(c){
+  const list=CS_BY_Q[c.tpl.q]||[];
+  if(!list.length)return '<span class="empty">Pas de chord-scale répertoriée pour cette forme.</span>';
+  return list.map(function(x){return '<button class="schip'+(SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===c.rootPc?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+c.rootPc+'" title="'+x[1]+'">🎼 '+nn(c.rootPc)+' <b>'+GAM[x[0]].lb+'</b></button>';}).join('');
+}
+function sclInfoRender(){
+  const el=document.getElementById('sclInfo');if(!el)return;
+  if(!SCLV){el.innerHTML='<div class="hint" style="margin-top:8px">Tape une gamme ci-dessus.</div>';return;}
+  const G=GAM[SCLV.sid],r=SCLV.rootPc,ivs=SCLV.ivs,av=csAvoid(SCLV.sid,ivs);
+  const why=((CS_BY_Q[cur?cur.tpl.q:'']||[]).filter(function(x){return x[0]===SCLV.sid;})[0]||[])[1]||'';
+  const degs=G.iv.map(function(x){const inC=ivs.indexOf(x)>=0,bad=av.indexOf(x)>=0;return '<span style="'+(inC?'color:var(--or);font-weight:800':bad?'color:var(--rouge);text-decoration:line-through':'color:var(--blanc)')+'">'+GAM_DEG[x]+'</span>';}).join(' · ');
+  el.innerHTML='<div class="scl-row"><b style="font-size:15px;color:var(--or)">'+nn(r)+' '+G.lb+'</b><span class="hint" style="margin:0">'+why+'</span></div>'
+    +'<div class="scl-row"><span class="hint" style="margin:0">Degrés</span><span style="font-size:14px">'+degs+'</span>'
+    +'<span class="hint" style="margin:0 0 0 6px">'+(av.length?'barré = à éviter (demi-ton au-dessus d’une note d’accord)':'aucune note à éviter')+'</span></div>'
+    +'<div class="scl-row"><button class="opill" data-scl-play="up">🎧 montée</button><button class="opill" data-scl-play="down">🎧 descente</button><button class="opill" data-scl-play="chord">🎧 accord + gamme</button>'
+    +'<button class="opill" data-scl-drill="1" style="border-color:var(--or);color:var(--or)">🏋️ Driller '+nn(r)+' '+G.lb+'</button><button class="opill" data-scl-off="1">✕ éteindre</button></div>';
+}
+function sclPaint(){
+  const kb=document.getElementById('mainKb');if(!kb)return;
+  kb.querySelectorAll('.sc,.av').forEach(function(k){k.classList.remove('sc','av');});
+  kb.querySelectorAll('.dlbl.scl').forEach(function(x){x.remove();});
+  if(!SCLV||PAGE!=='scales')return;
+  const G=GAM[SCLV.sid],r=SCLV.rootPc,ivs=SCLV.ivs,av=csAvoid(SCLV.sid,ivs);
+  const inScale={},isAv={};G.iv.forEach(function(x){inScale[(r+x)%12]=x;});av.forEach(function(x){isAv[(r+x)%12]=1;});
+  /* une octave étiquetée autour de Do 4 */
+  let lo=60+((r-60)%12+12)%12;if(lo>65)lo-=12;
+  kb.querySelectorAll('.wk,.bk').forEach(function(k){
+    const m=+k.dataset.n,pc=m%12;if(inScale[pc]==null)return;
+    if(held.has(m))return; /* la note tenue garde sa couleur de fonction */
+    const x=inScale[pc];
+    if(ivs.indexOf(x)>=0)k.classList.add('r'+ROLE[x]);else k.classList.add(isAv[pc]?'av':'sc');
+    if(m>=lo&&m<lo+12&&!k.querySelector('.dlbl')){const sp=document.createElement('span');sp.className='dlbl scl';sp.textContent=GAM_DEG[x];k.appendChild(sp);}
+  });
+}
+function sclSet(sid,rootPc){
+  if(!GAM[sid]||!cur)return;
+  SCLV={sid:sid,rootPc:rootPc,ivs:chordIvs(cur).map(function(x){return ((x+cur.rootPc-rootPc)%12+12)%12;})};
+  document.getElementById('scaleBox').innerHTML=buildScales(cur);sclInfoRender();sclModesRender();lightMain();
+}
+function sclOff(){SCLV=null;if(cur)document.getElementById('scaleBox').innerHTML=buildScales(cur);sclInfoRender();sclModesRender();lightMain();}
+let _sclT=[];
+function sclPlay(mode){
+  _sclT.forEach(clearTimeout);_sclT=[];
+  if(!SCLV)return;
+  const G=GAM[SCLV.sid],r=SCLV.rootPc;let base=60+((r-60)%12+12)%12;if(base>65)base-=12;
+  let seq=G.iv.map(function(x){return base+x;}).concat([base+12]);
+  if(mode==='down')seq=seq.slice().reverse();
+  let t0=0;
+  if(mode==='chord'&&cur){playNotes(cur.notes,1.2);t0=900;}
+  seq.forEach(function(m,i){_sclT.push(setTimeout(function(){playNotes([m],.5);const k=document.querySelector('#mainKb [data-n="'+m+'"]');if(k){k.classList.add('arp');setTimeout(function(){k.classList.remove('arp');},200);}},t0+i*230));});
+}
+function sclDrill(){
+  if(!SCLV)return;
+  const G=GAM[SCLV.sid],k=KEYS.filter(function(x){return x.pc===SCLV.rootPc;})[0];
+  drSelectEx('gam');DRV.gamF=G.fam;DRV.gamS=SCLV.sid;DRV.scope='fix';if(k)setKey(k);
+  drvSave();drRender();setPage('drill');toast('🎵 gammes',nn(SCLV.rootPc)+' '+G.lb);
+}
+/* les 7 modes de la tonalité active */
+const SCL_MODES=[['I','ion','maj7'],['ii','dor','m7'],['iii','phr','m7'],['IV','lyd','maj7'],['V','mix','7'],['vi','aeo','m7'],['vii°','loc','m7b5']];
+const SCL_MDEG=[0,2,4,5,7,9,11];
+function sclModesRender(){
+  const box=document.getElementById('sclModesBox');if(!box)return;
+  const k=KEY.pc;
+  box.innerHTML='<div class="hint" style="margin-bottom:6px">Tonalité <b>'+KEY.n+' majeur</b> — chaque degré a son mode : même sept notes, une autre fondamentale. Tape pour l’allumer.</div><div class="scl-modes">'
+    +SCL_MODES.map(function(m,i){const rp=(k+SCL_MDEG[i])%12,isCur=cur&&cur.rootPc===rp,on=SCLV&&SCLV.sid===m[1]&&SCLV.rootPc===rp;
+      return '<div class="scl-mode'+(isCur?' cur':'')+'" data-scl-mode="'+m[1]+'|'+rp+'"><span><b>'+m[0]+'</b> · '+nn(rp)+PSYM[m[2]]+'</span><span style="color:'+(on?'var(--or)':'var(--gris)')+'">'+nn(rp)+' '+GAM[m[1]].lb.split(' (')[0]+(isCur?' ← ton accord':'')+'</span></div>';}).join('')+'</div>';
+}
 /* ================= RENDU ================= */
 function render(){
   if(!cur)return;
@@ -1510,8 +1613,8 @@ function render(){
   if(vis('renv'))document.getElementById('invBox').innerHTML=buildInversions(cur);
   if(vis('voi'))document.getElementById('voiBox').innerHTML=buildVoicings(cur);
   if(vis('fam'))document.getElementById('famBox').innerHTML=buildFamilies(cur);
-  if(vis('scales')){document.getElementById('scaleBox').innerHTML=buildScales(cur);
-    document.getElementById('subBox').innerHTML=buildSubs(cur);}
+  if(vis('scales')){if(SCLV&&(SCLV.rootPc!==cur.rootPc))SCLV=null; /* nouvel accord : on repart */
+    document.getElementById('scaleBox').innerHTML=buildScales(cur);sclInfoRender();sclModesRender();}
   if(vis('deg')){document.getElementById('degTitle').textContent='Harmonisation de '+nn(cur.rootPc)+' majeur (accord joué = I)';
     document.getElementById('degBox').innerHTML=buildDegrees(cur);
     document.getElementById('keysBox').innerHTML=buildMemberKeys(cur);}
@@ -1532,6 +1635,7 @@ function pushHist(c){
 function lightMain(){
   const entries=Array.from(held).map(function(m){return E(m,cur?cur.rootPc:null);});
   kbLight('mainKb',entries,cur?cur.rootPc:null);
+  if(typeof sclPaint==='function')sclPaint();
   if(typeof mgMarkHeld==='function')mgMarkHeld();
 }
 
@@ -1539,7 +1643,7 @@ function lightMain(){
 const PAGES={renv:'pgRenv',voi:'pgVoi',fam:'pgFam',drill:'pgDrill',scales:'pgScales',deg:'pgDeg',stats:'pgStats',prisme:'pgPrisme',sub:'pgSub',repert:'pgRepert',bous:'pgBous',pano:'pgPano'};
 const PGNAMES={all:'⊞ Tout',renv:'🔄 Renversements',voi:'🖐️ Voicings',fam:'7️⃣ Formes de 7e',drill:'🏋️ Drill',scales:'🎼 Gammes & Subs',deg:'🧭 Degrés & Tonalités',stats:'📊 Stats',prisme:'🔮 Prisme',repert:'📚 Répertoire',bous:'🧭 Boussole',pano:'🌈 Panorama'};
 /* E6=88 F6=89 F♯6=90 G6=91 G♯6=92 A6=93 B♭6=94 · C♯6=85 → Prisme · C6=84 → Panorama · D6=86 → Répertoire · E♭6=87 → Boussole */
-const PGKEYS={84:'pano',85:'prisme',86:'repert',87:'bous',88:'stats',89:'renv',90:'voi',91:'fam',92:'drill',93:'scales',94:'deg'};
+const PGKEYS={84:'all',85:'prisme',86:'repert',87:'bous',88:'stats',89:'renv',90:'voi',91:'fam',92:'drill',93:'scales',94:'deg'};
 let PAGE='renv';
 const PAGE_ALL=['renv','voi','fam','deg'];
 function setPage(p){
@@ -1555,6 +1659,8 @@ function setPage(p){
   if(p==='bous'){bousRender();}
   if(p==='pano'){panoRender();}
   document.getElementById('mainGrid').classList.toggle('solo',p!=='all');
+  if(p==='scales'){sclInfoRender();sclModesRender();}
+  lightMain(); /* v9.51 : repeint le clavier maître (gamme allumée seulement sur la page Gammes) */
   if(cur)render(); /* ⚡ v9.2 : la carte qu'on ouvre est redessinée à l'ouverture */
   document.querySelectorAll('#fnBar .fchip').forEach(function(b){
     b.classList.toggle('on',b.dataset.pg===p);
@@ -3105,11 +3211,13 @@ function subRender(){
   const all=subList(typ);
   const fams=SUBT_FAMORD.filter(function(f){return all.some(function(g){return g.fam===f;});});
   if(SUBX.fam!=='all'&&fams.indexOf(SUBX.fam)<0)SUBX.fam=fams[0];
-  let h='<div class="og"><div class="og-lb">Triade cible</div><div class="og-row">';
+  const wasOpen=!!(document.querySelector('#subRoot details')||{}).open; /* v9.51 : cible repliée — l'accord joué l'a déjà fixée */
+  let h='<details class="pano-sec"'+(wasOpen?' open':'')+' style="margin-bottom:8px"><summary>Cible : <b style="color:var(--bleu)">'+nm(r)+(typ==='min'?' mineur':' majeur')+'</b> · modifier</summary>'
+    +'<div class="og" style="margin-top:6px"><div class="og-lb">Triade cible</div><div class="og-row">';
   for(let pc=0;pc<12;pc++)h+='<button class="opill'+(r===pc?' on':'')+'" data-sub-root="'+pc+'">'+nnK(pc,r)+'</button>';
   h+='</div></div><div class="og"><div class="og-lb">Qualité</div><div class="og-row">'
     +'<button class="opill'+(typ==='maj'?' on':'')+'" data-sub-typ="maj">Majeure</button>'
-    +'<button class="opill'+(typ==='min'?' on':'')+'" data-sub-typ="min">Mineure</button></div></div>'
+    +'<button class="opill'+(typ==='min'?' on':'')+'" data-sub-typ="min">Mineure</button></div></div></details>'
     +'<div class="og"><div class="og-lb">Famille</div><div class="og-row">'
     +fams.map(function(f){const F=SUBT_FAMS[f];
       return '<button class="opill'+(SUBX.fam===f?' on':'')+'" data-sub-fam="'+f+'">'+F.em+' '+F.lb+'</button>';}).join('')
@@ -10566,6 +10674,14 @@ document.addEventListener('click',function(e){
   if(bp){bousPlay(+bp.dataset.bousPlay);return;}
   const bdr=e.target.closest('[data-bous-drill]');
   if(bdr){bousDrillGo(+bdr.dataset.bousDrill);return;}
+  const scx=e.target.closest('[data-scl]');
+  if(scx){if(SCLV&&SCLV.sid===scx.dataset.scl&&SCLV.rootPc===+scx.dataset.sclr)sclOff();else sclSet(scx.dataset.scl,+scx.dataset.sclr);return;}
+  const scm=e.target.closest('[data-scl-mode]');
+  if(scm){const p=scm.dataset.sclMode.split('|');if(SCLV&&SCLV.sid===p[0]&&SCLV.rootPc===+p[1])sclOff();else sclSet(p[0],+p[1]);return;}
+  const scp=e.target.closest('[data-scl-play]');
+  if(scp){sclPlay(scp.dataset.sclPlay);return;}
+  if(e.target.closest('[data-scl-drill]')){sclDrill();return;}
+  if(e.target.closest('[data-scl-off]')){sclOff();return;}
   const ivp=e.target.closest('[data-ivp]');
   if(ivp){const ns=ivp.dataset.ivp.split(',').map(Number);playNotes([ns[0]],.9);setTimeout(function(){playNotes([ns[1]],.9);},450);setTimeout(function(){playNotes(ns,1.2);},950);return;}
   if(e.target.closest('[data-arp]')){arpPlay(cur);return;}
@@ -10759,7 +10875,7 @@ document.addEventListener('click',function(e){
 
 /* ═══ 🧭 v9.21 — interface compacte : on RANGE l'existant (mêmes boutons, mêmes fonctions) ═══ */
 const UX_GRP=[['jouer','Jouer',['renv','voi','fam','deg','all']],['drill','Drill',['drill']],['gammes','Gammes',['scales']],
-  ['harm','Harmonie',['sub','prisme']],['expl','Explorer',['repert','bous','pano']],['stats','Stats',['stats']]];
+  ['harm','Harmonie',['prisme','sub','bous']],['repert','Répertoire',['repert']],['stats','Stats',['stats']]];
 const UXS={pick:false,set:false,les:false,last:{}};
 let UXR=(function(){try{return JSON.parse(localStorage.getItem('garden_recent_ex'))||[];}catch(e){return [];}})();
 function uxRecentPush(ex){UXR=[ex].concat(UXR.filter(function(x){return x!==ex;})).slice(0,4);try{localStorage.setItem('garden_recent_ex',JSON.stringify(UXR));}catch(e){}}
@@ -10772,6 +10888,7 @@ function uxFind(q){const r=document.getElementById('uxFindRes');if(!r)return;q=(
 function uxGrpOf(p){for(let i=0;i<UX_GRP.length;i++)if(UX_GRP[i][2].indexOf(p)>=0)return UX_GRP[i];return UX_GRP[0];}
 function uxTabs(){
   const g=uxGrpOf(PAGE);UXS.last[g[0]]=PAGE;
+  document.body.classList.toggle('ux-lite',g[0]!=='jouer'); /* v9.51 : hero compact hors Jouer */
   document.querySelectorAll('.ux-gtabs button').forEach(function(b){b.classList.toggle('on',b.dataset.g===g[0]);});
   const fb=document.getElementById('fnBar');
   fb.querySelectorAll('.fchip').forEach(function(c){c.classList.toggle('ux-hide',g[2].indexOf(c.dataset.pg)<0);});
