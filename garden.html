@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.55 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.56 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -447,7 +447,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.55 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.56 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1567,12 +1567,14 @@ function sclInfoRender(){
   if(!SCLV){el.innerHTML='<div class="hint" style="margin-top:8px">Tape une gamme ci-dessus.</div>';return;}
   const G=GAM[SCLV.sid],r=SCLV.rootPc,ivs=SCLV.ivs,av=csAvoid(SCLV.sid,ivs);
   const why=((CS_BY_Q[cur?cur.tpl.q:'']||[]).filter(function(x){return x[0]===SCLV.sid;})[0]||[])[1]||'';
-  const degs=G.iv.map(function(x){const inC=ivs.indexOf(x)>=0,bad=av.indexOf(x)>=0;return '<span style="'+(inC?'color:var(--or);font-weight:800':bad?'color:var(--rouge);text-decoration:line-through':'color:var(--blanc)')+'">'+GAM_DEG[x]+'</span>';}).join(' · ');
+  const CH=CB_MODES[SCLV.sid]?CB_MODES[SCLV.sid][2].map(function(x){return x%12;}):[];
+  const degs=G.iv.map(function(x){const inC=ivs.indexOf(x)>=0,bad=av.indexOf(x)>=0;return '<span style="'+(inC?'color:var(--or);font-weight:800':bad?'color:var(--rouge);text-decoration:line-through':'color:var(--blanc)')+(CH.indexOf(x)>=0?';border-bottom:2px solid var(--or)':'')+'" title="'+(CH.indexOf(x)>=0?'note caractéristique (Callipari)':'')+'">'+GAM_DEG[x]+'</span>';}).join(' · ');
   el.innerHTML='<div class="scl-row"><b style="font-size:15px;color:var(--or)">'+nn(r)+' '+G.lb+'</b><span class="hint" style="margin:0">'+why+'</span></div>'
     +'<div class="scl-row"><span class="hint" style="margin:0">Degrés</span><span style="font-size:14px">'+degs+'</span>'
     +'<span class="hint" style="margin:0 0 0 6px">'+(av.length?'barré = à éviter (demi-ton au-dessus d’une note d’accord)':'aucune note à éviter')+'</span></div>'
     +'<div class="scl-row"><button class="opill" data-scl-play="up">🎧 montée</button><button class="opill" data-scl-play="down">🎧 descente</button><button class="opill" data-scl-play="chord">🎧 accord + gamme</button>'
-    +'<button class="opill" data-scl-drill="1" style="border-color:var(--or);color:var(--or)">🏋️ Driller '+nn(r)+' '+G.lb+'</button><button class="opill" data-scl-off="1">✕ éteindre</button></div>';
+    +'<button class="opill" data-scl-drill="1" style="border-color:var(--or);color:var(--or)">🏋️ Driller '+nn(r)+' '+G.lb+'</button><button class="opill" data-scl-off="1">✕ éteindre</button></div>'
+    +cbHTML();
 }
 function sclPaint(){
   const kb=document.getElementById('mainKb');if(!kb)return;
@@ -1679,6 +1681,51 @@ function sclAllRender(){
   box.innerHTML='<div class="hint" style="margin-bottom:6px">Sur <b>'+nn(r)+'</b> (la fondamentale de l’accord joué). Chaque famille = une gamme mère et ses modes.</div>'
     +GAM_FAM.map(function(F){return '<div class="scl-fam"><span class="og-lb">'+F.lb+'</span><div class="chips">'+F.sc.map(function(x){const on=SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===r;return '<button class="schip'+(on?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+r+'">'+x[1]+'</button>';}).join('')+'</div></div>';}).join('');
 }
+/* ═══ 🗺 v9.56 — Cartographie modale (Brian Callipari, Modes Illustrés p. 102), lue en C et transposée.
+   Notes caractéristiques = ce qui diffère de l'ionien (modes majeurs) ou de l'éolien (modes mineurs).
+   [gamme mère, tension du 1er degré (libellé, empilement), notes caractéristiques, accords principaux [écart, qualité]] ═══ */
+const CB_Q={maj:[[0,4,7],''],min:[[0,3,7],'m'],dim:[[0,3,6],'°'],aug:[[0,4,8],'+'],d7:[[0,4,7,10],'7']};
+const CB_MODES={
+  ion:['Majeure',['maj7',[0,4,7,11]],[],[[5,'maj'],[7,'maj'],[11,'dim']]],
+  mix:['Majeure',['7',[0,4,7,10]],[10],[[7,'min'],[10,'maj']]],
+  mixb6:['Mélodique',['7♭13',[0,4,7,10,20]],[8,10],[[5,'min'],[7,'min'],[10,'maj']]],
+  lyd:['Majeure',['add♯11',[0,4,7,18]],[6],[[11,'min'],[2,'maj']]],
+  lydb7:['Mélodique',['7♯11',[0,4,7,10,18]],[6,10],[[2,'maj'],[7,'min'],[10,'aug','La carte imprime « G+ », absent de la gamme (G-B-D♯) : l’accord augmenté du mode est B♭+ (B♭-D-F♯)']]],
+  lyds2:['Harmonique',['(♯9♯11)',[0,4,7,15,18]],[3,6],[[11,'maj'],[7,'aug']]],
+  phrdom:['Harmonique',['7♭9♭13',[0,4,7,10,13,20]],[1,8,10],[[1,'maj'],[10,'min']]],
+  mel:['Mélodique',['m6(maj7)',[0,3,7,9,11]],[9,11],[[5,'maj'],[7,'maj']]],
+  har:['Harmonique',['m(maj7)',[0,3,7,11]],[11],[[7,'d7']]],
+  aeo:['Majeure',['m(♭6)',[0,3,7,8]],[],[[5,'min'],[7,'min']]],
+  phr:['Majeure',['m(♭9)',[0,3,7,13]],[1],[[1,'maj'],[10,'min']]],
+  dor:['Majeure',['m6',[0,3,7,9]],[9],[[2,'min'],[5,'maj']]],
+  dorb2:['Mélodique',['m6(♭9)',[0,3,7,9,13]],[1,9],[[10,'min'],[5,'maj'],[1,'aug']]],
+  dors4:['Harmonique',['m6(♯11)',[0,3,7,9,18]],[6,9],[[2,'maj'],[10,'aug']]]
+};
+function cbNote(r,x,iv){x=((x%12)+12)%12;const pc=((r+x)%12+12)%12;if([1,3,6,8,10].indexOf(x)<0)return nn(pc);
+  /* altération lue dans la gamme : ♯ si le degré naturel du dessus est présent et celui du dessous absent (♯2, ♯4) */
+  const up=iv&&iv.indexOf((x+1)%12)>=0&&iv.indexOf((x+11)%12)<0;return (up||GAM_DEG[x].charAt(0)==='♯')?NS[pc]:NF[pc];}
+function cbMinor(sid){const G=GAM[sid];return G&&G.iv.indexOf(3)>=0&&G.iv.indexOf(4)<0;}
+/* modes voisins : une seule note change (même fondamentale) */
+function cbNeighbours(sid){const A=GAM[sid].iv;return Object.keys(CB_MODES).filter(function(k){if(k===sid)return false;const B=GAM[k].iv;if(B.length!==A.length)return false;
+  return A.filter(function(x){return B.indexOf(x)<0;}).length===1;}).map(function(k){const B=GAM[k].iv;return {k:k,out:A.filter(function(x){return B.indexOf(x)<0;})[0],inn:B.filter(function(x){return A.indexOf(x)<0;})[0]};});}
+function cbChordNotes(r,ivs){let b=48+((r-48)%12+12)%12;if(b>55)b-=12;return ivs.map(function(x){return b+x;});}
+function cbHTML(){
+  if(!SCLV||!CB_MODES[SCLV.sid])return '';
+  const M=CB_MODES[SCLV.sid],r=SCLV.rootPc,mn=cbMinor(SCLV.sid),ton=nn(r)+(mn?'m':'');
+  const ch=[[0,mn?'min':'maj']].concat(M[3]);
+  const nb=cbNeighbours(SCLV.sid);
+  return '<div style="margin-top:12px;border:1px solid var(--gris2);border-radius:12px;padding:10px 12px">'
+    +'<div style="font-size:13px"><b style="color:var(--blanc)">🗺 Cartographie modale</b> <span class="hint" style="margin:0">— Brian Callipari, <i>Modes Illustrés</i></span></div>'
+    +'<div class="scl-row"><span class="hint" style="margin:0">Gamme mère</span><b>'+M[0]+'</b>'
+    +'<span class="hint" style="margin:0 0 0 8px">Note'+(M[2].length>1?'s':'')+' caractéristique'+(M[2].length>1?'s':'')+'</span>'
+    +(M[2].length?M[2].map(function(x){const iv=GAM[SCLV.sid].iv,sh=cbNote(0,x,iv).indexOf('♯')>=0;return '<b style="color:var(--or)">'+cbNote(r,x,iv)+' ('+(sh?'♯'+({1:'1',3:'2',6:'4',8:'5',10:'6'})[x%12]:GAM_DEG[x%12])+')</b>';}).join(' '):'<span>aucune — c’est la référence '+(mn?'mineure':'majeure')+'</span>')+'</div>'
+    +'<div class="scl-row"><span class="hint" style="margin:0">Tension du 1er degré</span><button class="opill" data-cb-ch="'+cbChordNotes(r,M[1][1]).join(',')+'|'+r+'">🎧 '+nn(r)+(mn&&M[1][0].charAt(0)!=='m'?'m':'')+M[1][0]+'</button>'
+    +'<span class="hint" style="margin:0 0 0 8px">Accords principaux</span>'
+    +ch.map(function(c){const q=CB_Q[c[1]],rp=(r+c[0])%12;return '<button class="opill" data-cb-ch="'+cbChordNotes(rp,q[0]).join(',')+'|'+rp+'"'+(c[2]?' title="'+c[2]+'"':'')+'>'+NBf(rp,r)+q[1]+(c[2]?'*':'')+'</button>';}).join('')+'</div>'
+    +(nb.length?'<div class="scl-row"><span class="hint" style="margin:0">Voisins (une note change)</span>'+nb.map(function(n){return '<button class="opill" data-scl="'+n.k+'" data-sclr="'+r+'">'+GAM[n.k].lb+' <small style="opacity:.7">'+cbNote(r,n.out,GAM[SCLV.sid].iv)+'→'+cbNote(r,n.inn,GAM[n.k].iv)+'</small></button>';}).join('')+'</div>':'')
+    +'</div>';
+}
+function cbPlay(spec){const p=spec.split('|'),ns=p[0].split(',').map(Number);SCLH={deg:-1,n:-1,notes:ns,rootPc:+p[1]};playNotes(ns,1.4);lightMain();}
 /* les 7 modes de la tonalité active */
 const SCL_MODES=[['I','ion','maj7'],['ii','dor','m7'],['iii','phr','m7'],['IV','lyd','maj7'],['V','mix','7'],['vi','aeo','m7'],['vii°','loc','m7b5']];
 const SCL_MDEG=[0,2,4,5,7,9,11];
@@ -2372,6 +2419,16 @@ function bousRender(){
   if(!b){box.innerHTML='<div class="empty">Joue un accord au clavier MIDI — la Boussole proposera les suites les plus fortes.</div>';return;}
   let h='<div style="grid-column:1/-1" class="hint">Depuis <b style="color:var(--or)">'+nn(b.c.rootPc)+b.c.tpl.sym+'</b> ('+romanFn(b.c).t+') :</div>';
   const mk=mgNodeOf(b.c),mp=mgPath(b.c);_MGP=mp;
+  /* 🔺 v9.56 — Callipari, Harmonie Illustrée 2 : néo-riemannien (P, R, L) et axes de Bartók (sur la triade) */
+  const fm=_bousFam(b.c.tpl.q),r0=b.c.rootPc;
+  if(fm==='M'||fm==='m'){
+    const NR=fm==='M'?[['P',0,'min','parallèle'],['R',9,'min','relatif'],['L',4,'min','la fondamentale descend d’un demi-ton']]:[['P',0,'maj','parallèle'],['R',3,'maj','relatif'],['L',8,'maj','la quinte monte d’un demi-ton']];
+    const chip=function(lb,d,q,t){const rp=(r0+d)%12,nm=(d===3||d===8)?NF[rp]:(d===6?NS[rp]:nn(rp));return '<button class="opill" data-bx="'+d+'|'+q+'" title="'+t+'"><b>'+lb+'</b> '+nm+(q==='min'?'m':'')+'</button>';};
+    h+='<div style="grid-column:1/-1;border:1px solid var(--gris2);border-radius:10px;padding:8px 12px;font-size:13px">🔺 <b>Néo-riemannien</b> (Callipari) — sur la triade de '+nn(r0)+(fm==='m'?'m':'')+' : '
+      +NR.map(function(x){return chip(x[0],x[1],x[2],x[3]);}).join(' ')
+      +(fm==='M'?' &nbsp; ✚ <b>Axe de Bartók</b> : '+[3,6,9].map(function(d){return chip('',d,'maj','même axe — '+(d===6?'pôle opposé, à distance de triton':'tierce mineure'));}).join(' ')+' <span class="hint" style="margin:0">enchaînements brusques, sans note commune ou presque — un système à part</span>':'')
+      +' <span class="hint" style="margin:0">· 🎧 tape pour entendre l’enchaînement</span></div>';
+  }
   h+='<div style="grid-column:1/-1;border:1px solid var(--gris2);border-radius:10px;padding:8px 12px;font-size:13px">🗺 <b>Carte de '+KEY.n+'</b> (Mugglin) — '
     +(mk?'tu es sur <b style="color:var(--or)">'+MG_N[mk][4]+'</b>'+(mp&&mp.length>1?' · chemin vers la maison : '+mp.map(function(id,i){return '<b style="color:'+(i===mp.length-1?'var(--vert)':'var(--blanc)')+'">'+mgName(id)+'</b>';}).join(' → ')+' <button class="opill" data-mg-path="1" style="margin-left:6px">🎧</button>':(mk==='I'?' · Home : tu peux aller partout':''))
         :'cet accord n’est pas sur la carte de '+KEY.n+' — change la tonalité (B6/C7) ou joue un accord de la carte')+'</div>';
@@ -10925,6 +10982,8 @@ document.addEventListener('click',function(e){
   }
   /* 🧭 Boussole (v8.3) */
   if(e.target.closest('[data-mg-path]')){mgPathPlay();return;}
+  const bx=e.target.closest('[data-bx]');
+  if(bx&&_BOUSL){const p=bx.dataset.bx.split('|'),c=_BOUSL.c,rp=(c.rootPc+(+p[0]))%12;playNotes(c.notes&&c.notes.length?c.notes:stackFrom(c.rootPc,c.tpl.iv,57),1.0);setTimeout(function(){playNotes(stackFrom(rp,TRIAD_IV[p[1]],57),1.2);},1000);return;}
   const gsm=e.target.closest('[data-gos-m]');
   if(gsm){GOS.m=+gsm.dataset.gosM;gosRender();const mp=(KEY.pc+GOS.m)%12;playNotes([60+((mp-60)%12+12)%12+12],.6);return;}
   if(e.target.closest('[data-gos-drill]')){drSelectEx('gmel');DRV.gmM=String(GOS.m);DRV.scope='12';drvSave();drRender();setPage('drill');toast('⛪ mélodie gospel',GM_DEGN[GOS.m]+' · 12 tons');return;}
@@ -10936,6 +10995,8 @@ document.addEventListener('click',function(e){
   if(scx){if(SCLV&&SCLV.sid===scx.dataset.scl&&SCLV.rootPc===+scx.dataset.sclr)sclOff();else sclSet(scx.dataset.scl,+scx.dataset.sclr);return;}
   const scm=e.target.closest('[data-scl-mode]');
   if(scm){const p=scm.dataset.sclMode.split('|');if(SCLV&&SCLV.sid===p[0]&&SCLV.rootPc===+p[1])sclOff();else sclSet(p[0],+p[1]);return;}
+  const cbc=e.target.closest('[data-cb-ch]');
+  if(cbc){cbPlay(cbc.dataset.cbCh);return;}
   const sch=e.target.closest('[data-scl-harm]');
   if(sch){const p=sch.dataset.sclHarm.split('|');sclHarmPlay(+p[0],+p[1]);return;}
   const scp=e.target.closest('[data-scl-play]');
