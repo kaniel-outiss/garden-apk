@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.53 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.54 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -125,6 +125,11 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 /* contenu des cartes en colonnes automatiques */
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;align-items:start}
 .mgrid .mini{margin-bottom:0}
+.gm-grid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.mini.gm-hit{border-color:var(--vert);box-shadow:0 0 10px 2px rgba(74,222,128,.5)}
+.gm-degs{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 10px}
+.gm-degs .opill.on{background:var(--or);color:#0C0E14;border-color:var(--or)}
+.gm-degs .opill small{opacity:.7;margin-left:4px;font-weight:500}
 /* Degrés : l'harmonisation prend la place, la liste des tonalités se range à droite quand l'écran est large */
 .deg-two{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 @media (min-width:1000px){.deg-two{grid-template-columns:minmax(0,3fr) minmax(260px,1fr)}}
@@ -442,7 +447,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.53 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.54 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -477,6 +482,7 @@ body.ux-focus #uxStopBar{display:flex}
   <button class="fchip" data-pg="stats">📊 Stats<span class="kbd">E6</span></button>
   <button class="fchip" data-pg="prisme">🔮 Prisme<span class="kbd">C♯6</span></button>
   <button class="fchip" data-pg="sub">🪞 Substituts</button>
+  <button class="fchip" data-pg="gos">⛪ Gospel</button>
   <button class="fchip" data-pg="repert">📚 Répertoire<span class="kbd">D6</span></button>
   <button class="fchip" data-pg="bous">🧭 Boussole<span class="kbd">E♭6</span></button>
 </div>
@@ -594,6 +600,14 @@ body.ux-focus #uxStopBar{display:flex}
     <div id="subRoot"></div>
     <div id="subCards" class="mgrid"></div>
     <div class="hint" style="margin-top:10px">Parcours : 🌀 défilé (le geste) → 🎯 résolution (la fonction) → 🧩 devine (la formule intériorisée). Survole une carte pour le pourquoi.</div>
+  </div>
+
+  <div class="card" id="pgGos" style="grid-column:1/-1;margin-bottom:16px;display:none">
+    <h2>⛪ Gospel — la mélodie au sommet</h2>
+    <div class="csub">Choisis une note de mélodie (ou joue-la au clavier) : voici les accords gospel qui la portent au sommet, avec leur basse — d’après Gregory Moody, <i>Black Gospel Chords — Melody Harmonization</i>. Tape une carte pour l’écouter ; joue-la au MIDI : elle s’allume en vert.</div>
+    <div id="gosDegs" class="gm-degs"></div>
+    <div id="gosInfo" class="hint" style="margin-bottom:8px"></div>
+    <div id="gosBox" class="mgrid gm-grid"></div>
   </div>
 
   <div class="card" id="pgRepert" style="grid-column:1/-1;margin-bottom:16px;display:none">
@@ -1171,15 +1185,17 @@ function kbLight(id,entries,rootPc){
   });
 }
 let _kbSeq=0;
-function miniKb(entries,rootPc){
+function miniKb(entries,rootPc,fitW){
   const all=entries.map(function(e){return e.m;});
   const lo=12*Math.floor(Math.min.apply(null,all)/12);
   let hi=12*Math.ceil((Math.max.apply(null,all)+1)/12);
   if(hi-lo<24)hi=lo+24;
   const id='mk'+(++_kbSeq);
+  /* v9.54 : fitW = largeur dispo → touches rétrécies pour que tout le voicing tienne (mélodie comprise) */
+  let w=15;if(fitW){let wh=0;for(let m=lo;m<=hi;m++)if(WPC.indexOf(m%12)>=0)wh++;w=Math.max(7,Math.min(15,Math.floor(fitW/wh)));}
   setTimeout(function(){
     const el=document.getElementById(id);if(!el)return;
-    kbHTML(id,lo,hi,15,58,false);
+    kbHTML(id,lo,hi,w,58,false);
     kbLight(id,entries,rootPc);
   },0);
   return '<div class="kb-sm"><div class="kb" id="'+id+'"></div></div>';
@@ -1716,8 +1732,8 @@ function lightMain(){
 }
 
 /* ================= PAGES / FONCTIONS ================= */
-const PAGES={renv:'pgRenv',voi:'pgVoi',fam:'pgFam',drill:'pgDrill',scales:'pgScales',deg:'pgDeg',stats:'pgStats',prisme:'pgPrisme',sub:'pgSub',repert:'pgRepert',bous:'pgBous',pano:'pgPano'};
-const PGNAMES={all:'⊞ Tout',renv:'🔄 Renversements',voi:'🖐️ Voicings',fam:'7️⃣ Formes de 7e',drill:'🏋️ Drill',scales:'🎼 Gammes & Subs',deg:'🧭 Degrés & Tonalités',stats:'📊 Stats',prisme:'🔮 Prisme',repert:'📚 Répertoire',bous:'🧭 Boussole',pano:'🌈 Panorama'};
+const PAGES={gos:'pgGos',renv:'pgRenv',voi:'pgVoi',fam:'pgFam',drill:'pgDrill',scales:'pgScales',deg:'pgDeg',stats:'pgStats',prisme:'pgPrisme',sub:'pgSub',repert:'pgRepert',bous:'pgBous',pano:'pgPano'};
+const PGNAMES={gos:'⛪ Gospel',all:'⊞ Tout',renv:'🔄 Renversements',voi:'🖐️ Voicings',fam:'7️⃣ Formes de 7e',drill:'🏋️ Drill',scales:'🎼 Gammes & Subs',deg:'🧭 Degrés & Tonalités',stats:'📊 Stats',prisme:'🔮 Prisme',repert:'📚 Répertoire',bous:'🧭 Boussole',pano:'🌈 Panorama'};
 /* E6=88 F6=89 F♯6=90 G6=91 G♯6=92 A6=93 B♭6=94 · C♯6=85 → Prisme · C6=84 → Panorama · D6=86 → Répertoire · E♭6=87 → Boussole */
 const PGKEYS={84:'all',85:'prisme',86:'repert',87:'bous',88:'stats',89:'renv',90:'voi',91:'fam',92:'drill',93:'scales',94:'deg'};
 let PAGE='renv';
@@ -1731,6 +1747,7 @@ function setPage(p){
   if(p==='stats'){gsRenderProgress();renderStatsGrid();}
   if(p==='prisme'){prismeRender();}
   if(p==='sub'){subRender();}
+  if(p==='gos'){gosRender();}
   if(p==='repert'){repertRender();}
   if(p==='bous'){bousRender();}
   if(p==='pano'){panoRender();}
@@ -1818,6 +1835,7 @@ function _analyseSoon(){
   const raf=window.requestAnimationFrame||function(f){return setTimeout(f,16);};
   _anaReq=raf(function(){
     _anaReq=0;
+    if(PAGE==='gos'&&held.size){const top=Math.max.apply(null,Array.from(held)),m=((top-KEY.pc)%12+12)%12;if(held.size===1&&m!==GOS.m)GOS.m=m;gosRender();}
     const c=identify(Array.from(held));
     if(c){
       if(cur&&(cur.rootPc!==c.rootPc||_bousFam(cur.tpl.q)!==_bousFam(c.tpl.q)))_VLPREV={rootPc:cur.rootPc,tpl:cur.tpl,notes:cur.notes.slice()};
@@ -3399,6 +3417,44 @@ function subDrillGo(fam,typ){
   drvSave();drRender();setPage('drill');
   toast('🪞 substituts',SUBT_FAMS[fam].lb+' · cible '+(typ==='min'?'mineure':'majeure'));
 }
+/* ═══ ⛪ v9.54 — Gospel : la mélodie au sommet (Gregory Moody, Adventures in Harmony vol. 2 « Black Gospel
+   Chords — Melody Harmonization »). 195 voicings vérifiés (8 écartés : mélodie absente du sommet dans le
+   tableau du livre). [degré de mélodie, fondamentale (écart à la tonique), symbole, degré romain, n° Moody,
+   empilement depuis la basse en demi-tons]. La basse est toujours la fondamentale. ═══ */
+const GM_V=[[0,0,"13sus","I",1129,[0,10,14,17,21,24]],[0,0,"9add6","I",1201,[0,4,10,12,14,16,21,24]],[0,0,"7♭9♯9♭5","I",1187,[0,4,10,13,15,18,24]],[0,10,"maj9add6","VII",933,[0,7,11,16,21,26]],[0,9,"m7","VI",892,[0,7,10,15,19,22,27]],[0,9,"7♯9♯5","VI",1046,[0,4,10,20,24,27]],[0,8,"9♭5add6","#V",970,[0,6,10,21,26,28]],[0,7,"13sus","V",1079,[0,10,12,21,24,26,29]],[0,7,"m11","V",172,[0,2,3,7,10,17]],[0,7,"m11","V",169,[0,7,10,14,15,17]],[0,6,"6add9♭5","bV",827,[0,4,9,14,18]],[0,6,"m7♭5","bV",1021,[0,12,18,22,27,30]],[0,6,"m7♭5","bV",1023,[0,6,12,15,22,30]],[0,6,"m7♭5","bV",1027,[0,6,15,22,24,30]],[0,6,"9♭5add6","bV",992,[0,10,16,21,26,30]],[0,6,"m♭5add6","bV",1216,[0,3,12,21,24,27,30]],[0,5,"6add9","IV",829,[0,9,14,16,19]],[0,5,"maj9add6","IV",980,[0,11,16,21,26,31]],[0,5,"6add9","IV",845,[0,4,9,14,19]],[0,5,"maj7add11","IV",1141,[0,11,17,23,28,31]],[0,4,"7♯9♯5","III",252,[0,10,15,16,20]],[0,2,"m11","II",825,[0,7,14,15,17,22]],[0,2,"m11","II",826,[0,5,14,15,19,22]],[0,1,"maj9add6","bII",1036,[0,4,9,11,14,19,23]],[0,1,"maj9add6","bII",1039,[0,7,14,16,21,23]],[1,0,"7♭9♯9♭5","I",1188,[0,12,16,22,27,30,37]],[1,11,"9sus","Maj VII",1117,[0,5,7,17,22,26]],[1,10,"m9","VII",501,[0,7,10,14,15]],[1,10,"7♯9♯5","VII",529,[0,4,8,10,15]],[1,9,"6,9","VI",1221,[0,9,14,19,21,24,28]],[1,4,"13sus","III",281,[0,10,14,17,21]],[1,2,"maj9add6","II",1225,[0,9,16,19,26,28,31,35]],[2,0,"m11","I",1242,[0,7,15,17,22,26]],[2,11,"7♯9♯5","Maj VII",939,[0,4,8,10,12,15]],[2,11,"7♯9♯5","Maj VII",940,[0,10,16,20,24,27]],[2,11,"7♯9♯5","Maj VII",942,[0,8,16,22,24,27]],[2,11,"7♯9♯5","Maj VII",945,[0,12,16,20,22,27]],[2,11,"dimadd6","Maj VII",873,[0,9,12,18,21,24,27]],[2,10,"maj9add6","VII",898,[0,4,9,11,14,16,19,23,28]],[2,10,"maj9add6","VII",935,[0,9,19,23,26,28]],[2,8,"9♭5add6","#V",963,[0,10,16,18,21,26,30]],[2,8,"9♭5add6","#V",964,[0,4,9,14,18]],[2,8,"9♭5add6","#V",967,[0,9,10,14,16,18]],[2,8,"9♭5add6","#V",969,[0,9,16,22,26,30]],[2,7,"m7add11","V",801,[0,10,15,17,19]],[2,6,"m7♯5","bV",735,[0,10,15,20]],[2,5,"9susadd6","IV",1002,[0,2,10,17,21]],[2,5,"7♭9add6","IV",919,[0,1,4,10,16,21]],[2,5,"7♭9add6","IV",1173,[0,10,16,21,25,28,33]],[2,4,"7♯5","III",1090,[0,8,12,16,22]],[2,2,"13sus","II",1172,[0,5,9,10,12,14,17,21,24]],[2,0,"maj9add6","I",862,[0,4,9,19,23,26]],[3,11,"7♯9♯5","Maj VII",960,[0,12,20,22,27,28]],[3,11,"7♯9♯5","Maj VII",961,[0,8,12,15,22,28]],[3,9,"6,9♭5","VI",378,[0,4,9,14,18]],[3,8,"maj7","#V",1259,[0,12,19,23,28,31]],[3,5,"m11","IV",1019,[0,2,3,5,7,10]],[3,2,"7♭9add6","II",1235,[0,10,16,21,25]],[3,1,"maj9add6","bII",1038,[0,9,16,19,23,26]],[3,1,"maj9add6","bII",1127,[0,11,16,19,21,23,26]],[3,1,"maj9add6","bII",1040,[0,7,11,16,21,26]],[4,0,"7♭9","I",1185,[0,7,16,19,22,25,28]],[4,11,"m11","Maj VII",1155,[0,3,7,10,14,17,19,24,29]],[4,11,"9sus","Maj VII",1115,[0,7,14,17,19,22,26,29]],[4,11,"m7sus","Maj VII",710,[0,7,10,15,17]],[4,11,"m7sus","Maj VII",713,[0,3,7,10,17]],[4,10,"maj9♭5","VII",1009,[0,4,9,11,14,16,18]],[4,9,"m11","VI",466,[0,10,14,15,17,19]],[4,7,"9add6","V",1149,[0,10,16,22,26,28,33]],[4,7,"7♭9♭5add6","V",1249,[0,10,13,16,18,21]],[4,6,"m7♭5","bV",1025,[0,3,6,12,18,22]],[4,6,"9♭5add6","bV",993,[0,4,9,14,18,22]],[4,5,"maj9add6","IV",988,[0,4,9,14,19,23]],[4,5,"maj9add6","IV",990,[0,2,4,7,9,11]],[4,4,"7♯5","III",1089,[0,10,16,20,24]],[4,4,"7♯9♯5","III",1102,[0,3,4,8,10,12]],[4,4,"dimadd6","III",1239,[0,9,12,15,18,21,24]],[4,4,"7♯5♯9","III",1143,[0,10,16,20,27,32,36]],[4,4,"7♭9♯5♭5","III",1175,[0,10,16,20,25,30,36]],[4,2,"9sus","II",1106,[0,5,9,10,14]],[4,2,"mmaj6,9♭5","II",1069,[0,3,6,9,11,14]],[4,1,"7♯9♯5","bII",1121,[0,4,10,16,20,22,27]],[5,0,"9sus","I",1180,[0,5,7,19,22,26,29]],[5,0,"13sus","I",1170,[0,5,9,10,14,19,21,24,29]],[5,0,"m6,9add11","I",1087,[0,3,9,14,17]],[5,0,"13sus","I",1130,[0,9,10,12,14,17]],[5,0,"m11","I",1241,[0,3,7,10,14,17]],[5,11,"7♯9♭5","Maj VII",1145,[0,4,10,15,22,27,30]],[5,11,"dimadd6","Maj VII",875,[0,9,12,15,21,30]],[5,11,"dimadd6","Maj VII",879,[0,9,12,15,24,30]],[5,10,"maj9add6","VII",900,[0,11,16,21,23,26,28,31]],[5,10,"maj9add6","VII",930,[0,11,16,21,26,31]],[5,10,"maj9add6","VII",934,[0,9,11,14,16,19]],[5,9,"7♯9♯5","VI",1048,[0,12,16,22,27,32]],[5,9,"7♯9♯5","VI",389,[0,10,15,16,20]],[5,8,"9♭5add6","#V",966,[0,6,10,14,16,18,21]],[5,5,"7add6","IV",1092,[0,10,16,21,24]],[5,5,"13sus","IV",1190,[0,10,14,17,21,24]],[5,4,"7♭9add6","III",1094,[0,10,16,21,25]],[5,3,"76,9♭5","-III",1194,[0,6,16,21,22,26]],[5,3,"76,9","-III",1231,[0,4,10,19,21,26]],[6,0,"9♭5add6","I",1098,[0,9,16,22,24,26,30]],[6,0,"9♭5add6","I",1099,[0,12,16,21,22,26,30]],[6,0,"7♯9♯5♭9♭5","I",1135,[0,4,10,15,20,22,25,30]],[6,11,"m11","Maj VII",789,[0,5,10,14,15,19]],[6,9,"13","VI",1197,[0,12,17,22,26,33]],[6,6,"m7♭5","bV",1028,[0,6,15,18,22,24]],[6,6,"m7♭5","bV",1029,[0,3,6,10,18,24]],[6,5,"7♭9add6","IV",921,[0,4,9,10,13]],[6,5,"7♭9add6","IV",920,[0,4,9,16,22,25]],[6,5,"7♭9♭5♯5♭5","IV",1245,[0,10,16,18,20,22,25]],[6,4,"m9","III",998,[0,3,7,10,15,22,26]],[6,2,"7♭9","II",1209,[0,7,16,19,22,25,28]],[6,2,"maj9add6","II",1226,[0,7,16,19,21,23,26,28]],[7,0,"major9","I",658,[0,7,11,14,16,19]],[7,0,"6,9","I",57,[0,4,9,14,19]],[7,0,"maj9add6","I",867,[0,2,9,11,16,19]],[7,0,"m","I",5,[0,12,15,19]],[7,0,"maj9add6","I",866,[0,2,4,9,11,19]],[7,0,"9sus","I",1179,[0,5,7,10,14,17,19]],[7,0,"7♭9","I",1184,[0,4,7,10,13,16,19]],[7,0,"m7","I",894,[0,12,15,22,27,31]],[7,11,"7♯9♯5","Maj VII",949,[0,10,12,16,27,32]],[7,11,"m7♭5♯5add11","Maj VII",1161,[0,6,10,12,17,22,27,32]],[7,11,"7♯9♯5","Maj VII",952,[0,12,22,28,39,44]],[7,11,"7♯9♯5","Maj VII",941,[0,12,16,22,27,32]],[7,10,"m11add6","VII",1252,[0,3,5,7,10,12,14,17,21]],[7,10,"maj9add6","VII",903,[0,4,7,11,14,16,21]],[7,10,"13♭5","VII",541,[0,10,14,16,18,21]],[7,9,"9sus","VI",418,[0,7,12,14,17,22]],[7,9,"m11","VI",465,[0,7,14,15,17,22]],[7,8,"maj7","#V",1258,[0,11,12,16,19,23]],[7,7,"13sus","V",1077,[0,10,12,14,17,21,24]],[7,7,"9sus","V",1256,[0,10,14,17,19,24]],[7,7,"7♭9♭5♯5","V",851,[0,10,13,16,18,20,24]],[7,7,"7♭9♭5♯5","V",854,[0,6,10,13,16,20,24]],[7,6,"7♭9add6","bV",1082,[0,10,16,21,25]],[7,6,"6,9♭9","bV",570,[0,2,4,9,13]],[7,5,"maj9add6","IV",986,[0,9,16,19,23,26]],[7,5,"9susadd6","IV",1005,[0,9,14,17,22,26]],[7,5,"m11","IV",1017,[0,10,15,17,19,22,26]],[7,5,"m11","IV",1011,[0,10,15,17,19,26]],[7,5,"m9♯5","IV",1007,[0,10,15,20,26]],[7,5,"maj9add6","IV",981,[0,7,11,16,21,26]],[7,5,"9susadd6","IV",1000,[0,10,14,17,21,22,26]],[7,5,"76,9","IV",1084,[0,10,16,21,26]],[7,4,"7♯9♯5","III",1101,[0,10,16,20,24,27]],[7,2,"m11","II",119,[0,3,7,10,14,17]],[7,2,"m7add11","II",927,[0,3,7,10,17]],[7,2,"13sus","II",147,[0,2,9,10,17]],[7,1,"7♯9♭5","bII",626,[0,4,10,15,18]],[8,11,"dimadd6","Maj VII",890,[0,12,18,21,24,27,33]],[8,5,"m11","IV",1018,[0,7,14,17,22,27]],[8,2,"mmaj6,9♭5","II",1070,[0,9,15,23,26,30]],[8,1,"maj9add6","bII",1126,[0,2,4,9,11,19]],[8,1,"maj9add6","bII",1037,[0,9,16,23,26,31]],[9,0,"13sus","I",1169,[0,5,10,12,14,17,21]],[9,0,"9♭5add6","I",1097,[0,4,10,12,14,18,21]],[9,10,"maj9add6","VII",929,[0,4,9,14,19,23]],[9,9,"7♯5","VI",1206,[0,4,10,16,20,24]],[9,9,"13","VI",1196,[0,10,12,14,17,21,24]],[9,9,"6,9","VI",1220,[0,9,12,14,16,19,21,24]],[9,9,"7♯9♯5","VI",1049,[0,3,15,16,20,22,24]],[9,6,"m7♭5","bV",1024,[0,6,12,18,22,27]],[9,6,"m♭5add6","bV",1214,[0,12,15,18,21,24,27]],[9,5,"maj9add6","IV",985,[0,9,19,23,26,28]],[9,5,"7♭9add6","IV",914,[0,10,16,21,25,28]],[9,5,"7♭9add6","IV",976,[0,9,16,22,25,28]],[9,4,"m11♭5","III",1237,[0,10,15,18,22,24,26,29]],[9,3,"76,9♭5","-III",1193,[0,10,16,21,26,30]],[9,2,"m7add11","II",926,[0,10,15,17,19]],[9,2,"7♭9","II",1208,[0,4,7,10,13,16,19]],[9,2,"7♭9","II",1212,[0,7,16,22,25,28,31]],[9,2,"7♭9","II",1210,[0,4,13,16,19,22,31]],[9,2,"maj9add6","II",1224,[0,4,7,9,11,14,16,19]],[9,2,"maj9add6","II",1228,[0,11,16,21,26,31]],[10,9,"7♭5♯9♯5","VI",1248,[0,4,10,15,20,25]],[10,7,"m13","V",1218,[0,10,14,15,17,19,27]],[10,5,"m11","IV",1012,[0,10,15,19,26,29]],[10,5,"m11","IV",1013,[0,7,10,15,26,29]],[10,5,"m11","IV",1014,[0,7,10,14,15,17]],[10,5,"m11","IV",1015,[0,2,7,10,15,17]],[10,5,"9susadd6","IV",1004,[0,9,14,22,29]],[10,5,"9susadd6","IV",1003,[0,9,14,22,26,29]],[10,3,"76,9","-III",1230,[0,10,16,21,26,31]],[10,1,"maj9add6","bII",1042,[0,2,7,11,16,21]],[11,0,"maj9add6","I",1163,[0,4,9,14,26,31,35]],[11,11,"7♯9♯5","Maj VII",938,[0,4,10,15,20,24]],[11,11,"7♯9♯5","Maj VII",943,[0,3,4,8,10,12]],[11,11,"7♯9♯5","Maj VII",947,[0,10,15,16,20,24]],[11,11,"7♯9♯5","Maj VII",950,[0,3,10,16,20,24]],[11,11,"dimadd6","Maj VII",871,[0,9,12,15,18,21,24]],[11,8,"dimadd6","#V",1159,[0,12,15,18,21,24,27]],[11,7,"7♭9♭5♯5","V",852,[0,10,13,18,20,24,28]],[11,7,"maj7♭9add6,7","V",1123,[0,10,16,21,23,25,28]]];
+const GM_DEGN=['1','♭2','2','♭3','3','4','♭5','5','♯5','6','♭7','7'];
+const GM_DIA=[0,2,4,5,7,9,11];
+/* réalise un voicing dans une tonalité : basse entre Mi1 et Ré♯2 (registre gospel), sommet ≤ Do6 */
+function gmNotes(v,keyPc){const r=((keyPc+v[1])%12+12)%12;let b=28+((r-28)%12+12)%12;let ns=v[5].map(function(x){return b+x;});
+  while(ns[ns.length-1]>84&&ns[0]-12>=24)ns=ns.map(function(m){return m-12;});
+  while(ns[ns.length-1]<67)ns=ns.map(function(m){return m+12;});
+  return ns;}
+function gmName(v,keyPc){const r=((keyPc+v[1])%12+12)%12;return NBf(r,keyPc)+v[2];}
+let GOS={m:0};
+function gosRender(){
+  const box=document.getElementById('gosBox');if(!box)return;
+  const k=KEY.pc;
+  document.getElementById('gosDegs').innerHTML='<span class="og-lb" style="align-self:center">Mélodie en '+KEY.n+'</span>'
+    +[0,1,2,3,4,5,6,7,8,9,10,11].map(function(m){const n=GM_V.filter(function(v){return v[0]===m;}).length;
+      return '<button class="opill'+(GOS.m===m?' on':'')+'" data-gos-m="'+m+'">'+NBf(k+m,k)+' <small>'+GM_DEGN[m]+' · '+n+'</small></button>';}).join('');
+  const L=GM_V.filter(function(v){return v[0]===GOS.m;}).slice().sort(function(a,b){return a[1]-b[1]||a[5].length-b[5].length;});
+  const hp=[];held.forEach(function(m){if(hp.indexOf(m%12)<0)hp.push(m%12);});
+  const hs=Array.from(held).sort(function(a,b){return a-b;});
+  const mp=(k+GOS.m)%12;
+  document.getElementById('gosInfo').innerHTML='Mélodie <b style="color:var(--or)">'+NBf(mp,k)+'</b> ('+GM_DEGN[GOS.m]+' de '+KEY.n+') — '+L.length+' accords, classés par basse. '
+    +'<button class="opill" data-gos-drill="1" style="margin-left:6px;border-color:var(--or);color:var(--or)">🏋️ Driller cette note sur 12 tons</button>';
+  box.innerHTML=L.map(function(v){
+    const ns=gmNotes(v,k),r=(k+v[1])%12;
+    const pcs=v[5].map(function(x){return (r+x)%12;}),f=(r+7)%12;
+    const hit=hs.length>=4&&hs[0]%12===r&&hp.every(function(p){return pcs.indexOf(p)>=0;})&&pcs.every(function(p){return p===f||hp.indexOf(p)>=0;});
+    const ent=ns.map(function(m,i){return E(m,r,i===0||m<55?'MG':'MD');});
+    const deg=ns.map(function(m){return degName(((m-r)%12+12)%12,v[5].map(function(x){return x%12;}));});
+    return '<div class="mini'+(hit?' gm-hit':'')+'" data-play="'+ns.join(',')+'">'
+      +'<div class="mtitle"><span class="mname">'+(hit?'✓ ':'')+gmName(v,k)+'</span><span class="mtag tag-g">'+v[3].replace(/^b/,'♭').replace(/^#/,'♯').replace('Maj','maj ')+' · n°'+v[4]+'</span></div>'
+      +miniKb(ent,r,(box.clientWidth>700?Math.floor(box.clientWidth/2)-40:box.clientWidth-40)||300)
+      +'<div class="mnotes" style="margin-top:4px">basse '+NBf(r,k)+' · MD '+deg.slice(1).join('-')+' · mélodie '+NBf(mp,k)+'</div></div>';
+  }).join('');
+}
 /* ═══════════ 📘 BOYD — Jazz Chord Progressions + Intermediate Jazz Chord Voicing (v9.0) ═══════════
    Chaque accord est décrit par ses « emplacements » (Intermediate, p. 4-7) :
      T = tierce · F = case de la quinte (5, ♭5, ♯5, 13 ou 11 selon l'accord)
@@ -4408,7 +4464,7 @@ function hmPropose(mel){
 }
 /* 🎲 v9.17 — exercices dont l'ordre des questions peut être tiré au sort : plusieurs familles,
    formes ou voicings par fondamentale, sans enchaînement musical à respecter (pas de grille). */
-const FAM_SHUF=['gam','tjmode','ffam','fmi','fdim','fhyb','dgust','bapp','bsup','bdim','bstr','hdia','vbank','famille','formes','renv','trenv','shell','rootless','drop2','drop3','boyd','mgen','mmir','mfrac','hshell','hso','wpoly','wvoi','gsub','topn','hdom','xfam','wscl','qacc','bgrp','slon'];
+const FAM_SHUF=['gmel','gam','tjmode','ffam','fmi','fdim','fhyb','dgust','bapp','bsup','bdim','bstr','hdia','vbank','famille','formes','renv','trenv','shell','rootless','drop2','drop3','boyd','mgen','mmir','mfrac','hshell','hso','wpoly','wvoi','gsub','topn','hdom','xfam','wscl','qacc','bgrp','slon'];
 function famShuffle(ex,steps){
   const m=DRV.famOrd;
   if(m!=='rand'&&m!=='mix')return steps;
@@ -5086,6 +5142,8 @@ const DR_OPTS={
   famOrdO:{lb:'🎲 Mélange des questions',key:'famOrd',ch:[['fix','Fixe (dans l’ordre du livre)'],['rand','🎲 Au hasard dans chaque tonalité'],['mix','🎲 Tout mélangé (tonalités et familles)']]},
   qaTO:{lb:'Lignes',key:'qaT',ch:[['modes','Modes et gammes (depuis la fondamentale)'],['penta','Pentatonique (beaucoup de réponses)'],['arp','Arpèges 1-3-5-7 et 3-5-7-9'],['all','Toutes']]},
   qaVO:{lb:'Consigne',key:'qaV',ch:[['lire','👀 Lire et écouter'],['oreille','🔊 Oreille seule']]},
+  gmMO:{lb:'Note de mélodie',key:'gmM',ch:[['dia','Notes de la gamme'],['all','🌀 Les 12'],['0','1'],['2','2'],['4','3'],['5','4'],['7','5'],['9','6'],['11','7'],['1','♭2'],['3','♭3'],['6','♭5'],['8','♯5'],['10','♭7']]},
+  gmVO:{lb:'Consigne',key:'gmV',ch:[['lire','📖 Lire la note'],['oreille','👂 À l’oreille']]},
   tnQO:{lb:'Accord',key:'tnQ',ch:[['maj7','maj7'],['m7','m7'],['7','7'],['m7b5','m7♭5'],['all','🌀 Les 4']]},
   tnTO:{lb:'Note de mélodie',key:'tnT',ch:[['ct','Notes de l’accord'],['ten','Tensions (9, 11, 13, altérations)'],['all','Toutes']]},
   hmMO:{lb:'Mélodie',key:'hmM',ch:Object.keys(HM_MEL).map(function(k){return [k,HM_MEL[k].lb];})},
@@ -5170,6 +5228,7 @@ const DR_EX={
   vbank:{lb:'🎰 Voicings de 7e',hint:'un accord, tous les voicings appris',opts:['vbMO','vbPO','vbEO','vbQO','vbNO']},
   qacc:{lb:'🎼 Quel accord ?',hint:'une ligne → ses accords',opts:['qaTO','qaVO']},
   topn:{lb:'🎼 Note du haut',hint:'la mélodie au sommet du voicing',opts:['tnQO','tnTO']},
+  gmel:{lb:'⛪ Mélodie gospel',hint:'Moody : 195 voicings, la mélodie au sommet',opts:['gmMO','gmVO']},
   harm:{lb:'🎼 Harmoniser',hint:'une mélodie, note par note',opts:['hmMO']},
   wscl:{lb:'🏛 Gammes de l’accord',hint:'table 6.16 · accord → gamme',opts:['wsCO','wsSO','warmDirO']},
   wpoly:{lb:'🏛 Structures polycordales',hint:'triade MD sur 1–7 MG · tables 1-10',opts:['wstrO','wfond','wtri','wsevO','wmode']},
@@ -5274,6 +5333,7 @@ const DR_HOW={
   gam:'Le drill du Coach de GospelKeys, pour TOUTES les gammes : une carte = gamme × tonalité × main. Objectif 300 reps, acquise sur au moins 10 jours (14 derniers jours), à un tempo donné ; l’échelle de tempo monte de 8 en 8 jusqu’à 208 quand le métronome tourne. Une fausse note fait repartir la gamme ; Garden retient la note où tu butes, et si ta vélocité passe par le MIDI, dit si c’est les doigts ou la force. Doigtés de GospelKeys pour majeures, mineures, pentatoniques et blues ; ailleurs, doigté libre. « 📚 Toutes les gammes » : l’état de chaque carte.',
   vbank:'Un accord, tous les voicings que tu as appris : position serrée, shells, rootless, drops, Haerle, Boyd, Mantooth, Waite, quartes. « Voicing au hasard » garde l’accord et tire le voicing ; « Tout au hasard » tire aussi la famille et la tonalité ; « Tour complet » passe l’accord dans chaque voicing du réservoir. Chaque voicing est jugé avec les règles de son auteur, et compte dans les statistiques de son exercice d’origine.',
   qacc:'La table de Waite lue à l’envers. Garden joue une ligne (une gamme depuis sa première note) ; tu plaques un accord dont c’est la gamme, fondamentale en bas (3ce et 7e obligatoires, 5te facultative). Plusieurs réponses sont justes : Garden te donne les autres après coup.',
+  gmel:'Gregory Moody, Black Gospel Chords — Melody Harmonization : pour chaque note de mélodie, une liste d’accords gospel qui la portent AU SOMMET. Garden donne une note de mélodie dans une tonalité ; tu poses un de ces accords — la fondamentale de l’accord en bas, la mélodie en haut. Toute réponse du catalogue est juste, Garden te montre les autres. Quinte facultative ; les doublures sont libres.',
   topn:'Mantooth ch. 11 et Haerle (appendice II) : la mélodie impose la note du HAUT. Joue un voicing de l’accord, au moins 4 sons, avec la 3ce et la 7e (elles disent l’accord), et la note demandée au sommet. Les tensions (9, 11, 13, altérations) sont permises selon l’accord.',
   harm:'Haerle, check-list d’harmonisation (The Jazz Language, appendice II) : pour chaque note de la mélodie, un accord dont elle est la note du HAUT. Toute harmonisation juste est acceptée ; Garden indique la force de l’enchaînement (fort : la basse descend d’une quinte ou d’un demi-ton ; moyen ; faible). La démo en propose une.',
   wscl:'Brian Waite, table 6.16 : pour chaque accord, les gammes qui lui vont et leur POINT DE DÉPART (R = la fondamentale, sinon l’intervalle au-dessus). Garden nomme l’accord et la gamme ; tu la joues legato depuis ce point. La démo fait entendre et voir chaque gamme. « Pentatonique » = T T m3 T m3.',
@@ -5312,7 +5372,7 @@ const DR_FAM=[
   {id:'tri',lb:'🔺 Triades',ex:['trenv']},
   {id:'voi',lb:'🖐 Voicings jazz',ex:['shell','rootless','drop2','drop3','quart','mgv','ust','poly']},
   {id:'berg',lb:'🧩 Bergonzi',ex:['bgrp','b4i']},
-  {id:'mel',lb:'🎼 Mélodie → harmonie',ex:['qacc','topn','harm']},
+  {id:'mel',lb:'🎼 Mélodie → harmonie',ex:['qacc','topn','gmel','harm']},
   {id:'felts',lb:'🎨 Felts réharmonisation',ex:['ffam','fdia','fext','fmi','ftur','fbas','flc','fdim','fmod','fhyb','fcs']},
   {id:'haer',lb:'🎓 Haerle',ex:['tjmode','tj5','hpen','hgui','hdia','hsus','hblu','hshell','hvl','hso','hmodal','hsoii','hpoly','hdom','hdim']},
   {id:'dg',lb:'🎹 DeGreg',ex:['dgop','dg4','dg6v','dgrow','dgust']},
@@ -5329,7 +5389,7 @@ const DR_FAM=[
   {id:'duo',lb:'🙌 Deux mains',ex:['comp']}
 ];
 /* voicing/contenu par défaut à la sélection d'un exercice */
-const DR_EXDEF={renv:'all',trenv:'all',shell:'17',rootless:'alt',drop2:'all',drop3:'all','251':'pl',dim251:'pl',quart:'sw',diat:'1451',diat7:'ech',gosp:'cad',jazzp:'v7ii',xform:'ref',xfam:'ref',xprog:'x251',gtl:'l7',appr:'inf',cell:'1235',forme:'blues12',earq:'root',eard:'',earp:'251',mgv:'158',ust:'cyc',poly:'cyc',grip:'solo',walk:'up',hex:'triads',tca:'',ppent:'',comp:'back',pass:'tech',sub:'cyc',lib:'gsp_cad',bous:'',echo:'arp1235',boyd:'both',boydp:'251',wvoi:'r3579',wpoly:'nom',desc:'plaq',mod:'v7',gsub:'',warm:'',bgrp:'',b4i:'',ligon:'',slon:'',mgen:'',mwk:'ex31',mmir:'',mfrac:'',mprog:'ex71',mdim:'',hshell:'',hvl:'ii5',hso:'',hmodal:'',hsoii:'',hpoly:'',hdom:'',hdim:'',qacc:'',topn:'',harm:'',vbank:'',gam:'',bsup:'',bdim:'',bmin:'',bstr:'',hdia:'',hsus:'',hblu:'',bapp:'',ffam:'',fmi:'',ftur:'',flc:'',fdim:'',fmod:'',fhyb:'',fcs:'',dgop:'',dg4:'',dgust:'',tjmode:'',tj5:'',dgrow:'',dg6v:'',fdia:'',fext:'',fbas:''};
+const DR_EXDEF={renv:'all',trenv:'all',shell:'17',rootless:'alt',drop2:'all',drop3:'all','251':'pl',dim251:'pl',quart:'sw',diat:'1451',diat7:'ech',gosp:'cad',jazzp:'v7ii',xform:'ref',xfam:'ref',xprog:'x251',gtl:'l7',appr:'inf',cell:'1235',forme:'blues12',earq:'root',eard:'',earp:'251',mgv:'158',ust:'cyc',poly:'cyc',grip:'solo',walk:'up',hex:'triads',tca:'',ppent:'',comp:'back',pass:'tech',sub:'cyc',lib:'gsp_cad',bous:'',echo:'arp1235',boyd:'both',boydp:'251',wvoi:'r3579',wpoly:'nom',desc:'plaq',mod:'v7',gsub:'',warm:'',bgrp:'',b4i:'',ligon:'',slon:'',mgen:'',mwk:'ex31',mmir:'',mfrac:'',mprog:'ex71',mdim:'',hshell:'',hvl:'ii5',hso:'',hmodal:'',hsoii:'',hpoly:'',hdom:'',hdim:'',qacc:'',topn:'',gmel:'',harm:'',vbank:'',gam:'',bsup:'',bdim:'',bmin:'',bstr:'',hdia:'',hsus:'',hblu:'',bapp:'',ffam:'',fmi:'',ftur:'',flc:'',fdim:'',fmod:'',fhyb:'',fcs:'',dgop:'',dg4:'',dgust:'',tjmode:'',tj5:'',dgrow:'',dg6v:'',fdia:'',fext:'',fbas:''};
 
 /* ===== état des options (persisté) ===== */
 const DRV_KEY='garden_drv_v1';
@@ -5344,7 +5404,7 @@ let DRV=(function(){
     ptech:'sub7',ptgt:'14',pzip:'z25',ps1:'cyc',pbeat:'off',
     styp:'maj',sfam:'all',
     bqa:'m7',bd:'5',bqb:'7',bassPat:'auto',
-    blvl:'9',bstart:'auto',bshow:'on',btype:'var',bsrc:'boyd',bband:'off',hpQ:'all',hpM:'show',hgC:'all',hgS:'any',mguide:'auto',wfond:'d7',wtri:'all',dqual:'diat-maj',mecart:'all',gsn:'5',wstr:'tri',wsev:'all',wsC:'m7',wsS:'all',warmIv:'2',warmPat:'asc',bgG:'15',bgQ:'maj',bgP:'rec',bgI:'0',bgC:'keys',b4Sz:'4',b4Set:'0',b4Dir:'F',b4Perm:'11',b4N:'1',b4Xf:'none',lgO:'1',lgM:'maj',slN:'2',slP:'inter1',slO:'0',slR:'2',mgQ:'maj',mgC:'tonic',mmV:'I',mmF:'all',mfF:'all',mdK:'dim',hsG:'379',hvS:'B',hsoM:'dor',hmS:'q',hdK:'cyc',hdD:'up',famOrd:'fix',gamF:'maj',gamS:'all',gamH:'MD',gamO:'2',tjM:'lire',tjG:'all',hsoF:'f1',hpF:'f1',fdL:'3',fdB:'off',fxM:'q5',fbP:'b1',dg6:'all',dgR:'dor',dgM:'251A',dguQ:'dom',fmoM:'dor',fmoP:'off',fhyM:'all',fcsP:'c1',flcP:'lc3',fdM:'four',ffF:'all',fmR:'all',fmV:'show',ftT:'t812',hbG:'q73',hsuS:'0',baQ:'all',bsT:'all',bsP:'P1',bmS:'P1',bmV:'rand',bmI:'69',bsV:'nine',vbM:'rvoic',vbP:'all',vbE:'drop2',vbQ:'all5',vbN:'1',qaT:'modes',qaV:'lire',tnQ:'maj7',tnT:'ct',hmM:'clair'};
+    blvl:'9',bstart:'auto',bshow:'on',btype:'var',bsrc:'boyd',bband:'off',hpQ:'all',hpM:'show',gmM:'dia',gmV:'lire',hgC:'all',hgS:'any',mguide:'auto',wfond:'d7',wtri:'all',dqual:'diat-maj',mecart:'all',gsn:'5',wstr:'tri',wsev:'all',wsC:'m7',wsS:'all',warmIv:'2',warmPat:'asc',bgG:'15',bgQ:'maj',bgP:'rec',bgI:'0',bgC:'keys',b4Sz:'4',b4Set:'0',b4Dir:'F',b4Perm:'11',b4N:'1',b4Xf:'none',lgO:'1',lgM:'maj',slN:'2',slP:'inter1',slO:'0',slR:'2',mgQ:'maj',mgC:'tonic',mmV:'I',mmF:'all',mfF:'all',mdK:'dim',hsG:'379',hvS:'B',hsoM:'dor',hmS:'q',hdK:'cyc',hdD:'up',famOrd:'fix',gamF:'maj',gamS:'all',gamH:'MD',gamO:'2',tjM:'lire',tjG:'all',hsoF:'f1',hpF:'f1',fdL:'3',fdB:'off',fxM:'q5',fbP:'b1',dg6:'all',dgR:'dor',dgM:'251A',dguQ:'dom',fmoM:'dor',fmoP:'off',fhyM:'all',fcsP:'c1',flcP:'lc3',fdM:'four',ffF:'all',fmR:'all',fmV:'show',ftT:'t812',hbG:'q73',hsuS:'0',baQ:'all',bsT:'all',bsP:'P1',bmS:'P1',bmV:'rand',bmI:'69',bsV:'nine',vbM:'rvoic',vbP:'all',vbE:'drop2',vbQ:'all5',vbN:'1',qaT:'modes',qaV:'lire',tnQ:'maj7',tnT:'ct',hmM:'clair'};
   try{const o=JSON.parse(localStorage.getItem(DRV_KEY));
     if(o&&DR_EX[o.ex]){Object.keys(d).forEach(function(k){if(o[k]!=null)d[k]=o[k];});}
   }catch(e){}
@@ -5411,7 +5471,7 @@ let DRV=(function(){
   if(d.bsT!=='all'&&d.bsT!=='dim'&&!B_SUP[d.bsT])d.bsT='all';if(['P1','P2','both'].indexOf(d.bsP)<0)d.bsP='P1';if(['P1','P2'].indexOf(d.bmS)<0)d.bmS='P1';if(['rand','s9','s5','s59'].indexOf(d.bmV)<0)d.bmV='rand';if(['69','M7'].indexOf(d.bmI)<0)d.bmI='69';if(['nine','oct','all','e251'].indexOf(d.bsV)<0&&!B_STR[d.bsV])d.bsV='nine';if(!H_BLU[d.hbG])d.hbG='q73';if(['0','1'].indexOf(String(d.hsuS))<0)d.hsuS='0';if(['all','s69','mM9'].indexOf(d.baQ)<0)d.baQ='all';
   if(['rvoic','rall','tour','fix'].indexOf(d.vbM)<0)d.vbM='rvoic';if(!VB_POOLS[d.vbP])d.vbP='all';if(!VB_POOL.some(function(E){return E.id===d.vbE;}))d.vbE='drop2';
   if(['all5','all7','maj7','7','m7','m7b5','dim7','6','m6'].indexOf(d.vbQ)<0)d.vbQ='all5';if(['1','2','3'].indexOf(String(d.vbN))<0)d.vbN='1';
-  if(['modes','penta','arp','all'].indexOf(d.qaT)<0)d.qaT='modes';if(['lire','oreille'].indexOf(d.qaV)<0)d.qaV='lire';if(d.tnQ!=='all'&&!TN_Q[d.tnQ])d.tnQ='maj7';if(['ct','ten','all'].indexOf(d.tnT)<0)d.tnT='ct';if(!HM_MEL[d.hmM])d.hmM='clair';
+  if(!(d.gmM==='dia'||d.gmM==='all'||GM_DEGN[+d.gmM]!=null))d.gmM='dia';if(['lire','oreille'].indexOf(d.gmV)<0)d.gmV='lire';if(['modes','penta','arp','all'].indexOf(d.qaT)<0)d.qaT='modes';if(['lire','oreille'].indexOf(d.qaV)<0)d.qaV='lire';if(d.tnQ!=='all'&&!TN_Q[d.tnQ])d.tnQ='maj7';if(['ct','ten','all'].indexOf(d.tnT)<0)d.tnT='ct';if(!HM_MEL[d.hmM])d.hmM='clair';
   if(!SLON_N[d.slN])d.slN='2';if(!SLON_P[d.slP])d.slP='inter1';if(['1','2'].indexOf(String(d.slR))<0)d.slR='2';
   if(['1','2','3','all'].indexOf(String(d.lgO))<0)d.lgO='1';if(['maj','min','both'].indexOf(d.lgM)<0)d.lgM='maj';
   return d;
@@ -5677,7 +5737,7 @@ function _cellOf(id){
   const p=id.split('|'),ex=p[0];
   /* v8 : les ids pass rythmiques finissent par |bN — la tonalité est l'avant-dernier segment */
   const pc=parseInt(/^b\d?$|^bet$/.test(p[p.length-1])?p[p.length-2]:p[p.length-1],10);
-  const fam=(ex==='formes'||ex==='renv'||ex==='trenv'||ex==='shell'||ex==='rootless'||ex==='drop2'||ex==='drop3'||ex==='xform'||ex==='quart'||ex==='mgv'||ex==='ust'||ex==='poly'||ex==='grip'||ex==='walk'||ex==='hex'||ex==='tca'||ex==='comp'||ex==='pass'||ex==='sub'||ex==='lib'||ex==='cond'||ex==='echo'||ex==='boyd'||ex==='boydp'||ex==='wvoi'||ex==='wpoly'||ex==='desc'||ex==='mod'||ex==='gsub'||ex==='warm'||ex==='bgrp'||ex==='b4i'||ex==='ligon'||ex==='slon'||ex==='mgen'||ex==='mwk'||ex==='mmir'||ex==='mfrac'||ex==='mprog'||ex==='mdim'||ex==='hshell'||ex==='hvl'||ex==='hso'||ex==='hmodal'||ex==='hsoii'||ex==='hpoly'||ex==='hdom'||ex==='hdim'||ex==='wscl'||ex==='qacc'||ex==='topn'||ex==='harm'||ex==='bsup'||ex==='bdim'||ex==='bmin'||ex==='bstr'||ex==='hdia'||ex==='hsus'||ex==='hblu'||ex==='bapp'||ex==='gam'||ex==='ffam'||ex==='fmi'||ex==='ftur'||ex==='flc'||ex==='fdim'||ex==='fmod'||ex==='fhyb'||ex==='fcs'||ex==='dgop'||ex==='dg4'||ex==='dgrow'||ex==='dg6v'||ex==='dgust'||ex==='tjmode'||ex==='tj5'||ex==='fdia'||ex==='fext'||ex==='fbas')?ex+'·'+p[1]:ex;
+  const fam=(ex==='formes'||ex==='renv'||ex==='trenv'||ex==='shell'||ex==='rootless'||ex==='drop2'||ex==='drop3'||ex==='xform'||ex==='quart'||ex==='mgv'||ex==='ust'||ex==='poly'||ex==='grip'||ex==='walk'||ex==='hex'||ex==='tca'||ex==='comp'||ex==='pass'||ex==='sub'||ex==='lib'||ex==='cond'||ex==='echo'||ex==='boyd'||ex==='boydp'||ex==='wvoi'||ex==='wpoly'||ex==='desc'||ex==='mod'||ex==='gsub'||ex==='warm'||ex==='bgrp'||ex==='b4i'||ex==='ligon'||ex==='slon'||ex==='mgen'||ex==='mwk'||ex==='mmir'||ex==='mfrac'||ex==='mprog'||ex==='mdim'||ex==='hshell'||ex==='hvl'||ex==='hso'||ex==='hmodal'||ex==='hsoii'||ex==='hpoly'||ex==='hdom'||ex==='hdim'||ex==='wscl'||ex==='qacc'||ex==='topn'||ex==='gmel'||ex==='harm'||ex==='bsup'||ex==='bdim'||ex==='bmin'||ex==='bstr'||ex==='hdia'||ex==='hsus'||ex==='hblu'||ex==='bapp'||ex==='gam'||ex==='ffam'||ex==='fmi'||ex==='ftur'||ex==='flc'||ex==='fdim'||ex==='fmod'||ex==='fhyb'||ex==='fcs'||ex==='dgop'||ex==='dg4'||ex==='dgrow'||ex==='dg6v'||ex==='dgust'||ex==='tjmode'||ex==='tj5'||ex==='fdia'||ex==='fext'||ex==='fbas')?ex+'·'+p[1]:ex;
   return {fam:fam,pc:pc};
 }
 function gsBump14(id){
@@ -5911,6 +5971,7 @@ function _gsCfgChain(p,ex){
   else if(ex==='hpen'){DRV.hpQ=H_PEN[p[1]]?p[1]:'all';DRV.hpM=p[2]==='col'?'col':'show';}
   else if(ex==='hgui'){DRV.hgC=H_GUIDE[p[1]]?p[1]:'all';DRV.hgS=H_GUIDE[p[1]]?String(p[2]):'any';}
   else if(ex==='topn'){DRV.tnQ=TN_Q[p[1]]?p[1]:'maj7';DRV.tnT='all';}
+  else if(ex==='gmel'){DRV.gmM=GM_DEGN[+p[1]]!=null?p[1]:'dia';}
   else if(ex==='harm'){DRV.hmM=HM_MEL[p[1]]?p[1]:'clair';}
   else if(ex==='hdom'){DRV.hdK=H_DOM[p[1]]?p[1]:'cyc';}
   else if(ex==='hdim'){DRV.hdD=/^f/.test(p[1])?'f2':(/^d/.test(p[1])?'down':'up');}
@@ -6379,7 +6440,7 @@ function resRender(){
 }
 /* ================= GRILLE STATS type × tonalité ================= */
 const FAMLBL={famille:'Famille (5 formes)','251':'2–5–1 majeur',dim251:'2–5–1 mineur',diat:'Diatonique (triades)',diat7:'7e diatoniques',gosp:'Gospel',jazzp:'Tournures jazz',xfam:'Famille étendue',xprog:'Prog. étendues',scl:'Gammes',id7:'Identification 7e',gtl:'Guide tones 2–5–1',appr:'Approches chrom.',cell:'Cellules mélodiques',forme:'Formes complètes',earq:'Oreille · qualité',eard:'Oreille · degré',earp:'Oreille · progression'};
-const FAMORD=['formes','famille','renv','trenv','shell','rootless','drop2','drop3','boyd','boydp','wvoi','wpoly','desc','mod','gsub','warm','slon','bgrp','b4i','ligon','mgen','mwk','mmir','mfrac','mprog','mdim','hshell','hvl','hso','hmodal','hsoii','hpoly','hdom','hdim','wscl','qacc','topn','harm','bsup','bdim','bmin','bstr','hdia','hsus','hblu','bapp','ffam','fmi','ftur','flc','fdim','fmod','fhyb','fcs','dgop','dg4','dg6v','dgrow','dgust','tjmode','tj5','fdia','fext','fbas','gam','quart','gtl','appr','cell','earq','eard','earp','251','dim251','diat','diat7','gosp','jazzp','forme','pass','sub','comp','xform','xfam','xprog','scl','id7'];
+const FAMORD=['formes','famille','renv','trenv','shell','rootless','drop2','drop3','boyd','boydp','wvoi','wpoly','desc','mod','gsub','warm','slon','bgrp','b4i','ligon','mgen','mwk','mmir','mfrac','mprog','mdim','hshell','hvl','hso','hmodal','hsoii','hpoly','hdom','hdim','wscl','qacc','topn','gmel','harm','bsup','bdim','bmin','bstr','hdia','hsus','hblu','bapp','ffam','fmi','ftur','flc','fdim','fmod','fhyb','fcs','dgop','dg4','dg6v','dgrow','dgust','tjmode','tj5','fdia','fext','fbas','gam','quart','gtl','appr','cell','earq','eard','earp','251','dim251','diat','diat7','gosp','jazzp','forme','pass','sub','comp','xform','xfam','xprog','scl','id7'];
 function famLabel(f){
   if(FAMLBL[f])return FAMLBL[f];
   const p=f.split('·');
@@ -6415,6 +6476,7 @@ function famLabel(f){
   if(p[0]==='ftur')return '🎨 Felts turnaround '+(F_TURN[p[1]]?'fig. '+F_TURN[p[1]].fig:p[1]);
   if(p[0]==='hdia')return '🎓 Haerle 7e diatoniques';
   if(p[0]==='qacc')return '🎼 Quel accord ? · '+(WS_SC[p[1]]?WS_SC[p[1]].lb:(/^arp/.test(p[1])?'arpèges':p[1]));
+  if(p[0]==='gmel')return '⛪ Mélodie gospel · '+(GM_DEGN[+p[1]]||p[1]);
   if(p[0]==='topn')return '🎼 Note du haut · '+(TN_Q[p[1]]?TN_Q[p[1]].sym:p[1]);
   if(p[0]==='harm')return '🎼 Harmoniser · '+(HM_MEL[p[1]]?HM_MEL[p[1]].lb:p[1]);
   if(p[0]==='wscl')return '🏛 Waite gammes · '+(WS_ROWS[p[1]]?WS_ROWS[p[1]].lb:p[1]);
@@ -6572,6 +6634,7 @@ function statsCellGo(cell){
     else if(ex==='gam'&&GAM[q]){DRV.gamF=GAM[q].fam;DRV.gamS=q;}
     else if(ex==='qacc')DRV.qaT=q==='pen'?'penta':'all';
     else if(ex==='topn'){DRV.tnQ=TN_Q[q]?q:'maj7';DRV.tnT='all';}
+    else if(ex==='gmel'){DRV.gmM=GM_DEGN[+q]!=null?q:'dia';}
     else if(ex==='hpen')DRV.hpQ=H_PEN[q]?q:'all';
     else if(ex==='hgui'){DRV.hgC=H_GUIDE[q]?q:'all';DRV.hgS='any';}
     else if(ex==='harm')DRV.hmM=HM_MEL[q]?q:'clair';
@@ -8084,6 +8147,26 @@ function drBuildSteps(){
           id:'hgui|'+k+'|'+(one?String(list[0].i):sel)+'|'+r,grp:r,lb:N(r)+G.sym+' · '+(one?alts[0].lb:(sel==='star'?'★':'guide')),isSCL:true});
       });
     });
+  }else if(ex==='gmel'){
+    /* ⛪ Mélodie gospel (Moody) — une note de mélodie, un accord gospel qui la porte au sommet */
+    const ms=DRV.gmM==='all'?[0,1,2,3,4,5,6,7,8,9,10,11]:(DRV.gmM==='dia'?GM_DIA:[+DRV.gmM]);
+    const hide=DRV.gmV==='oreille';
+    roots.forEach(function(r){_tr=r;
+      ms.forEach(function(m){
+        const L=GM_V.filter(function(v){return v[0]===m;});if(!L.length)return;
+        const mp=(r+m)%12;
+        const A=L.slice().sort(function(a,b){return a[5][a[5].length-1]-b[5][b[5].length-1];})[0]; /* démo : le plus compact */
+        const gh=gmNotes(A,r),ar=(r+A[1])%12;
+        const ton=stackFrom(r,[0,4,7],52),mo=((mp-60)%12+12)%12,mel=60+mo+(mo<5?12:0);
+        steps.push({name:(hide?'🔊 En '+keyName(r)+' — quelle note de mélodie ?':'En '+keyName(r)+' — mélodie : '+NBf(mp,r)+' ('+GM_DEGN[m]+')'),
+          sub:(hide?'Garden joue le I puis la mélodie (🔊 pour réécouter). ':'')+'Pose un accord gospel qui porte la mélodie AU SOMMET, sa fondamentale à la basse. '+L.length+' réponses dans le catalogue Moody. · Démo : '+gmName(A,r),
+          rootPc:ar,pcs:null,ivs:A[5].map(function(x){return x%12;}),forceBass:null,
+          ghostNotes:gh,ghostHands:gh.map(function(n,i){return i===0||n<55?'MG':'MD';}),
+          ear:true,earSeq:[ton,[mel]],earGap:700,earDur:0.9,
+          gm:{r:r,mel:mp,ans:L.map(function(v){return {root:(r+v[1])%12,pcs:v[5].map(function(x){return (r+v[1]+x)%12;}),v:v};})},
+          id:'gmel|'+m+'|0|'+r,grp:r,lb:keyName(r)+' · mélodie '+GM_DEGN[m]});
+      });
+    });
   }else if(ex==='topn'){
     /* 🎼 Note du haut — un accord, une note de mélodie : un voicing qui la met au sommet */
     const qs=DRV.tnQ==='all'?Object.keys(TN_Q):[TN_Q[DRV.tnQ]?DRV.tnQ:'maj7'];
@@ -8770,7 +8853,7 @@ function fbSecret(s){
   return !!(s.ear||(s.id&&(s.id.startsWith('id7|')||s.id.startsWith('sub|id|')))||(DRV.ex==='boydp'&&DRV.bshow==='off')||(s.wpoly&&s.wpoly.effet)
     ||(s.boyd&&s.boyd.topQ&&!DR.badFired&&!DR.wrongFired)); /* 🎼 la mélodie choisit : la cible se montre après une erreur */
 }
-function fbEligible(s){return !!(s&&s.pcs&&!s.isSCL&&!s.isDUO&&!s.qa&&!s.tn&&!s.hm);}
+function fbEligible(s){return !!(s&&s.pcs&&!s.isSCL&&!s.isDUO&&!s.qa&&!s.tn&&!s.hm&&!s.gm);}
 function fbLb(s,t,i){
   const iv=((t.notes[i]-t.root)%12+12)%12;
   return s.glb&&s.glb[i]!=null?s.glb[i]:(s.boyd?boydDeg(s.boyd.q,iv,s.boyd.sym):MG_DEG[iv]);
@@ -9118,6 +9201,12 @@ const LESSONS={
     'La 7e de chaque accord descend d’un demi-ton ou d’un ton sur la 3ce du suivant : c’est la résolution qu’on entend.',
     'Outline 1 : la gamme qui descend. Outline 2 : l’arpège qui monte. Outline 3 : descend puis remonte.',
     'Le mineur (iiø–V7–i) garde la forme, avec ♭9 sur le V et la tierce mineure en arrivant.']},
+  g_gmel:{t:'Mélodie gospel — la mélodie au sommet',src:'Gregory Moody, Adventures in Harmony vol. 2 — Black Gospel Chords, Melody Harmonization',pts:[
+    'La mélodie est TOUJOURS la note du haut. On choisit l’accord par en dessous.',
+    'La basse est la fondamentale de l’accord choisi : sur une même note de mélodie, la basse peut être I, ♭II, IV, ♭V, VI, ♭VII…',
+    'Exemple : mélodie sur le 1 en C → C13sus (le I), B♭maj9(add6) (le ♭VII), A7♯9♯5 (le VI), G♭m7♭5 (le ♭V), D♭maj9(add6) (le ♭II).',
+    'Les 13sus, 9(add6) et maj9(add6) sont les couleurs d’église ; les 7♯9♯5 et m7♭5 servent de passage vers l’accord suivant.',
+    'Méthode : une note de mélodie = un accord. Choisir des basses qui bougent peu, et une tension qui monte vers la cadence.']},
   g_desc:{t:'La descente gospel',src:'GospelKeys Academy — mode Descente',pts:[
     'On descend la gamme harmonisée degré par degré : I → VII → VI → V → IV → III → II → I.',
     'Plaqué : chaque accord en position fondamentale, pour entendre et sentir la qualité de chaque degré (majeur, mineur, diminué).',
@@ -9189,6 +9278,7 @@ function lessonFor(ex,btype){
   if(ex==='bgrp')return 't_bgrp';
   if(ex==='b4i')return 't_b4i';
   if(ex==='ligon')return 't_ligon';
+  if(ex==='gmel')return 'g_gmel';
   if(ex==='gosp')return 'g_cad';
   if(ex==='mod')return 'g_mod';
   if(ex==='gsub')return 'g_sub';
@@ -9257,7 +9347,9 @@ const PARC={
     {id:'x7',lb:'Harmoniser · Frère Jacques',les:'x_mel',cfg:{ex:'harm',hmM:'jacq'}},
     {id:'x8',lb:'Harmoniser · Ode à la joie',les:'x_mel',cfg:{ex:'harm',hmM:'joie'}},
     {id:'x9',lb:'Harmoniser · Amazing Grace',les:'x_mel',cfg:{ex:'harm',hmM:'grace'}},
-    {id:'x10',lb:'Quel accord ? · à l’oreille',les:'x_mel',cfg:{ex:'qacc',qaT:'all',qaV:'oreille'}}]},
+    {id:'x10',lb:'Quel accord ? · à l’oreille',les:'x_mel',cfg:{ex:'qacc',qaT:'all',qaV:'oreille'}},
+    {id:'x11',lb:'⛪ Mélodie gospel · notes de la gamme',les:'g_gmel',cfg:{ex:'gmel',gmM:'dia',gmV:'lire'}},
+    {id:'x12',lb:'⛪ Mélodie gospel · les 12, à l’oreille',les:'g_gmel',cfg:{ex:'gmel',gmM:'all',gmV:'oreille'}}]},
   haer:{lb:'🎓 Haerle',st:[
     {id:'h1',lb:'3-7-9 (Skills 9-11)',les:'h_shell',cfg:{ex:'hshell',hsG:'379'}},
     {id:'h2',lb:'7-3-5 (Skills 12-15)',les:'h_shell',cfg:{ex:'hshell',hsG:'735'}},
@@ -9415,7 +9507,7 @@ function parcMatch(){ /* l'étape dont la config est celle du drill courant */
   });});
   return hit;
 }
-const PARC_EX={dg6v:'dg',dgrow:'dg',tjmode:'haer',tj5:'haer',fdia:'felts',fext:'felts',fbas:'felts',dgop:'dg',dg4:'dg',dgust:'dg',fmod:'felts',fhyb:'felts',fcs:'felts',flc:'felts',fdim:'felts',ffam:'felts',fmi:'felts',ftur:'felts',boyd:'boyd',boydp:'boyd',bsup:'boyd',bdim:'boyd',bmin:'boyd',bstr:'boyd',bapp:'boyd',hdia:'haer',hsus:'haer',hblu:'haer',wvoi:'waite',wpoly:'waite',wscl:'waite',desc:'gospel',gosp:'gospel',mod:'gospel',gsub:'gospel',mgen:'mant',mwk:'mant',mmir:'mant',mfrac:'mant',mprog:'mant',mdim:'mant',hshell:'haer',hvl:'haer',hso:'haer',qacc:'mel',topn:'mel',harm:'mel',hmodal:'haer',hsoii:'haer',hpoly:'haer',hdom:'haer',hdim:'haer'};
+const PARC_EX={dg6v:'dg',dgrow:'dg',tjmode:'haer',tj5:'haer',fdia:'felts',fext:'felts',fbas:'felts',dgop:'dg',dg4:'dg',dgust:'dg',fmod:'felts',fhyb:'felts',fcs:'felts',flc:'felts',fdim:'felts',ffam:'felts',fmi:'felts',ftur:'felts',boyd:'boyd',boydp:'boyd',bsup:'boyd',bdim:'boyd',bmin:'boyd',bstr:'boyd',bapp:'boyd',hdia:'haer',hsus:'haer',hblu:'haer',wvoi:'waite',wpoly:'waite',wscl:'waite',desc:'gospel',gosp:'gospel',mod:'gospel',gsub:'gospel',mgen:'mant',mwk:'mant',mmir:'mant',mfrac:'mant',mprog:'mant',mdim:'mant',hshell:'haer',hvl:'haer',hso:'haer',qacc:'mel',topn:'mel',gmel:'mel',harm:'mel',hmodal:'haer',hsoii:'haer',hpoly:'haer',hdom:'haer',hdim:'haer'};
 function parcRender(){
   const box=document.getElementById('parcBox');if(!box)return;
   /* 🧹 v9.5 : on ne montre que ce qu'on travaille — le parcours Boyd n'apparaît que sur un
@@ -9784,7 +9876,7 @@ function drillStart(){
   earMaybe(DR.steps[0]);
   DR.tStep=Date.now();
 }
-const EXLBL={formes:'Formes de 7e',famille:'Famille',renv:'Renversements',trenv:'Triades (renv.)',shell:'Shells MG',rootless:'Rootless',drop2:'Drop-2',drop3:'Drop-3','251':'2–5–1',dim251:'2–5–1 mineur',diat:'Diatonique',diat7:'7e diatoniques',gosp:'Gospel',jazzp:'Tournures jazz',xform:'Formes étendues',xfam:'Famille étendue',xprog:'Prog. étendues',scl:'Gammes',id7:'Identification 7e',gtl:'Guide tones',appr:'Approches',cell:'Cellules',quart:'Quartaux',forme:'Formes complètes',earq:'👂 Qualité',eard:'👂 Degré',earp:'👂 Progression',comp:'🙌 Comping',pass:'🚪 Passing chords',boyd:'📘 Boyd positions',boydp:'📘 Boyd progressions',wvoi:'🏛 Waite formules',wpoly:'🏛 Waite polycordes',desc:'⬇️ Descente',mod:'🚪 Modulation',gsub:'🧩 Subs MG/MD',warm:'🔥 Échauffement',slon:'📐 Slonimsky',mgen:'🎹 Generic',mwk:'🎹 Workout',mmir:'🎹 Miracle',mfrac:'🎹 Fractions',mprog:'🎹 Progressions',mdim:'🎹 °7 ø7',hshell:'🎓 Haerle shells',hvl:'🎓 Haerle A/B',hso:'🎓 So What',hmodal:'🎓 Quartes modales',wscl:'🏛 Waite gammes',vbank:'🎰 Voicings de 7e',gam:'🎵 Gammes',bsup:'📘 Superposition',bdim:'📘 °7 contemporain',bmin:'📘 II–V–I mineur',bstr:'📘 Stretch',hdia:'🎓 7e diatoniques',hsus:'🎓 Cycle sus4',hblu:'🎓 Blues Haerle',bapp:'📘 6/9 et m(maj7)9',ffam:'🎨 Felts familles',fmi:'🎨 Felts emprunts',ftur:'🎨 Felts turnarounds',flc:'🎨 Felts line clichés',fdim:'🎨 Felts °7',fmod:'🎨 Felts cadences modales',fhyb:'🎨 Felts hybrides',fcs:'🎨 Felts structures constantes',dgop:'🎹 DeGreg position ouverte',dg4:'🎹 DeGreg quartes',dgust:'🎹 DeGreg triades sup.',dgrow:'🎹 DeGreg rangées',dg6v:'🎹 DeGreg 6 sons',tjmode:'📗 Modes (TJL)',tj5:'📗 5 voix (TJL)',fdia:'🎨 Felts approche diatonique',fext:'🎨 Felts chaînes',fbas:'🎨 Felts basse',qacc:'🎼 Quel accord ?',topn:'🎼 Note du haut',harm:'🎼 Harmoniser',hsoii:'🎓 II–V–I quartes',hpoly:'🎓 II–V–I polycordal',hdom:'🎓 Polycordes dom.',hdim:'🎓 Subs diminuées',bgrp:'🧩 Bergonzi groupings',b4i:'🧩 Bergonzi intervalles',ligon:'🎯 Ligon'};
+const EXLBL={gmel:'Mélodie gospel',formes:'Formes de 7e',famille:'Famille',renv:'Renversements',trenv:'Triades (renv.)',shell:'Shells MG',rootless:'Rootless',drop2:'Drop-2',drop3:'Drop-3','251':'2–5–1',dim251:'2–5–1 mineur',diat:'Diatonique',diat7:'7e diatoniques',gosp:'Gospel',jazzp:'Tournures jazz',xform:'Formes étendues',xfam:'Famille étendue',xprog:'Prog. étendues',scl:'Gammes',id7:'Identification 7e',gtl:'Guide tones',appr:'Approches',cell:'Cellules',quart:'Quartaux',forme:'Formes complètes',earq:'👂 Qualité',eard:'👂 Degré',earp:'👂 Progression',comp:'🙌 Comping',pass:'🚪 Passing chords',boyd:'📘 Boyd positions',boydp:'📘 Boyd progressions',wvoi:'🏛 Waite formules',wpoly:'🏛 Waite polycordes',desc:'⬇️ Descente',mod:'🚪 Modulation',gsub:'🧩 Subs MG/MD',warm:'🔥 Échauffement',slon:'📐 Slonimsky',mgen:'🎹 Generic',mwk:'🎹 Workout',mmir:'🎹 Miracle',mfrac:'🎹 Fractions',mprog:'🎹 Progressions',mdim:'🎹 °7 ø7',hshell:'🎓 Haerle shells',hvl:'🎓 Haerle A/B',hso:'🎓 So What',hmodal:'🎓 Quartes modales',wscl:'🏛 Waite gammes',vbank:'🎰 Voicings de 7e',gam:'🎵 Gammes',bsup:'📘 Superposition',bdim:'📘 °7 contemporain',bmin:'📘 II–V–I mineur',bstr:'📘 Stretch',hdia:'🎓 7e diatoniques',hsus:'🎓 Cycle sus4',hblu:'🎓 Blues Haerle',bapp:'📘 6/9 et m(maj7)9',ffam:'🎨 Felts familles',fmi:'🎨 Felts emprunts',ftur:'🎨 Felts turnarounds',flc:'🎨 Felts line clichés',fdim:'🎨 Felts °7',fmod:'🎨 Felts cadences modales',fhyb:'🎨 Felts hybrides',fcs:'🎨 Felts structures constantes',dgop:'🎹 DeGreg position ouverte',dg4:'🎹 DeGreg quartes',dgust:'🎹 DeGreg triades sup.',dgrow:'🎹 DeGreg rangées',dg6v:'🎹 DeGreg 6 sons',tjmode:'📗 Modes (TJL)',tj5:'📗 5 voix (TJL)',fdia:'🎨 Felts approche diatonique',fext:'🎨 Felts chaînes',fbas:'🎨 Felts basse',qacc:'🎼 Quel accord ?',topn:'🎼 Note du haut',harm:'🎼 Harmoniser',hsoii:'🎓 II–V–I quartes',hpoly:'🎓 II–V–I polycordal',hdom:'🎓 Polycordes dom.',hdim:'🎓 Subs diminuées',bgrp:'🧩 Bergonzi groupings',b4i:'🧩 Bergonzi intervalles',ligon:'🎯 Ligon'};
 const GTL_LB={l7:'7→3',l3:'3→7',both:'2 lignes'};
 const APPR_LB={inf:'chrom. inf.',sup:'chrom. sup.',enc:'enclosure'};
 const QUART_LB={sw:'So What',q4:'3 quartes',plan:'planing dorien'};
@@ -10028,11 +10120,24 @@ function drillCheck(){
   }
   DR.lastNote=null;
   /* ── 🎼 v9.16 : l'harmonie à partir de la mélodie ── */
-  if(s.qa||s.tn||s.hm){
+  if(s.qa||s.tn||s.hm||s.gm){
     const arr=_drH().sort(function(a,b){return a-b;});
     const pcs=[];arr.forEach(function(m){if(pcs.indexOf(m%12)<0)pcs.push(m%12);});
     let why='',okTxt='';
-    if(s.qa){
+    if(s.gm){
+      if(arr.length<4)return;
+      const G=s.gm,top=arr[arr.length-1]%12,bass=arr[0]%12;
+      const C=G.ans.filter(function(a){return a.root===bass;});
+      const inA=function(a){return pcs.every(function(p){return a.pcs.indexOf(p)>=0;});};
+      const full=function(a){const f=(a.root+7)%12;return a.pcs.every(function(p){return p===f||pcs.indexOf(p)>=0;});};
+      const hit=C.filter(function(a){return inA(a)&&full(a);})[0];
+      if(!C.length){const R=[];G.ans.forEach(function(a){const n=NBf(a.root,G.r);if(R.indexOf(n)<0)R.push(n);});why='✕ Aucun accord du catalogue sur cette basse — basses possibles : '+R.slice(0,8).join(', ');}
+      else if(!hit){if(C.some(inA))return; /* l'accord se construit encore */
+        why='✕ Ce n’est pas un voicing du catalogue sur '+NBf(bass,G.r)+' — essaie '+C.slice(0,3).map(function(a){return gmName(a.v,G.r);}).join(', ');}
+      else if(top!==G.mel)why='⬆ La note du HAUT doit être la mélodie : '+NBf(G.mel,G.r);
+      else{const others=G.ans.filter(function(a){return a!==hit;}).map(function(a){return gmName(a.v,G.r);}).filter(function(n,i,A){return A.indexOf(n)===i;});
+        okTxt='✓ '+gmName(hit.v,G.r)+' ('+hit.v[3]+') · aussi juste : '+others.slice(0,5).join(', ')+(others.length>5?' … (+'+(others.length-5)+')':'');}
+    }else if(s.qa){
       if(pcs.length<3)return;
       const hit=s.qa.ans.filter(function(a){const R=a.row||WS_ROWS[a.rk],need=R.iv.filter(function(v){return v!==7;}).map(function(v){return (a.root+v)%12;}),all=R.iv.map(function(v){return (a.root+v)%12;});
         return arr[0]%12===a.root&&need.every(function(p){return pcs.indexOf(p)>=0;})&&pcs.every(function(p){return all.indexOf(p)>=0;});})[0];
@@ -10657,6 +10762,7 @@ document.addEventListener('click',function(e){
 /* ================= UI INIT ================= */
 function setKey(k){
   KEY=k;
+  if(typeof PAGE!=='undefined'&&PAGE==='gos'&&typeof gosRender==='function')setTimeout(gosRender,0);
   if(typeof DEMO!=='undefined'&&DEMO.on)demoSetKey(k.pc);
   document.querySelectorAll('#tonaBar .tchip').forEach(function(x){
     x.classList.toggle('on',x.textContent===k.n);
@@ -10813,6 +10919,9 @@ document.addEventListener('click',function(e){
   }
   /* 🧭 Boussole (v8.3) */
   if(e.target.closest('[data-mg-path]')){mgPathPlay();return;}
+  const gsm=e.target.closest('[data-gos-m]');
+  if(gsm){GOS.m=+gsm.dataset.gosM;gosRender();const mp=(KEY.pc+GOS.m)%12;playNotes([60+((mp-60)%12+12)%12+12],.6);return;}
+  if(e.target.closest('[data-gos-drill]')){drSelectEx('gmel');DRV.gmM=String(GOS.m);DRV.scope='12';drvSave();drRender();setPage('drill');toast('⛪ mélodie gospel',GM_DEGN[GOS.m]+' · 12 tons');return;}
   const bp=e.target.closest('[data-bous-play]');
   if(bp){bousPlay(+bp.dataset.bousPlay);return;}
   const bdr=e.target.closest('[data-bous-drill]');
@@ -11020,7 +11129,7 @@ document.addEventListener('click',function(e){
 
 /* ═══ 🧭 v9.21 — interface compacte : on RANGE l'existant (mêmes boutons, mêmes fonctions) ═══ */
 const UX_GRP=[['jouer','Jouer',['renv','voi','fam','deg','all']],['drill','Drill',['drill']],['gammes','Gammes',['scales']],
-  ['harm','Harmonie',['prisme','sub','bous']],['repert','Répertoire',['repert']],['stats','Stats',['stats']]];
+  ['harm','Harmonie',['prisme','sub','gos','bous']],['repert','Répertoire',['repert']],['stats','Stats',['stats']]];
 const UXS={pick:false,set:false,les:false,last:{}};
 let UXR=(function(){try{return JSON.parse(localStorage.getItem('garden_recent_ex'))||[];}catch(e){return [];}})();
 function uxRecentPush(ex){UXR=[ex].concat(UXR.filter(function(x){return x!==ex;})).slice(0,4);try{localStorage.setItem('garden_recent_ex',JSON.stringify(UXR));}catch(e){}}
