@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.45 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.46 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -95,8 +95,11 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 /* mode solo : la carte active occupe toute la largeur */
 .grid.solo .card{grid-column:1/-1}
 /* contenu des cartes en colonnes automatiques */
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;align-items:start}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;align-items:start}
 .mgrid .mini{margin-bottom:0}
+/* Degrés : l'harmonisation prend la place, la liste des tonalités se range à droite quand l'écran est large */
+.deg-two{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:1000px){.deg-two{grid-template-columns:minmax(0,3fr) minmax(260px,1fr)}}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:0 22px}
 .card{background:var(--bg2);border:1px solid var(--bg4);border-radius:18px;padding:16px;min-width:0}
 .card h2{font-family:'Playfair Display',serif;font-size:1.02rem;font-weight:900;color:var(--or);margin-bottom:3px;display:flex;align-items:center;gap:8px}
@@ -407,7 +410,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.45 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.46 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -633,7 +636,7 @@ body.ux-focus #uxStopBar{display:flex}
     <div class="card" id="pgDeg" style="display:none;grid-column:1/-1">
       <h2>🧭 Degrés & Tonalités</h2>
       <div class="csub">L'accord joué comme centre : sa gamme harmonisée, et les tonalités auxquelles il appartient</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px">
+      <div class="deg-two">
         <div>
           <div class="csub" style="margin-bottom:8px;font-weight:700;color:var(--blanc)" id="degTitle">Harmonisation</div>
           <div id="degBox" class="mgrid"><div class="empty">En attente d'un accord…</div></div>
