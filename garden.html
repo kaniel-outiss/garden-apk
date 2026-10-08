@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.56 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.57 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -447,7 +447,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.56 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.57 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -10841,12 +10841,24 @@ function setKey(k){
   if(!cur&&(PAGE==='bous'||PAGE==='all'))bousRender();
   if(cur)render();
 }
+/* v9.57 — changer la tonalité depuis l'en-tête transpose AUSSI l'accord affiché (même fonction dans la nouvelle
+   tonalité : Cmaj7 en C → B♭maj7 en B♭), comme les touches MIDI C7/B6. Pas pendant un drill ni une démo. */
+function setKeyUser(k){
+  const from=KEY.pc;setKey(k);
+  if(!cur||(typeof DR!=='undefined'&&DR.on)||(typeof DEMO!=='undefined'&&DEMO.on)||(typeof COND!=='undefined'&&COND.on))return;
+  let d=((k.pc-from)%12+12)%12;if(d>6)d-=12;if(!d)return;
+  let notes=cur.notes.map(function(m){return m+d;});
+  if(Math.max.apply(null,notes)>86)notes=notes.map(function(m){return m-12;});
+  if(Math.min.apply(null,notes)<36)notes=notes.map(function(m){return m+12;});
+  const c=identify(notes);if(!c)return;
+  cur=c;render();pushHist(c);lightMain();
+}
 function initTona(){
   const bar=document.getElementById('tonaBar');
   KEYS.forEach(function(k,i){
     const b=document.createElement('button');
     b.className='tchip'+(i===0?' on':'');b.textContent=k.n;
-    b.onclick=function(){setKey(k);};
+    b.onclick=function(){setKeyUser(k);};
     bar.appendChild(b);
   });
 }
@@ -11216,7 +11228,7 @@ function uxTabs(){
   fb.classList.toggle('ux-solo',g[2].length<2);
 }
 function uxKeyLbl(){const e=document.getElementById('uxKn');if(e&&typeof KEY!=='undefined'&&KEY)e.textContent=KEY.n+' ▾';}
-function uxKeyShift(d){const base=(typeof DEMO!=='undefined'&&DEMO.on)?DEMO.pc:KEY.pc;const pc=(base+d+12)%12;const k=KEYS.filter(function(x){return x.pc===pc;})[0];if(k)setKey(k);}
+function uxKeyShift(d){const base=(typeof DEMO!=='undefined'&&DEMO.on)?DEMO.pc:KEY.pc;const pc=(base+d+12)%12;const k=KEYS.filter(function(x){return x.pc===pc;})[0];if(k)setKeyUser(k);}
 function uxDrill(){
   if(!document.getElementById('uxDrBar'))return;
   const f=DR_FAM.filter(function(x){return x.ex.indexOf(DRV.ex)>=0;})[0];
