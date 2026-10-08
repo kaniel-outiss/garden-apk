@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.46 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.47 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -149,6 +149,8 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 .kb.fbErr .gd:not(.ok){background:rgba(16,18,28,.88)!important;color:var(--orange);outline:2px dashed var(--orange);outline-offset:1px;box-shadow:none}
 .kb.fbErr .gdo{opacity:.35}
 @keyframes fbShake{0%,100%{translate:0}25%{translate:-2px}75%{translate:2px}}
+@keyframes bousHit{0%{box-shadow:0 0 0 0 rgba(74,222,128,.9)}70%{box-shadow:0 0 0 9px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.opill.bous-hit{border-color:var(--vert);color:var(--vert);background:rgba(74,222,128,.12);box-shadow:0 0 10px 2px rgba(74,222,128,.55);animation:bousHit 1s ease-out 2}
 .fb-box{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .fb-box:empty{display:none}
 .fb-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -410,7 +412,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.46 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.47 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -657,7 +659,7 @@ body.ux-focus #uxStopBar{display:flex}
   </div>
 </main>
 
-<footer>Garden v4 · Fabrice Manga · Collection PianoTools</footer>
+<footer>Garden · Fabrice Manga · Collection PianoTools</footer>
 <div id="toast"><span class="dir" id="toastDir"></span><span id="toastKey"></span></div>
 
 <script>
@@ -1399,10 +1401,10 @@ function render(){
   if(vis('deg')){document.getElementById('degTitle').textContent='Harmonisation de '+nn(cur.rootPc)+' majeur (accord joué = I)';
     document.getElementById('degBox').innerHTML=buildDegrees(cur);
     document.getElementById('keysBox').innerHTML=buildMemberKeys(cur);}
-  if(typeof prismeRender==='function'&&vis('prisme'))prismeRender();
+  if(typeof prismeRender==='function'&&PAGE==='prisme')prismeRender();
   bousInline();
-  if(PAGE==='bous'||PAGE==='all')bousRender();
-  if(PAGE==='pano'||PAGE==='all')panoRender();
+  if(PAGE==='bous')bousRender();
+  if(PAGE==='pano')panoRender();
 }
 function pushHist(c){
   const name=nn(c.rootPc)+c.tpl.sym;
@@ -1425,17 +1427,19 @@ const PGNAMES={all:'⊞ Tout',renv:'🔄 Renversements',voi:'🖐️ Voicings',f
 /* E6=88 F6=89 F♯6=90 G6=91 G♯6=92 A6=93 B♭6=94 · C♯6=85 → Prisme · C6=84 → Panorama · D6=86 → Répertoire · E♭6=87 → Boussole */
 const PGKEYS={84:'pano',85:'prisme',86:'repert',87:'bous',88:'stats',89:'renv',90:'voi',91:'fam',92:'drill',93:'scales',94:'deg'};
 let PAGE='renv';
+const PAGE_ALL=['renv','voi','fam','deg'];
 function setPage(p){
   PAGE=p;
+  /* v9.47 : « Tout » = les quatre vues de l'onglet Jouer seulement (plus la page de 10 000 px) */
   Object.keys(PAGES).forEach(function(k){
-    document.getElementById(PAGES[k]).style.display=(p==='all'||p===k)?'':'none';
+    document.getElementById(PAGES[k]).style.display=(p==='all'?PAGE_ALL.indexOf(k)>=0:p===k)?'':'none';
   });
-  if(p==='stats'||p==='all'){gsRenderProgress();renderStatsGrid();}
-  if(p==='prisme'||p==='all'){prismeRender();}
-  if(p==='sub'||p==='all'){subRender();}
-  if(p==='repert'||p==='all'){repertRender();}
-  if(p==='bous'||p==='all'){bousRender();}
-  if(p==='pano'||p==='all'){panoRender();}
+  if(p==='stats'){gsRenderProgress();renderStatsGrid();}
+  if(p==='prisme'){prismeRender();}
+  if(p==='sub'){subRender();}
+  if(p==='repert'){repertRender();}
+  if(p==='bous'){bousRender();}
+  if(p==='pano'){panoRender();}
   document.getElementById('mainGrid').classList.toggle('solo',p!=='all');
   if(cur)render(); /* ⚡ v9.2 : la carte qu'on ouvre est redessinée à l'ouverture */
   document.querySelectorAll('#fnBar .fchip').forEach(function(b){
@@ -1519,11 +1523,11 @@ function _analyseSoon(){
   _anaReq=raf(function(){
     _anaReq=0;
     const c=identify(Array.from(held));
-    if(c){cur=c;render();pushHist(c);}
+    if(c){bousHit(c);cur=c;render();pushHist(c);}
     /* 🔬 Spectre : analyse dès 4 sons (même si identify échoue sur l'accord riche) */
     if(held.size>=4){
       const sp=_spectreAnalyze(Array.from(held));
-      if(sp){_SPECTRE=sp;if(PAGE==='prisme'||PAGE==='all')prismeSpectre();}
+      if(sp){_SPECTRE=sp;if(PAGE==='prisme')prismeSpectre();}
     }
   });
 }
@@ -1950,7 +1954,7 @@ function boussole(c){
     add(+p[0],p[1],'',1+t[k]*0.4);
   });
   bousRules(c).forEach(function(r){add(r[0],r[1],r[2],r[3]);});
-  const L=Object.keys(map).map(function(k){return map[k];});
+  const L=Object.keys(map).map(function(k){return map[k];}).filter(function(e){return !(e.d===0&&e.q===c.tpl.q);}); /* v9.47 : jamais « vers soi-même » */
   L.forEach(function(e){
     if(!e.why){
       const n=Math.max(1,Math.round((e.sc-1)/0.4));
@@ -2003,11 +2007,36 @@ function bousRender(){
   });
   box.innerHTML=h;
 }
+/* ✓ v9.47 — halo vert : l'accord joué au MIDI est l'une des suites proposées.
+   Comparaison par fondamentale + famille (Am joué pour Am7 proposé = juste). */
+function _bousFam(q){
+  if(q==='maj'||q==='maj7'||q==='6'||q==='maj9'||q==='69')return 'M';
+  if(q==='min'||q==='m7'||q==='m9'||q==='m11'||q==='m6'||q==='mMaj7')return 'm';
+  if(q==='m7b5')return 'ø';
+  if(q==='dim'||q==='dim7')return '°';
+  if(q==='aug')return '+';
+  return 'D'; /* 7 · 9 · 13 · 7♭9 · 7♯9 · 7sus4 · 9sus4 */
+}
+let _BOUSHIT=null,_BOUSHITT=0;
+function bousHit(c){
+  const b=_BOUSL;if(!b||!b.c||!c)return;
+  if(b.c.rootPc===c.rootPc&&_bousFam(b.c.tpl.q)===_bousFam(c.tpl.q))return; /* même accord qui se complète */
+  const L=b.list.slice(0,3);
+  for(let i=0;i<L.length;i++){
+    const s=L[i],rp=((b.c.rootPc+s.d)%12+12)%12;
+    if(rp===c.rootPc&&_bousFam(s.q)===_bousFam(c.tpl.q)){
+      _BOUSHIT={from:nn(b.c.rootPc)+b.c.tpl.sym,name:_bousName(b,s)};
+      clearTimeout(_BOUSHITT);_BOUSHITT=setTimeout(function(){_BOUSHIT=null;bousInline();},2500);
+      return;
+    }
+  }
+}
 function bousInline(){
   const el=document.getElementById('bousInline');if(!el)return;
   if(!cur){el.innerHTML='';return;}
   const b=_bousFor();if(!b){el.innerHTML='';return;}
-  el.innerHTML='<span class="hint" style="margin:0">\ud83e\udded et apr\u00e8s ?</span>'
+  const hit=_BOUSHIT?'<button class="opill bous-hit" title="Suite juste depuis '+_BOUSHIT.from+'">\u2713 '+_BOUSHIT.name+'</button><span class="hint" style="margin:0 2px">\u2192</span>':'';
+  el.innerHTML=hit+'<span class="hint" style="margin:0">\ud83e\udded et apr\u00e8s ?</span>'
     +b.list.slice(0,3).map(function(s,i){
       return '<button class="opill" data-bous-goto="1">'+_bousName(b,s)+'</button>';
     }).join('');
