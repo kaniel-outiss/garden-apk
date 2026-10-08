@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.47 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.48 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -89,6 +89,16 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 .kb .ct{background:linear-gradient(180deg,#a9cdff,var(--bleu))!important;border-color:#2b6fd6!important}
 .kb .oth{background:linear-gradient(180deg,#ffe9a3,var(--or))!important;border-color:var(--or2)!important}
 .kb .nlbl{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:9px;font-weight:700;color:#3a4060;pointer-events:none}
+/* v9.48 : degré écrit sur la touche allumée (clavier maître) */
+.kb .dlbl{position:absolute;bottom:30px;left:0;right:0;text-align:center;font-size:11px;font-weight:800;color:#141826;pointer-events:none;line-height:1}
+.kb .bk .dlbl{bottom:8px;color:#fff;font-size:10px}
+.kb .arp{filter:brightness(1.35);box-shadow:0 0 12px 3px rgba(255,255,255,.75)}
+.ivrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px;font-size:12.5px;color:var(--gris)}
+.ivrow .deg{font-weight:800;color:var(--blanc);letter-spacing:.03em}
+.ivrow .ivp{background:var(--bg3);border:1px solid var(--gris2);border-radius:8px;padding:3px 8px;cursor:pointer;color:var(--blanc);font-weight:700;font-size:11.5px}
+.ivrow .ivp:hover{border-color:var(--or)}
+.vlrow{margin-top:6px;font-size:12.5px;color:var(--gris)}
+.vlrow b{color:var(--blanc)} .vlrow .keep{color:var(--vert)} .vlrow .mv{color:var(--or)} .vlrow .gain{color:var(--bleu);font-weight:700}
 
 /* ===== CARTES ===== */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
@@ -340,7 +350,7 @@ body.ux-legend #trscLegend{display:block}
 .ux-drbar .ux-tg{min-height:46px;padding:0 14px;border-radius:12px;border:1px solid rgba(122,133,168,.4);background:transparent;color:#C9D2EA;font-size:14px;cursor:pointer}
 .ux-drbar .ux-tg.on{border-color:var(--bleu);background:rgba(79,158,255,.12);color:#BFD9FF}
 /* 🎯 v9.43 — mode concentration : pendant le drill, clavier + cible + stats, rien d'autre */
-body.ux-focus #fnBar,body.ux-focus .ux-gtabs,body.ux-focus .hero .chord-line,body.ux-focus .hero .legend,body.ux-focus .hero>.hint,body.ux-focus #bousInline,
+body.ux-focus #fnBar,body.ux-focus .ux-gtabs,body.ux-focus .hero .chord-line,body.ux-focus .hero .legend,body.ux-focus .hero>.hint,body.ux-focus #bousInline,body.ux-focus #chIvs,body.ux-focus #chVL,
 body.ux-focus #pgDrill>h2,body.ux-focus #pgDrill>.csub,body.ux-focus #parcBox,body.ux-focus #pgDrill .dr-panel,body.ux-focus #histBox,body.ux-focus main>.card:not(#pgDrill),body.ux-focus main>.grid{display:none!important}
 body.ux-focus .hero{padding:10px 14px;margin-bottom:10px}
 body.ux-focus #pgDrill{margin-bottom:76px}
@@ -412,7 +422,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.47 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.48 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -460,6 +470,8 @@ body.ux-focus #uxStopBar{display:flex}
       <div class="chord-inv" id="chInv"></div>
     </div>
     <div class="chord-notes" id="chNotes"></div>
+    <div class="ivrow" id="chIvs"></div>
+    <div class="vlrow" id="chVL"></div>
     <div id="bousInline" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px"></div>
     <div class="legend">
       <span class="lg lg-F"><i></i>Fondamentale</span>
@@ -1381,6 +1393,97 @@ function buildSubs(c){
   return L.map(function(x){return '<div class="sub-line"><span class="sname">'+x[0]+'</span><span class="swhy">'+x[1]+'</span></div>';}).join('');
 }
 
+/* ================= v9.48 — DEGRÉS, INTERVALLES, CONDUITE DES VOIX ================= */
+/* nom du degré d'une note par rapport à la fondamentale, en contexte (les autres notes tenues) */
+function degName(iv,ivs){
+  const has=function(x){return ivs.indexOf(x)>=0;};
+  switch(iv){
+    case 0:return '1';case 1:return '♭9';case 2:return '9';
+    case 3:return has(4)?'♯9':'♭3';case 4:return '3';
+    case 5:return (has(3)||has(4))?'11':'4';
+    case 6:return has(7)?'♯11':(has(4)?'♭5':'♭5');
+    case 7:return '5';case 8:return (has(7)||has(10)||has(11))?'♭13':'♯5';
+    case 9:return (has(10)||has(11))?'13':'6';case 10:return '♭7';case 11:return '7';
+  }
+  return '';
+}
+const IVN=['8','2m','2M','3m','3M','4','TT','5','6m','6M','7m','7M'];
+function ivName(d){if(d===0)return 'unisson';if(d===12)return '8ve';if(d>12){return IVN[d%12]==='8'?(d/12)+'×8ve':IVN[d%12]+'+8';}return IVN[d];}
+function chordIvs(c){return c.notes.map(function(m){return ((m-c.rootPc)%12+12)%12;});}
+function ivsRender(c){
+  const el=document.getElementById('chIvs');if(!el)return;
+  if(!c){el.innerHTML='';return;}
+  const ivs=chordIvs(c);
+  const degs=c.notes.map(function(m,i){return degName(ivs[i],ivs);});
+  let h='<span class="hint" style="margin:0">Degrés</span><span class="deg">'+degs.join(' · ')+'</span>';
+  if(c.notes.length>1){
+    h+='<span class="hint" style="margin:0 0 0 8px">Intervalles</span>';
+    for(let i=1;i<c.notes.length;i++){
+      const a=c.notes[i-1],b=c.notes[i];
+      h+='<button class="ivp" data-ivp="'+a+','+b+'" title="'+noteName(a)+' → '+noteName(b)+'">'+ivName(b-a)+'</button>';
+    }
+    h+='<button class="ivp" data-ivp="'+c.notes[0]+','+c.notes[c.notes.length-1]+'" title="basse → soprano" style="border-style:dashed">'+ivName(c.notes[c.notes.length-1]-c.notes[0])+' ⤒</button>';
+  }
+  h+='<button class="ivp" data-arp="1" title="Écouter l’accord note à note, du grave à l’aigu, chaque degré nommé">🎧 arpège</button>'
+    +'<button class="ivp" data-ivchord="1" title="Réécouter l’accord">🎧</button>';
+  el.innerHTML=h;
+}
+/* étiquettes de degré sur le clavier maître */
+function kbDegLabels(c){
+  const kb=document.getElementById('mainKb');if(!kb)return;
+  kb.querySelectorAll('.dlbl').forEach(function(x){x.remove();});
+  if(!c)return;
+  const ivs=chordIvs(c);
+  c.notes.forEach(function(m,i){
+    const k=kb.querySelector('[data-n="'+m+'"]');if(!k)return;
+    const sp=document.createElement('span');sp.className='dlbl';sp.textContent=degName(ivs[i],ivs);k.appendChild(sp);
+  });
+}
+/* arpège : une note après l'autre, la touche s'éclaire, le degré en toast */
+let _arpT=[];
+function arpPlay(c){
+  _arpT.forEach(clearTimeout);_arpT=[];
+  if(!c)return;
+  const ivs=chordIvs(c),kb=document.getElementById('mainKb');
+  c.notes.forEach(function(m,i){
+    _arpT.push(setTimeout(function(){
+      playNotes([m],.9);
+      const k=kb&&kb.querySelector('[data-n="'+m+'"]');
+      if(k){k.classList.add('arp');setTimeout(function(){k.classList.remove('arp');},380);}
+      toast('🎧 '+degName(ivs[i],ivs),noteName(m));
+    },i*420));
+  });
+  _arpT.push(setTimeout(function(){playNotes(c.notes,1.4);},c.notes.length*420+200));
+}
+/* conduite des voix entre deux accords joués : notes tenues, voix qui bougent, total en demi-tons */
+function voiceLead(p,n){
+  const P=p.slice().sort(function(a,b){return a-b;}),N=n.slice().sort(function(a,b){return a-b;});
+  const keep=P.filter(function(m){return N.indexOf(m)>=0;});
+  const P2=P.filter(function(m){return N.indexOf(m)<0;}),N2=N.filter(function(m){return P.indexOf(m)<0;});
+  /* appariement glouton par distance croissante ; au-delà d'un triton, ce n'est plus une voix qui bouge
+     mais une note lâchée + une note ajoutée (la main saute, elle ne conduit pas) */
+  const pairs=[];P2.forEach(function(p){N2.forEach(function(n){pairs.push([Math.abs(n-p),p,n]);});});
+  pairs.sort(function(x,y){return x[0]-y[0];});
+  const usedP={},usedN={},mv=[];let tot=0;
+  pairs.forEach(function(x){if(x[0]>6||usedP[x[1]]||usedN[x[2]])return;usedP[x[1]]=1;usedN[x[2]]=1;mv.push([x[1],x[2]]);tot+=x[0];});
+  mv.sort(function(x,y){return x[0]-y[0];});
+  return {keep:keep,mv:mv,add:N2.filter(function(n){return !usedN[n];}),drop:P2.filter(function(p){return !usedP[p];}),tot:tot};
+}
+let _VLPREV=null;
+function vlRender(prev,c){
+  const el=document.getElementById('chVL');if(!el)return;
+  if(!prev||!c){el.innerHTML='';return;}
+  const v=voiceLead(prev.notes,c.notes);
+  const sg=function(d){return (d>0?'+':'−')+Math.abs(d);};
+  let h='↔ depuis <b>'+nn(prev.rootPc)+prev.tpl.sym+'</b> : ';
+  h+='<span class="keep">'+v.keep.length+' tenue'+(v.keep.length>1?'s':'')+'</span>';
+  if(v.mv.length)h+=' · <span class="mv">'+v.mv.map(function(x){return noteName(x[0])+'→'+noteName(x[1])+' ('+sg(x[1]-x[0])+')';}).join(' · ')+'</span>';
+  if(v.add.length)h+=' · +'+v.add.map(noteName).join(' ');
+  if(v.drop.length)h+=' · −'+v.drop.map(noteName).join(' ');
+  if(v.mv.length)h+=' · <span class="gain">'+v.tot+' ½ ton'+(v.tot>1?'s':'')+'</span>'+(v.tot<=2?' — économe ✓':(v.tot>=7?' — ça bouge beaucoup':''));
+  else if(!v.add.length&&!v.drop.length)h+=' · même accord';
+  el.innerHTML=h;
+}
 /* ================= RENDU ================= */
 function render(){
   if(!cur)return;
@@ -1390,6 +1493,7 @@ function render(){
   fnEl.textContent=fn.t;fnEl.className='chord-fn'+(fn.ok?'':' nd');
   document.getElementById('chInv').textContent=invLabel(cur);
   document.getElementById('chNotes').textContent='Notes : '+cur.notes.map(noteName).join(' · ');
+  ivsRender(cur);kbDegLabels(cur);
   /* ⚡ v9.2 : seules les cartes VISIBLES sont reconstruites — chaque carte cachée coûtait des
      mini-claviers à chaque note ; setPage() redessine la carte qu'on ouvre. */
   const vis=function(k){return PAGE==='all'||PAGE===k;};
@@ -1523,7 +1627,10 @@ function _analyseSoon(){
   _anaReq=raf(function(){
     _anaReq=0;
     const c=identify(Array.from(held));
-    if(c){bousHit(c);cur=c;render();pushHist(c);}
+    if(c){
+      if(cur&&(cur.rootPc!==c.rootPc||_bousFam(cur.tpl.q)!==_bousFam(c.tpl.q)))_VLPREV={rootPc:cur.rootPc,tpl:cur.tpl,notes:cur.notes.slice()};
+      bousHit(c);cur=c;render();pushHist(c);vlRender(_VLPREV,c);
+    }
     /* 🔬 Spectre : analyse dès 4 sons (même si identify échoue sur l'accord riche) */
     if(held.size>=4){
       const sp=_spectreAnalyze(Array.from(held));
@@ -10449,6 +10556,10 @@ document.addEventListener('click',function(e){
   if(bp){bousPlay(+bp.dataset.bousPlay);return;}
   const bdr=e.target.closest('[data-bous-drill]');
   if(bdr){bousDrillGo(+bdr.dataset.bousDrill);return;}
+  const ivp=e.target.closest('[data-ivp]');
+  if(ivp){const ns=ivp.dataset.ivp.split(',').map(Number);playNotes([ns[0]],.9);setTimeout(function(){playNotes([ns[1]],.9);},450);setTimeout(function(){playNotes(ns,1.2);},950);return;}
+  if(e.target.closest('[data-arp]')){arpPlay(cur);return;}
+  if(e.target.closest('[data-ivchord]')){if(cur)playNotes(cur.notes,1.4);return;}
   const bg=e.target.closest('[data-bous-goto]');
   if(bg){setPage('bous');return;}
   const mini=e.target.closest('[data-play]');
