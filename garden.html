@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.52 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.53 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -442,7 +442,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.52 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.53 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -2239,13 +2239,74 @@ function bousRules(c){
   }
   return L;
 }
+/* ═══ 🗺 v9.53 — Carte de progression (Steve Mugglin, « Chord Progression Maps », chordmaps.com) ═══
+   Le graphe fonctionnel d'UNE tonalité (la tonalité active) : nœud = degré + famille, flèche = suite usuelle.
+   Les satellites (dominantes secondaires, °7 de passage, ii relatifs, rootless) mènent à leur cible.
+   « Home » (le I) peut aller vers n'importe quel accord de la carte. */
+const MG_N={ /* id : [écart à la tonique, famille, qualité affichée, basse (écart) ou null, libellé] */
+  I:[0,'M','maj7',null,'I'], ii:[2,'m','m7',null,'ii'], iii:[4,'m','m7',null,'iii'], IV:[5,'M','maj7',null,'IV'],
+  V:[7,'D','7',null,'V'], vi:[9,'m','m7',null,'vi'], iv:[5,'m','m7',null,'iv (emprunt)'],
+  I5:[0,'M','maj',7,'I/5'], I3:[0,'M','maj',4,'I/3'], IVI:[5,'M','maj',0,'IV/I'], VI_:[7,'M','maj',0,'V/I'],
+  bVI:[8,'M','maj',null,'♭VI'], bVI7:[8,'D','7',null,'♭VI7'], bVII:[10,'D','7',null,'♭VII9'],
+  Vii:[9,'D','7',null,'V/ii'], Viii:[11,'D','7',null,'V/iii'], VIV:[0,'D','7',null,'V/IV'], VV:[2,'D','7',null,'V/V'], Vvi:[4,'D','7',null,'V/vi'],
+  d1:[1,'°','dim7',null,'♯i°7'], d3:[3,'°','dim7',null,'♯ii°7'], d6:[6,'ø','m7b5',null,'♯ivø7'], d8:[8,'°','dim7',null,'♯v°7'],
+  iiIV:[7,'m','m7',null,'ii/IV'], eo:[4,'ø','m7b5',null,'C9 sans fondamentale'], iivi:[11,'ø','m7b5',null,'iiø/vi'], i6:[0,'m','m6',null,'i m6 (emprunt)']
+};
+const MG_E={ /* id : [[cible, pourquoi], …] */
+  I:[['IVI','la tonique balance vers IV/I et revient'],['VI_','V/I : la dominante sur pédale de tonique'],['ii','depuis Home, tout est permis'],['iii','depuis Home, tout est permis'],['IV','depuis Home, tout est permis'],['V','depuis Home, tout est permis'],['vi','depuis Home, tout est permis']],
+  IVI:[['I','retour à la maison']], VI_:[['I','retour à la maison']],
+  ii:[['V','ii → V, le mouvement de quinte'],['iii','ii → iii, la basse monte d’un ton'],['I5','ii → I/5 : la cadence à la quarte et sixte']],
+  iii:[['IV','iii → IV, la basse monte d’un demi-ton'],['vi','iii → vi, quinte descendante']],
+  vi:[['IV','vi → IV, tierce descendante'],['ii','vi → ii, quinte descendante']],
+  IV:[['V','IV → V, vers la dominante'],['ii','IV → ii, même fonction de sous-dominante'],['I3','IV → I/3 → ii : la basse monte'],['I','IV → I, la cadence plagale'],['I5','IV → I/5 puis V'],['iv','IV → iv : l’emprunt mineur (Fm7 → C)']],
+  I3:[['ii','I/3 → ii, la basse continue de monter']], iv:[['I','iv → I, la cadence plagale mineure']],
+  V:[['I','V → I, la résolution'],['iii','V → iii, la cadence évitée'],['vi','V → vi, la cadence rompue']],
+  I5:[['V','I/5 → V : la quarte et sixte se résout']],
+  bVI:[['bVII','♭VI → ♭VII → I, la cadence « aeolienne »']], bVII:[['I','♭VII9 → I, la cadence backdoor'],['I5','♭VII9 → I/5']], bVI7:[['I5','♭VI7 → I/5, la sixte augmentée']],
+  Vii:[['ii','la dominante secondaire se résout sur sa cible']], d1:[['ii','♯i°7 → ii, la basse monte d’un demi-ton']],
+  Viii:[['iii','la dominante secondaire se résout sur sa cible']], d3:[['iii','♯ii°7 → iii'],['ii','♯ii°7 → ii (Cdim/E♭ → Dm)']],
+  VIV:[['IV','la dominante secondaire se résout sur sa cible']], iiIV:[['VIV','ii/IV → V/IV : un ii–V vers le IV']], eo:[['IV','le 9 sans fondamentale de V/IV → IV']],
+  VV:[['V','la dominante secondaire se résout sur sa cible']], d6:[['V','♯ivø7 → V (le 9 sans fondamentale de V/V)']], i6:[['VV','i m6 → V/V : la couleur mineure prépare la dominante']],
+  Vvi:[['vi','la dominante secondaire se résout sur sa cible']], d8:[['vi','♯v°7 → vi']], iivi:[['Vvi','iiø/vi → V/vi : le ii–V mineur vers vi']]
+};
+function mgNodeOf(c){
+  if(!c)return null;
+  const rel=((c.rootPc-KEY.pc)%12+12)%12,f=_bousFam(c.tpl.q),bs=c.bassPc!=null?((c.bassPc-KEY.pc)%12+12)%12:rel;
+  /* renversements nommés par la carte */
+  if(bs!==rel){
+    for(const k in MG_N){const n=MG_N[k];if(n[3]!=null&&n[0]===rel&&n[3]===bs&&n[1]===(f==='D'?'M':f))return k;}
+  }
+  for(const k in MG_N){const n=MG_N[k];if(n[3]==null&&n[0]===rel&&n[1]===f)return k;}
+  if(f==='M'&&rel===7)return 'V';            /* G triade = V */
+  if(f==='M'&&rel===10)return 'bVII';
+  if(f==='°'&&rel===6)return 'd6';
+  if(f==='ø'&&rel===1)return 'd1';
+  return null;
+}
+function mgEdges(c){
+  const k=mgNodeOf(c);if(!k)return [];
+  return (MG_E[k]||[]).map(function(e){const n=MG_N[e[0]];
+    return {d:((n[0]-((c.rootPc-KEY.pc)%12+12)%12)%12+12)%12,q:n[2],bs:n[3]!=null?(KEY.pc+n[3])%12:null,why:'🗺 Carte de '+KEY.n+' — '+MG_N[k][4]+' → '+n[4]+' : '+e[1]+'.',sc:/tout est permis/.test(e[1])?1.1:3.6,node:e[0]};});
+}
+/* plus court chemin vers le I sur la carte */
+function mgPath(c){
+  const k=mgNodeOf(c);if(!k)return null;if(k==='I')return ['I'];
+  const prev={},Q=[k];prev[k]=null;
+  while(Q.length){const x=Q.shift();if(x==='I')break;(MG_E[x]||[]).forEach(function(e){if(!(e[0] in prev)){prev[e[0]]=x;Q.push(e[0]);}});}
+  if(!('I' in prev))return null;
+  const p=[];for(let x='I';x!=null;x=prev[x])p.unshift(x);return p;
+}
+function mgName(id){const n=MG_N[id];const pc=(KEY.pc+n[0])%12;return nn(pc)+(PSYM[n[2]]!=null?PSYM[n[2]]:'')+(n[3]!=null?'/'+nn((KEY.pc+n[3])%12):'');}
+function mgNotes(id){const n=MG_N[id];const pc=(KEY.pc+n[0])%12;const ns=stackFrom(pc,_rpChordIvs(n[2]),57);if(n[3]!=null){const b=36+((KEY.pc+n[3])%12);ns.unshift(b<ns[0]-12?b+12:b);}return ns;}
+let _MGP=null;
+function mgPathPlay(){if(!_MGP)return;_MGP.forEach(function(id,i){setTimeout(function(){playNotes(mgNotes(id),1.0);},i*900);});}
 function boussole(c){
   const map={};
-  const add=function(d,tq,why,sc){
+  const add=function(d,tq,why,sc,bs){
     if(!(PQ[tq]||TRIAD_IV[tq]))return;
-    const k=d+'|'+tq,e=map[k];
+    const k=d+'|'+tq+(bs!=null?'/'+bs:''),e=map[k];
     if(e){e.sc+=sc;if(why)e.why=why;}
-    else map[k]={d:d,q:tq,sc:sc,why:why||''};
+    else map[k]={d:d,q:tq,sc:sc,why:why||'',bs:bs!=null?bs:null};
   };
   const t=TRANS[c.tpl.q]||{};
   Object.keys(t).forEach(function(k){
@@ -2253,7 +2314,8 @@ function boussole(c){
     add(+p[0],p[1],'',1+t[k]*0.4);
   });
   bousRules(c).forEach(function(r){add(r[0],r[1],r[2],r[3]);});
-  const L=Object.keys(map).map(function(k){return map[k];}).filter(function(e){return !(e.d===0&&e.q===c.tpl.q);}); /* v9.47 : jamais « vers soi-même » */
+  mgEdges(c).forEach(function(e){add(e.d,e.q,e.why,e.sc,e.bs);}); /* 🗺 la carte de la tonalité active */
+  const L=Object.keys(map).map(function(k){return map[k];}).filter(function(e){return !(e.d===0&&e.q===c.tpl.q&&e.bs==null);}); /* v9.47 : jamais « vers soi-même » */
   L.forEach(function(e){
     if(!e.why){
       const n=Math.max(1,Math.round((e.sc-1)/0.4));
@@ -2271,12 +2333,12 @@ function _bousFor(){
   _BOUSL={c:c,list:boussole(c)};
   return _BOUSL;
 }
-function _bousName(b,s){return nn(((b.c.rootPc+s.d)%12+12)%12)+(PSYM[s.q]!=null?PSYM[s.q]:s.q);}
+function _bousName(b,s){return nn(((b.c.rootPc+s.d)%12+12)%12)+(PSYM[s.q]!=null?PSYM[s.q]:s.q)+(s.bs!=null?'/'+nn(s.bs):'');}
 function bousPlay(i){
   const b=_BOUSL;if(!b||!b.list[i])return;
   const s=b.list[i],rp=((b.c.rootPc+s.d)%12+12)%12;
   playNotes(b.c.notes&&b.c.notes.length?b.c.notes:stackFrom(b.c.rootPc,b.c.tpl.iv,57),1.0);
-  setTimeout(function(){playNotes(stackFrom(rp,_rpChordIvs(s.q),57),1.2);},1000);
+  setTimeout(function(){const ns=stackFrom(rp,_rpChordIvs(s.q),57);if(s.bs!=null)ns.unshift(36+s.bs);playNotes(ns,1.2);},1000);
 }
 function bousDrillGo(i){
   const b=_BOUSL;if(!b||!b.list[i])return;
@@ -2291,6 +2353,10 @@ function bousRender(){
   const b=_bousFor();
   if(!b){box.innerHTML='<div class="empty">Joue un accord au clavier MIDI — la Boussole proposera les suites les plus fortes.</div>';return;}
   let h='<div style="grid-column:1/-1" class="hint">Depuis <b style="color:var(--or)">'+nn(b.c.rootPc)+b.c.tpl.sym+'</b> ('+romanFn(b.c).t+') :</div>';
+  const mk=mgNodeOf(b.c),mp=mgPath(b.c);_MGP=mp;
+  h+='<div style="grid-column:1/-1;border:1px solid var(--gris2);border-radius:10px;padding:8px 12px;font-size:13px">🗺 <b>Carte de '+KEY.n+'</b> (Mugglin) — '
+    +(mk?'tu es sur <b style="color:var(--or)">'+MG_N[mk][4]+'</b>'+(mp&&mp.length>1?' · chemin vers la maison : '+mp.map(function(id,i){return '<b style="color:'+(i===mp.length-1?'var(--vert)':'var(--blanc)')+'">'+mgName(id)+'</b>';}).join(' → ')+' <button class="opill" data-mg-path="1" style="margin-left:6px">🎧</button>':(mk==='I'?' · Home : tu peux aller partout':''))
+        :'cet accord n’est pas sur la carte de '+KEY.n+' — change la tonalité (B6/C7) ou joue un accord de la carte')+'</div>';
   b.list.forEach(function(s,i){
     const rp=((b.c.rootPc+s.d)%12+12)%12;
     const fake={rootPc:rp,tpl:{q:s.q,sym:PSYM[s.q]!=null?PSYM[s.q]:''}};
@@ -10746,6 +10812,7 @@ document.addEventListener('click',function(e){
     toast('📚 répertoire','Grille supprimée');return;
   }
   /* 🧭 Boussole (v8.3) */
+  if(e.target.closest('[data-mg-path]')){mgPathPlay();return;}
   const bp=e.target.closest('[data-bous-play]');
   if(bp){bousPlay(+bp.dataset.bousPlay);return;}
   const bdr=e.target.closest('[data-bous-drill]');
