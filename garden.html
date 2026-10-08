@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.48 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.49 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -422,7 +422,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.48 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.49 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1257,13 +1257,13 @@ function buildVoicings(c){
   const A=function(name,tag,mg,md){V.push({name:name,tag:tag,mg:mg,md:md});};
 
   if(has7){
-    A('Shell 1–7 · MD 3–5'+(ninth!=null?'–9':''),'Jazz',
+    A('Shell 1–7 · MD 3–5'+(ninth!=null?'–9':'')+(BOYD_S[q]?' (Boyd Var. P.1)':''),'Jazz',
       [bass,nearestAbove((r+sev)%12,bass+3)],
       (function(){const md=[nearestAbove((r+third)%12,60)];
         md.push(nearestAbove((r+fifth)%12,md[0]+1));
         if(ninth!=null)md.push(nearestAbove((r+ninth)%12,md[1]+1));
         return md;})());
-    A('Shell 1–3 · MD 7–9–5','Jazz',
+    A('Shell 1–3 · MD 7–9–5'+(BOYD_S[q]?' (Boyd Var. P.2)':''),'Jazz',
       [bass,nearestAbove((r+third)%12,bass+3)],
       (function(){const md=[nearestAbove((r+sev)%12,60)];
         if(ninth!=null)md.push(nearestAbove((r+ninth)%12,md[0]+1));
@@ -1283,6 +1283,16 @@ function buildVoicings(c){
     if(q==='m7'){
       A('So What (quartal 1-4-♭7-♭3-5)','Modal',
         stackFrom(r,[0,5],48),stackFrom(r,[10,3,7],58));
+    }
+    /* 📘 Boyd P.1 / P.2 (v9.49) — Basic (Intermediate p. 4-7) : MG fondamentale, MD 4 sons ;
+       P.1 pouce sur la 3ce (3-5-7-9), P.2 pouce sur la 7e (7-9-3-5). Les Shells ci-dessus = Variation. */
+    if(BOYD_S[q]){
+      ['P1','P2'].forEach(function(pos){
+        const v=boydVoicing(q,'9','',null,'basic'),shp=boydShape(v,pos);
+        const root=boydRootNear(r,shp.sp,pos,pos==='P1'?45:50,'basic');
+        const notes=shp.sp.map(function(x){return root+x;});
+        A('Boyd P.'+pos.slice(1)+' — '+nn(r)+shp.sym+' · '+boydHandsTxt(v,pos,shp),'Boyd',notes.slice(0,shp.lh),notes.slice(shp.lh));
+      });
     }
     /* Drop 2 */
     const close=stackFrom(r,[0,third,fifth,sev],60);
