@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.74 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.75 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -469,7 +469,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.74 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.75 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1405,7 +1405,14 @@ function _stfDraw(cols,o){
     else grand=!(mn>=55||mx<=64);}
   const staves=grand?['G','F']:[(mn>=55||(mx>64))?'G':'F'];
   const B0={G:30,F:18};
-  const clefW=sp*4.4,colW=sp*6.2,x0=sp*1.2;
+  /* 🎼 v9.75 — armure : o.ks = true quand la portée est dans une tonalité (gammes, Hanon, grilles, lignes) ; la clé = o.key.
+     Dièses dans l'ordre F C G D A E B, bémols B E A D G C F ; les notes diatoniques perdent leur altération, ♮ sinon. */
+  const KS_N={0:0,7:1,2:2,9:3,4:4,11:5,6:6,5:-1,10:-2,3:-3,8:-4,1:-5};
+  const ksn=o.ks?(KS_N[((key%12)+12)%12]||0):0,ksSharp=ksn>0,ksL=(ksSharp?'FCGDAEB':'BEADGCF').slice(0,Math.abs(ksn));
+  const ksMap={};for(let i=0;i<ksL.length;i++)ksMap[ksL[i]]=ksSharp?'♯':'♭';
+  const KS_STEP={'♯':{F:8,C:5,G:9,D:6,A:3,E:7,B:4},'♭':{B:4,E:7,A:3,D:6,G:2,C:5,F:1}};
+  const ksW=ksL.length?ksL.length*sp*.95+sp*.6:0;
+  const clefW=sp*4.4+ksW,colW=sp*6.2,x0=sp*1.2;
   const W=o.w||Math.max(sp*14,x0+clefW+cols.length*colW+sp);
   /* marges dynamiques : assez de place pour les lignes supplémentaires et les étiquettes */
   const ext={G:[0,8],F:[0,8]};
@@ -1421,6 +1428,8 @@ function _stfDraw(cols,o){
     for(let k=0;k<5;k++)out+='<line x1="'+x0+'" x2="'+(W-sp*.6)+'" y1="'+(t+k*sp)+'" y2="'+(t+k*sp)+'" stroke="#B8C0DA" stroke-width="'+(sp*.1)+'"/>';
     if(cl==='G')out+='<text x="'+(x0+sp*.3)+'" y="'+(t+hS+sp*.75)+'" font-family="Noto Music,Bravura,serif" font-size="'+(sp*5.4)+'" fill="#E8ECF5">𝄞</text>';
     else out+='<text x="'+(x0+sp*.4)+'" y="'+(t+hS-sp*.1)+'" font-family="Noto Music,Bravura,serif" font-size="'+(sp*4.2)+'" fill="#E8ECF5">𝄢</text>';
+    for(let k=0;k<ksL.length;k++){const st=KS_STEP[ksSharp?'♯':'♭'][ksL[k]]-(cl==='F'?2:0);
+      out+='<text x="'+(x0+sp*4.6+k*sp*.95)+'" y="'+(t+hS-st*sp/2+sp*.5)+'" text-anchor="middle" font-family="Noto Music,Bravura,serif" font-size="'+(sp*2)+'" fill="#E8ECF5">'+(ksSharp?'♯':'♭')+'</text>';}
   });
   if(grand){out+='<line x1="'+x0+'" x2="'+x0+'" y1="'+topY(0)+'" y2="'+(topY(1)+hS)+'" stroke="#B8C0DA" stroke-width="'+(sp*.18)+'"/>'
     +'<path d="M'+(x0-sp*.4)+','+topY(0)+' Q'+(x0-sp*1.5)+','+((topY(0)+topY(1)+hS)/2)+' '+(x0-sp*.4)+','+(topY(1)+hS)+'" fill="none" stroke="#B8C0DA" stroke-width="'+(sp*.25)+'"/>';}
@@ -1430,7 +1439,9 @@ function _stfDraw(cols,o){
       const t=topY(si),bot=t+hS,b0=B0[cl];
       let N=c.notes.filter(function(n){return !grand||handOf(n)===(cl==='F'?'MG':'MD');});
       if(!N.length)return;
-      N=N.map(function(n){const sp_=stfSpell(n.m,key,o.rootPc,o.ivs);return {n:n,step:sp_.step-b0,acc:sp_.acc,nm:sp_.nm};}).sort(function(a,b){return a.step-b.step;});
+      N=N.map(function(n){const sp_=stfSpell(n.m,key,o.rootPc,o.ivs);let acc=sp_.acc;
+        if(o.ks){const ka=ksMap[sp_.nm.charAt(0)]||'';acc=(acc===ka)?'':(acc||'♮');}
+        return {n:n,step:sp_.step-b0,acc:acc,nm:sp_.nm};}).sort(function(a,b){return a.step-b.step;});
       /* lignes supplémentaires */
       const lx=sp*1.15;
       N.forEach(function(q){const dxl=0;
@@ -2695,7 +2706,7 @@ function repertRender(){
       +'<div style="font-size:13px;color:var(--or);font-weight:700">'+resolved+'</div>'
       +(STFM!=='off'&&g.st.length<=8?staffSeqSVG(g.st.map(function(stp){const rp=((KEY.pc+stp[0])%12+12)%12,iv=_rpChordIvs(stp[1]);
           const bass=36+((rp-36)%12+12)%12,md=stackFrom(rp,iv,60),ivs=iv.map(function(x){return x%12;});
-          return {lb:nn(rp)+(PSYM[stp[1]]!=null?PSYM[stp[1]]:stp[1]),notes:[{m:bass,hand:'MG',col:stfColOf(bass,rp,ivs,'MG')}].concat(md.map(function(m){return {m:m,hand:'MD',col:stfColOf(m,rp,ivs,'MD')};}))};}),{grand:true,sp:8,scale:1}):'')
+          return {lb:nn(rp)+(PSYM[stp[1]]!=null?PSYM[stp[1]]:stp[1]),notes:[{m:bass,hand:'MG',col:stfColOf(bass,rp,ivs,'MG')}].concat(md.map(function(m){return {m:m,hand:'MD',col:stfColOf(m,rp,ivs,'MD')};}))};}),{grand:true,sp:8,scale:1,key:KEY.pc,ks:true}):'')
       +(g.why?'<div class="hint" style="margin:4px 0 0">'+g.why+(g.src?' <i>— '+g.src+'</i>':'')+'</div>':'')
       +'<div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">'
       +'<button class="opill" data-rp-play="'+g.id+'">\ud83c\udfa7</button>'
@@ -10830,10 +10841,10 @@ function drStfSeq(s){
   const N=s.dy?s.dy.length:s.seqNotes.length;let i0=0,i1=N;if(N>24){i0=Math.max(0,Math.floor(DR.sclPtr/8)*8-8);i1=Math.min(N,i0+24);}
   const fgOf=function(i){if(s.glbSeq)return s.glbSeq[i];if(!s.glb)return null;const u=[];for(let k=0;k<s.seqNotes.length;k++){if(u.indexOf(s.seqNotes[k])<0)u.push(s.seqNotes[k]);}return s.glb[u.indexOf(s.seqNotes[i])];};
   if(s.dy){el.style.maxWidth='none';const cols=s.dy.slice(i0,i1).map(function(ev,j){const i=i0+j;const c=i===DR.sclPtr?'#F5C842':(i<DR.sclPtr?'#3ECF8E':'#E8ECF5');return {notes:ev.map(function(m){return {m:m,col:c,hand:s.dyH?(s.dyH[i]&&s.dyH[i][ev.indexOf(m)]):undefined};}),lb:(s.colLb&&s.colLb[i])||null};});
-    el.innerHTML=staffSeqSVG(cols,{sp:7,key:s.grp!=null?s.grp:KEY.pc,scale:document.body.classList.contains('ux-focus')?1.8:1.1});return;}
+    el.innerHTML=staffSeqSVG(cols,{sp:7,key:s.grp!=null?s.grp:KEY.pc,ks:true,scale:document.body.classList.contains('ux-focus')?1.8:1.1});return;}
   const cols=s.seqNotes.slice(i0,i1).map(function(m,j){const i=i0+j;return {notes:[{m:m,col:i===DR.sclPtr?'#F5C842':(i<DR.sclPtr?'#3ECF8E':'#E8ECF5'),lb:(STFM!=='read'&&fgOf(i)!=null&&fgOf(i)!=='')?fgOf(i):null}],lb:(s.colLb&&s.colLb[i])?s.colLb[i]:((i%8===0&&s.hn)?('m. '+(Math.floor(i/8)+1)):null)};});
   el.style.maxWidth='none';
-  el.innerHTML=staffSeqSVG(cols,{sp:7,key:s.grp!=null?s.grp:KEY.pc,scale:document.body.classList.contains('ux-focus')?1.8:1.1});
+  el.innerHTML=staffSeqSVG(cols,{sp:7,key:s.grp!=null?s.grp:KEY.pc,ks:true,scale:document.body.classList.contains('ux-focus')?1.8:1.1});
 }
 /* 🟢 v9.71 — halo de séance : le contour de la carte se remplit à mesure de la séance ; doré dès 10 justes d'affilée */
 function drHalo(){
