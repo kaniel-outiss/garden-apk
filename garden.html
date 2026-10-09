@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.67 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.68 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -142,7 +142,7 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 .mini:active{border-color:var(--or)}
 .mini .mtitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .mini .mname{font-size:12px;font-weight:700;color:var(--blanc)}
-.mini .mnotes{font-size:10px;color:var(--gris);font-family:'Courier New',monospace;letter-spacing:.03em}
+.mini .mnotes{font-size:11.5px;color:#B8C0DA;font-family:'Courier New',monospace;letter-spacing:.03em}
 .mini .mtag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:999px;white-space:nowrap}
 .tag-md{background:rgba(245,200,66,.13);color:var(--or);border:1px solid rgba(245,200,66,.35)}
 .tag-g{background:rgba(62,207,142,.13);color:var(--vert);border:1px solid rgba(62,207,142,.35)}
@@ -448,7 +448,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.67 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.68 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1210,10 +1210,13 @@ function miniKb(entries,rootPc,fitW){
   if(hi-lo<24)hi=lo+24;
   const id='mk'+(++_kbSeq);
   /* v9.54 : fitW = largeur dispo → touches rétrécies pour que tout le voicing tienne (mélodie comprise) */
-  let w=15;if(fitW){let wh=0;for(let m=lo;m<=hi;m++)if(WPC.indexOf(m%12)>=0)wh++;w=Math.max(7,Math.min(15,Math.floor(fitW/wh)));}
+  let wh=0;for(let m=lo;m<=hi;m++)if(WPC.indexOf(m%12)>=0)wh++;
+  let w=15;if(fitW)w=Math.max(7,Math.min(15,Math.floor(fitW/wh)));
   setTimeout(function(){
     const el=document.getElementById(id);if(!el)return;
-    kbHTML(id,lo,hi,w,58,false);
+    /* v9.68 : le mini-clavier occupe toute la largeur réelle de la carte (tablette) et grandit en hauteur */
+    let h=58;if(fitW){const cw=(el.parentNode&&el.parentNode.clientWidth)||0;if(cw>wh*w)w=Math.max(7,Math.min(26,Math.floor((cw-2)/wh)));h=Math.max(58,Math.min(110,Math.round(w*4.2)));}
+    kbHTML(id,lo,hi,w,h,false);
     kbLight(id,entries,rootPc);
   },0);
   return '<div class="kb-sm"><div class="kb" id="'+id+'"></div></div>';
