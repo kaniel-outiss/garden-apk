@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.75 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.76 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -55,6 +55,8 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 .chord-fn.nd{color:var(--gris);background:var(--bg3);border-color:var(--gris2)}
 .chord-notes{font-size:13px;color:var(--gris);letter-spacing:.05em}
 .chord-inv{font-size:12px;color:var(--bleu);font-weight:600}
+.chord-voi{font-size:13px;font-weight:700;color:var(--vert);margin-top:2px}.chord-voi.libre{color:var(--gris);font-weight:600}
+.mini.vo-hit{border-color:var(--vert);box-shadow:0 0 12px 2px rgba(62,207,142,.45)}
 .hint{font-size:12px;color:var(--gris);margin-top:4px}
 
 /* ===== LÉGENDE COULEURS FONCTIONNELLES ===== */
@@ -469,7 +471,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.75 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.76 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -515,6 +517,7 @@ body.ux-focus #uxStopBar{display:flex}
       <div class="chord-name" id="chName">—</div>
       <div class="chord-fn nd" id="chFn">jouez un accord…</div>
       <div class="chord-inv" id="chInv"></div>
+      <div class="chord-voi" id="chVoi"></div>
     </div>
     <div class="chord-notes" id="chNotes"></div>
     <div class="ivrow" id="chIvs"></div>
@@ -1571,6 +1574,50 @@ function hzLine(gid,cid,k){
   return {notes:notes,lh:lh,lbs:lbs,roots:roots,n:G.st.length};
 }
 
+/* ═══════════ 🎯 v9.76 — QUEL VOICING JE JOUE ? ═══════════
+   La forme d'un accord joué = ses écarts en demi-tons depuis la note grave (l'octave compte : un drop 2 n'est pas une
+   position serrée). On la compare aux cartes affichées (voicings, renversements, Moody, Ligon) et aux catalogues :
+   la carte qui correspond s'allume en vert, et l'en-tête nomme la forme. Sans correspondance : « voicing libre »,
+   avec sa description (serré / ouvert, renversement). Transposition libre : la forme ne dépend pas de la hauteur. */
+function voShape(notes){const a=notes.slice().sort(function(x,y){return x-y;});return a.map(function(m){return m-a[0];}).join('.');}
+function voMatchCards(shape){
+  const out=[];document.querySelectorAll('.mini[data-shape]').forEach(function(el){
+    const on=el.dataset.shape===shape;el.classList.toggle('vo-hit',on);
+    if(on){const nm=el.querySelector('.mname');if(nm&&out.indexOf(nm.textContent)<0)out.push(nm.textContent.replace(/^✓ /,''));}
+  });
+  return out;
+}
+/* catalogues non affichés : Moody (GM_V, MB_V) et Ligon (LG_HC) — même forme, n'importe quelle hauteur */
+function voMatchCatalog(shape,bassPc){
+  const out=[];const chk=function(v,lb){if(v[5].map(function(x){return x-v[5][0];}).join('.')===shape)out.push(lb);};
+  if(typeof GM_V!=='undefined')GM_V.forEach(function(v){chk(v,'Moody vol. 2 n°'+v[4]+' ('+GM_BUCK[v[1]]+', mélodie '+GM_DEGN[v[0]]+')');});
+  if(typeof MB_V!=='undefined')MB_V.forEach(function(v){chk(v,'Moody vol. 4 n°'+v[4]+' (basse '+GM_BUCK[v[1]]+')');});
+  if(typeof LG_HC!=='undefined')LG_HC.forEach(function(v){chk(v,'Ligon ex. '+v[6].ex+' ('+v[6].role+')');});
+  /* rootless A / B (Bill Evans) : l'accord identifié est souvent celui du haut (Em7 pour Cmaj9) — on nomme le vrai */
+  const RL=[['A','maj9','0.3.7.10',4],['A','9','0.3.6.10',4],['A','m9','0.4.7.11',3],['B','maj9','0.3.5.8',11],['B','9','0.4.6.9',10],['B','m9','0.4.5.9',10]];
+  return out.slice(0,3);
+}
+function voRootless(shape,bassPc){
+  const RL=[['A','maj9','0.3.7.10',4],['A','9','0.3.6.10',4],['A','m9','0.4.7.11',3],['B','maj9','0.3.5.8',11],['B','9','0.4.6.9',10],['B','m9','0.4.5.9',10]];
+  return RL.filter(function(x){return x[2]===shape;}).map(function(x){return 'Rootless '+x[0]+' de '+nn((bassPc-x[3]+12)%12)+x[1];});
+}
+function voDescribe(c){
+  const n=c.notes,span=n[n.length-1]-n[0];
+  let gaps=0;for(let i=1;i<n.length;i++)if(n[i]-n[i-1]>12)gaps++;
+  const pcs=[];n.forEach(function(m){if(pcs.indexOf(m%12)<0)pcs.push(m%12);});
+  const dbl=n.length-pcs.length;
+  return (span<=12?'position serrée':(gaps?'position ouverte (large)':'position ouverte'))+(dbl?' · '+dbl+' doublure'+(dbl>1?'s':''):'')+' · '+invLabel(c).toLowerCase();
+}
+function voRender(c){
+  const el=document.getElementById('chVoi');if(!el||!c||!c.notes||c.notes.length<3)return;
+  const shape=voShape(c.notes);
+  let names=voMatchCards(shape);
+  if(!names.length)names=voMatchCatalog(shape,c.notes[0]%12);
+  const rl=voRootless(shape,c.notes[0]%12);
+  if(names.length){el.className='chord-voi';el.textContent='🎯 Tu joues : '+names.join(' · ');}
+  else{el.className='chord-voi libre';el.textContent='Forme : '+voDescribe(c)+(rl.length?' · aussi lisible comme '+rl.join(' / ')+' (sans fondamentale)':' — aucune carte ne correspond');}
+}
+
 /* ================= RENVERSEMENTS ================= */
 function buildInversions(c){
   const iv=SEVENTH[c.tpl.q]||c.tpl.iv;
@@ -1579,7 +1626,7 @@ function buildInversions(c){
   for(let k=0;k<iv.length;k++){
     const order=iv.slice(k).concat(iv.slice(0,k));
     const notes=stackFrom(c.rootPc,order,60);
-    _it.push({v:String(k),lb:names[k],html:'<div class="mini" data-play="'+notes.join(',')+'">'
+    _it.push({v:String(k),lb:names[k],html:'<div class="mini" data-play="'+notes.join(',')+'" data-shape="'+voShape(notes)+'">'
       +'<div class="mtitle"><span class="mname">'+names[k]+'</span><span class="mnotes">'+notes.map(noteName).join(' · ')+'</span></div>'
       +miniKb(notes.map(function(m){return E(m,c.rootPc);}),c.rootPc)+stfFromEntries(notes.map(function(m){return E(m,c.rootPc);}),c.rootPc)+'</div>'});
   }
@@ -1676,7 +1723,7 @@ function buildVoicings(c){
   V.forEach(function(v){let html='';
     const all=v.mg.concat(v.md);
     const entries=v.mg.map(function(m){return E(m,r,'MG');}).concat(v.md.map(function(m){return E(m,r,'MD');}));
-    html+='<div class="mini" data-play="'+all.join(',')+'">'
+    html+='<div class="mini" data-play="'+all.join(',')+'" data-shape="'+voShape(all)+'">'
       +'<div class="mtitle"><span class="mname">'+v.name+'</span><span class="mtag '+(v.tag==='Gospel'?'tag-g':'tag-md')+'">'+v.tag+'</span></div>'
       +miniKb(entries,r,226) /* v9.58 : tout le voicing tient dans la carte */
       +stfFromEntries(entries,r)
@@ -2095,6 +2142,7 @@ function render(){
   bousInline();
   if(PAGE==='bous')bousRender();
   if(PAGE==='pano')panoRender();
+  voRender(cur);
 }
 function pushHist(c){
   const name=nn(c.rootPc)+c.tpl.sym;
@@ -4040,7 +4088,7 @@ function gmCard(v,k,head,foot){
   const ent=ns.map(function(m,i){return E(m,r,i===0||m<55?'MG':'MD');});
   const deg=ns.map(function(m){return degName(((m-r)%12+12)%12,v[5].map(function(x){return x%12;}));});
   const T=gmTen(v),top=ns[ns.length-1]%12;
-  return '<div class="mini'+(hit?' gm-hit':'')+'" data-play="'+ns.join(',')+'">'
+  return '<div class="mini'+(hit?' gm-hit':'')+'" data-play="'+ns.join(',')+'" data-shape="'+voShape(ns)+'">'
     +'<div class="mtitle"><span class="mname">'+(hit?'✓ ':'')+(head||'')+gmName(v,k)+'</span><span class="mtag tag-g">'+(v[6]?'ex. '+v[6].ex+' · '+v[6].role:GM_BUCK[v[1]]+(v[4]?' · n°'+v[4]:''))+'</span></div>'
     +miniKb(ent,r,(box.clientWidth>700?Math.floor(box.clientWidth/2)-40:box.clientWidth-40)||300)+stfFromEntries(ent,r)
     +'<div class="mnotes" style="margin-top:4px">basse '+NBf(r,k)+' · MD '+deg.slice(1).join('-')+' · '+T.lb+'</div>'
@@ -4129,7 +4177,7 @@ function gosRender(){
     const hit=hs.length>=4&&hs[0]%12===r&&hp.every(function(p){return pcs.indexOf(p)>=0;})&&pcs.every(function(p){return p===f||hp.indexOf(p)>=0;});
     const ent=ns.map(function(m,i){return E(m,r,i===0||m<55?'MG':'MD');});
     const deg=ns.map(function(m){return degName(((m-r)%12+12)%12,v[5].map(function(x){return x%12;}));});
-    return '<div class="mini'+(hit?' gm-hit':'')+'" data-play="'+ns.join(',')+'">'
+    return '<div class="mini'+(hit?' gm-hit':'')+'" data-play="'+ns.join(',')+'" data-shape="'+voShape(ns)+'">'
       +'<div class="mtitle"><span class="mname">'+(hit?'✓ ':'')+gmName(v,k)+'</span><span class="mtag tag-g">'+v[3].replace(/^b/,'♭').replace(/^#/,'♯').replace('Maj','maj ')+' · n°'+v[4]+'</span></div>'
       +miniKb(ent,r,(box.clientWidth>700?Math.floor(box.clientWidth/2)-40:box.clientWidth-40)||300)+stfFromEntries(ent,r)
       +'<div class="mnotes" style="margin-top:4px">basse '+NBf(r,k)+' · MD '+deg.slice(1).join('-')+' · mélodie '+NBf(mp,k)+'</div></div>';
