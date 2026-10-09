@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.68 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.69 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -126,6 +126,11 @@ main{padding:16px 18px 60px;max-width:1280px;margin:0 auto}
 /* contenu des cartes en colonnes automatiques */
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;align-items:start}
 .mgrid .mini{margin-bottom:0}
+.ffbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 4px}
+.ffc{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 11px;border:1px solid var(--gris2);border-radius:999px;cursor:pointer;color:var(--gris);background:var(--bg3);user-select:none}
+.ffc.on{color:var(--blanc);border-color:var(--or)}.ffc input{accent-color:var(--or);margin:0;width:15px;height:15px}.ffc small{opacity:.6;font-weight:400}
+.ffall{background:none;border:1px dashed var(--gris3);border-radius:999px;color:var(--gris);font-size:11.5px;padding:5px 11px;cursor:pointer;font-family:inherit}
+.ffdet{width:100%}.ffdet>summary{cursor:pointer;color:var(--gris);font-size:12px;margin:2px 0 6px}
 .gm-grid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
 .mini.gm-hit{border-color:var(--vert);box-shadow:0 0 10px 2px rgba(74,222,128,.5)}
 .gm-degs{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 10px}
@@ -448,7 +453,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.68 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.69 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1290,19 +1295,63 @@ function stackFrom(rootPc,ivs,start){
   return out;
 }
 
+/* ☑ v9.69 — filtres à cocher : dès qu'une vue génère plus de 3 cartes de familles différentes, on coche celles à voir.
+   On mémorise ce qui est DÉCOCHÉ (une famille nouvelle apparaît d'office). Rien n'est bloqué : décocher masque, ne verrouille pas. */
+const FF_KEY='garden_ff_v1';
+let FFS=(function(){try{const o=JSON.parse(localStorage.getItem(FF_KEY));if(o&&typeof o==='object')return o;}catch(e){}return {};})();
+function ffSave(){try{localStorage.setItem(FF_KEY,JSON.stringify(FFS));}catch(e){}}
+function ffOn(key,v){return !(FFS[key]&&FFS[key].indexOf(String(v))>=0);}
+const FF_RR={inv:function(){if(cur)render();},voi:function(){if(cur)render();},fam7:function(){if(cur)render();},
+  gam:function(){sclAllRender();},lhc:function(){gosRender();},gten:function(){gosRender();},
+  drf:function(){drRender();},vb:function(){drRender();},rps:function(){repertRender();}};
+function ffBar(key,vals,lb){ /* vals = [[valeur, étiquette, nombre?]] */
+  if(!vals||vals.length<2)return '';
+  const allOn=vals.every(function(x){return ffOn(key,x[0]);});
+  return '<div class="ffbar" style="grid-column:1/-1"><span class="og-lb" style="align-self:center">'+(lb||'☑ Afficher')+'</span>'
+    +vals.map(function(x){const on=ffOn(key,x[0]);return '<label class="ffc'+(on?' on':'')+'"><input type="checkbox" data-ff="'+key+'" value="'+String(x[0]).replace(/"/g,'&quot;')+'"'+(on?' checked':'')+'>'+x[1]+(x[2]!=null?' <small>'+x[2]+'</small>':'')+'</label>';}).join('')
+    +'<button class="ffall" data-ffall="'+key+'" data-ffm="'+(allOn?'none':'all')+'">'+(allOn?'Tout décocher':'Tout cocher')+'</button></div>';
+}
+/* items = [{v, lb, html}] → barre (si > 3 cartes et ≥ 2 familles) + les cartes cochées */
+function ffWrap(key,items,lb){
+  const vals=[],cnt={};
+  items.forEach(function(x){const v=String(x.v);if(cnt[v]==null){cnt[v]=0;vals.push([v,x.lb]);}cnt[v]++;});
+  if(items.length<=3||vals.length<2)return items.map(function(x){return x.html;}).join('');
+  const sh=items.filter(function(x){return ffOn(key,x.v);});
+  return ffBar(key,vals.map(function(x){return [x[0],x[1],cnt[x[0]]];}),lb)
+    +(sh.length?sh.map(function(x){return x.html;}).join(''):'<div class="empty" style="grid-column:1/-1">Tout est décoché — coche au moins une famille.</div>');
+}
+function ffRR(k){
+  const op=Array.prototype.some.call(document.querySelectorAll('details[data-ffd="'+k+'"]'),function(d){return d.open;});
+  const f=FF_RR[k];if(f)f();
+  if(op)document.querySelectorAll('details[data-ffd="'+k+'"]').forEach(function(d){d.open=true;});
+}
+document.addEventListener('change',function(e){
+  const i=e.target&&e.target.closest?e.target.closest('input[data-ff]'):null;if(!i)return;
+  const k=i.dataset.ff;let L=(FFS[k]||[]).filter(function(v){return v!==i.value;});
+  if(!i.checked)L.push(i.value);FFS[k]=L;ffSave();ffRR(k);
+});
+document.addEventListener('click',function(e){
+  const b=e.target&&e.target.closest?e.target.closest('[data-ffall]'):null;if(!b)return;
+  const k=b.dataset.ffall,bar=b.closest('.ffbar');
+  const vs=Array.prototype.map.call(bar.querySelectorAll('input[data-ff]'),function(i){return i.value;});
+  let L=(FFS[k]||[]).filter(function(v){return vs.indexOf(v)<0;});
+  if(b.dataset.ffm==='none')L=L.concat(vs);
+  FFS[k]=L;ffSave();ffRR(k);
+});
+
 /* ================= RENVERSEMENTS ================= */
 function buildInversions(c){
   const iv=SEVENTH[c.tpl.q]||c.tpl.iv;
   const names=['Position fondamentale','1er renversement','2e renversement','3e renversement'];
-  let html='';
+  const _it=[];
   for(let k=0;k<iv.length;k++){
     const order=iv.slice(k).concat(iv.slice(0,k));
     const notes=stackFrom(c.rootPc,order,60);
-    html+='<div class="mini" data-play="'+notes.join(',')+'">'
+    _it.push({v:String(k),lb:names[k],html:'<div class="mini" data-play="'+notes.join(',')+'">'
       +'<div class="mtitle"><span class="mname">'+names[k]+'</span><span class="mnotes">'+notes.map(noteName).join(' · ')+'</span></div>'
-      +miniKb(notes.map(function(m){return E(m,c.rootPc);}),c.rootPc)+'</div>';
+      +miniKb(notes.map(function(m){return E(m,c.rootPc);}),c.rootPc)+'</div>'});
   }
-  return html;
+  return ffWrap('inv',_it);
 }
 
 /* ================= VOICINGS MG/MD ================= */
@@ -1391,8 +1440,8 @@ function buildVoicings(c){
   }
   A('Gospel — MG octave · MD plaqué','Gospel',[bass,bass+12],stackFrom(r,iv,60));
 
-  let html='';
-  V.forEach(function(v){
+  const _it=[];
+  V.forEach(function(v){let html='';
     const all=v.mg.concat(v.md);
     const entries=v.mg.map(function(m){return E(m,r,'MG');}).concat(v.md.map(function(m){return E(m,r,'MD');}));
     html+='<div class="mini" data-play="'+all.join(',')+'">'
@@ -1400,22 +1449,23 @@ function buildVoicings(c){
       +miniKb(entries,r,226) /* v9.58 : tout le voicing tient dans la carte */
       +'<div class="mnotes" style="margin-top:6px">MG: '+(v.mg.map(noteName).join(' ')||'—')+(v.mg.length?' <b style="color:var(--or)" title="doigté suggéré">('+fingering(v.mg,'MG')+')</b>':'')+' · MD: '+(v.md.map(noteName).join(' ')||'—')+(v.md.length?' <b style="color:var(--or)" title="doigté suggéré">('+fingering(v.md,'MD')+')</b>':'')+'</div>'
       +'</div>';
+    _it.push({v:v.tag,lb:v.tag,html:html});
   });
-  return html;
+  return ffWrap('voi',_it);
 }
 
 /* ================= FAMILLES DE 7e ================= */
 function buildFamilies(c){
-  const r=c.rootPc;let html='';
+  const r=c.rootPc;const _it=[];
   FAM7.forEach(function(f){
     const notes=stackFrom(r,SEVENTH[f.q],60);
     const on=(f.q===c.tpl.q);
-    html+='<div class="mini" data-play="'+notes.join(',')+'" style="'+(on?'border-color:var(--or)':'')+'">'
+    _it.push({v:f.q,lb:f.lbl,html:'<div class="mini" data-play="'+notes.join(',')+'" style="'+(on?'border-color:var(--or)':'')+'">'
       +'<div class="mtitle"><span class="mname">'+nn(r)+SYMQ[f.q]+' — '+f.lbl+(on?' ✓':'')+'</span>'
       +'<span class="mnotes">'+notes.map(noteName).join(' · ')+'</span></div>'
-      +miniKb(notes.map(function(m){return E(m,r);}),r)+'</div>';
+      +miniKb(notes.map(function(m){return E(m,r);}),r)+'</div>'});
   });
-  return html;
+  return ffWrap('fam7',_it);
 }
 
 /* ================= DEGRÉS & TONALITÉS ================= */
@@ -1730,7 +1780,7 @@ function sclAllRender(){
   const box=document.getElementById('sclAllBox');if(!box)return;
   const r=SCLV?SCLV.rootPc:(cur?cur.rootPc:KEY.pc);
   box.innerHTML='<div class="hint" style="margin-bottom:6px">Sur <b>'+nn(r)+'</b> (la fondamentale de l’accord joué). Chaque famille = une gamme mère et ses modes.</div>'
-    +GAM_FAM.map(function(F){return '<div class="scl-fam"><span class="og-lb">'+F.lb+'</span><div class="chips">'+F.sc.map(function(x){const on=SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===r;return '<button class="schip'+(on?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+r+'">'+x[1]+'</button>';}).join('')+'</div></div>';}).join('');
+    +ffWrap('gam',GAM_FAM.map(function(F){return {v:F.id,lb:F.lb,html:'<div class="scl-fam"><span class="og-lb">'+F.lb+'</span><div class="chips">'+F.sc.map(function(x){const on=SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===r;return '<button class="schip'+(on?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+r+'">'+x[1]+'</button>';}).join('')+'</div></div>'};}),'☑ Familles');
 }
 /* ═══ 🗺 v9.56 — Cartographie modale (Brian Callipari, Modes Illustrés p. 102), lue en C et transposée.
    Notes caractéristiques = ce qui diffère de l'ionien (modes majeurs) ou de l'éolien (modes mineurs).
@@ -2393,15 +2443,16 @@ function boydLibGo(id){
 }
 function repertRender(){
   const fbox=document.getElementById('rpFilters');if(!fbox)return;
-  let h='<div class="og"><div class="og-lb">Style</div><div class="og-row">'
-    +REPERT_STYLES.map(function(s){return '<button class="opill'+(RPX.style===s[0]?' on':'')+'" data-rp-style="'+s[0]+'">'+s[1]+'</button>';}).join('')
-    +'</div></div><div class="og"><div class="og-lb">Mood</div><div class="og-row">'
+  const _sv=REPERT_STYLES.filter(function(s){return s[0]!=='all';});
+  (RPU.user||[]).forEach(function(g){if(g.style&&!_sv.some(function(s){return s[0]===g.style;}))_sv.push([g.style,g.style==='import'?'👤 Mes grilles':g.style]);});
+  let h='<div class="og">'+ffBar('rps',_sv.map(function(s){const n=REPERT_LIB.concat(RPU.user||[]).filter(function(g){return g.style===s[0];}).length;return [s[0],s[1],n];}),'Style')
+    +'</div><div class="og"><div class="og-lb">Mood</div><div class="og-row">'
     +REPERT_MOODS.map(function(s){return '<button class="opill'+(RPX.mood===s[0]?' on':'')+'" data-rp-mood="'+s[0]+'">'+s[1]+'</button>';}).join('')
     +'</div></div>';
   fbox.innerHTML=h;
   const all=REPERT_LIB.concat(RPU.user||[]);
   const gs=all.filter(function(g){
-    if(RPX.style!=='all'&&g.style!==RPX.style)return false;
+    if(!ffOn('rps',g.style))return false;
     if(RPX.mood!=='all'&&(g.mood||[]).indexOf(RPX.mood)<0)return false;
     return true;
   });
@@ -3807,19 +3858,18 @@ function gosRender(){
     if(GOS.lx==null)GOS.lx='all';
     document.getElementById('gosDegs').innerHTML='<span class="og-lb" style="align-self:center">Mélodie</span>'
       +[0,1,2,3,4,5,6,7,8,9,10,11].map(function(m){return '<button class="opill'+(GOS.m===m?' on':'')+'" data-gos-m="'+m+'">'+NBf(k+m,k)+'</button>';}).join('')
-      +'<span class="og-lb" style="align-self:center;margin-left:8px">Famille</span>'
-      +[['all','toutes']].concat(Object.keys(LG_HCX).map(function(x){return [x,x+' '+LG_HCX[x]];})).map(function(x){return '<button class="opill'+(GOS.lx===x[0]?' on':'')+'" data-gos-lx="'+x[0]+'">'+x[1]+'</button>';}).join('');
-    const mp=(k+GOS.m)%12,L=LG_HC.filter(function(v){return GOS.lx==='all'||v[6].ex===GOS.lx;});
+      ;
+    const mp=(k+GOS.m)%12,L=LG_HC;
     document.getElementById('gosInfo').innerHTML='Ligon (p. 451) : toute note peut être la fondamentale, la 3ce, la 5te, la 7e, la 9e, la 11e ou la 13e d’un accord, avec ou sans altération. Ici <b style="color:var(--or)">'+NBf(mp,k)+'</b> au sommet de '+L.length+' voicings du livre (écrits pour C, transposés). '
       +'<button class="opill" data-gos-drill="lhc" style="margin-left:6px;border-color:var(--or);color:var(--or)">🏋️ Driller sur 12 notes</button>';
-    box.innerHTML=L.map(function(v){return gmCard(v,mp);}).join('');return;}
+    box.innerHTML=ffWrap('lhc',L.map(function(v){return {v:v[6].ex,lb:LG_HCX[v[6].ex]||v[6].ex,html:gmCard(v,mp)};}),'☑ Familles (Ligon)');return;}
   if(GOS.t==='bas'){
     document.getElementById('gosDegs').innerHTML='<span class="og-lb" style="align-self:center">Basse en '+KEY.n+'</span>'
       +MB_DEGS.map(function(d){const n=MB_V.filter(function(v){return v[1]===d;}).length;return '<button class="opill'+(GOS.b===d?' on':'')+'" data-gos-b="'+d+'">'+NBf(k+d,k)+' <small>'+GM_BUCK[d]+' · '+n+'</small></button>';}).join('');
     const L=MB_V.filter(function(v){return v[1]===GOS.b;}).slice().sort(function(a,b){return gmTen(a).sc-gmTen(b).sc||a[4]-b[4];});
     document.getElementById('gosInfo').innerHTML='Basse <b style="color:var(--or)">'+NBf(k+GOS.b,k)+'</b> ('+GM_BUCK[GOS.b]+' de '+KEY.n+') — '+L.length+' accords sur cette basse, du moins tendu au plus tendu (Moody vol. 4 : la basse est toujours la fondamentale). '
       +'<button class="opill" data-gos-drill="bas" style="margin-left:6px;border-color:var(--or);color:var(--or)">🏋️ Driller cette basse sur 12 tons</button>';
-    box.innerHTML=L.map(function(v){return gmCard(v,k);}).join('');return;}
+    box.innerHTML=ffWrap('gten',L.map(function(v){const t=gmTen(v);return {v:t.cls,lb:t.lb,html:gmCard(v,k)};}),'☑ Tension');return;}
   if(GOS.t==='cyc'){
     document.getElementById('gosDegs').innerHTML='<span class="og-lb" style="align-self:center">Mélodie en '+KEY.n+'</span>'
       +[0,1,2,3,4,5,6,7,8,9,10,11].map(function(m){return '<button class="opill'+(GOS.m===m?' on':'')+'" data-gos-m="'+m+'">'+NBf(k+m,k)+' <small>'+GM_DEGN[m]+'</small></button>';}).join('');
@@ -3837,7 +3887,7 @@ function gosRender(){
   const mp=(k+GOS.m)%12;
   document.getElementById('gosInfo').innerHTML='Mélodie <b style="color:var(--or)">'+NBf(mp,k)+'</b> ('+GM_DEGN[GOS.m]+' de '+KEY.n+') — '+L.length+' accords, classés par basse. '
     +'<button class="opill" data-gos-drill="1" style="margin-left:6px;border-color:var(--or);color:var(--or)">🏋️ Driller cette note sur 12 tons</button>';
-  box.innerHTML=L.map(function(v){
+  const _H=L.map(function(v){
     const ns=gmNotes(v,k),r=(k+v[1])%12;
     const pcs=v[5].map(function(x){return (r+x)%12;}),f=(r+7)%12;
     const hit=hs.length>=4&&hs[0]%12===r&&hp.every(function(p){return pcs.indexOf(p)>=0;})&&pcs.every(function(p){return p===f||hp.indexOf(p)>=0;});
@@ -3847,7 +3897,8 @@ function gosRender(){
       +'<div class="mtitle"><span class="mname">'+(hit?'✓ ':'')+gmName(v,k)+'</span><span class="mtag tag-g">'+v[3].replace(/^b/,'♭').replace(/^#/,'♯').replace('Maj','maj ')+' · n°'+v[4]+'</span></div>'
       +miniKb(ent,r,(box.clientWidth>700?Math.floor(box.clientWidth/2)-40:box.clientWidth-40)||300)
       +'<div class="mnotes" style="margin-top:4px">basse '+NBf(r,k)+' · MD '+deg.slice(1).join('-')+' · mélodie '+NBf(mp,k)+'</div></div>';
-  }).join('');
+  });
+  box.innerHTML=ffWrap('gten',L.map(function(v,i){const t=gmTen(v);return {v:t.cls,lb:t.lb,html:_H[i]};}),'☑ Tension');
 }
 /* ═══════════ 📘 BOYD — Jazz Chord Progressions + Intermediate Jazz Chord Voicing (v9.0) ═══════════
    Chaque accord est décrit par ses « emplacements » (Intermediate, p. 4-7) :
@@ -4908,7 +4959,7 @@ const VB_POOL=[
   {id:'waite',g:'livres',lb:'Waite, formules à deux mains',fams:['maj7','7','m7','m7b5'],cf:function(q){return ['r1357','r3579','r5_9357','r57_935'].filter(function(f){return WAITE_VF[f].q.indexOf(q)>=0;}).map(function(f){return {ex:'wvoi',voic:f,qual:q};});}},
   {id:'sowhat',g:'quartes',lb:'So What (quartes + 3ce M)',fams:['maj7','m7'],cf:function(q){return [{ex:'hso',hsoM:q==='m7'?'dor':'lyd'}];}}
 ];
-const VB_POOLS={base:'Les bases (serrée, shells, rootless, drops)',livres:'Les méthodes (Haerle, Boyd, Mantooth, Waite)',quartes:'En quartes (Miracle, So What)',all:'🌀 Tout le réservoir'};
+const VB_POOLS={base:'Les bases (serrée, shells, rootless, drops)',livres:'Les méthodes (Haerle, Boyd, Mantooth, Waite)',quartes:'En quartes (Miracle, So What)',all:'🌀 Tout le réservoir',carte:'☑ À la carte (coche tes voicings)'};
 const _vbCache={};
 /* les steps d'une entrée du réservoir, pour une qualité et une fondamentale */
 function vbSteps(E,q,pc){
@@ -4924,7 +4975,9 @@ function vbSteps(E,q,pc){
   out.forEach(function(s){s.vb=E.lb;});
   _vbCache[key]=out;return out;
 }
-function vbEntries(pool,q){return VB_POOL.filter(function(E){return (pool==='all'||E.g===pool)&&E.fams.indexOf(q)>=0;});}
+function vbEntries(pool,q){
+  if(pool==='carte'){const L=VB_POOL.filter(function(E){return ffOn('vb',E.id)&&E.fams.indexOf(q)>=0;});if(L.length)return L;pool='all';} /* rien de coché → tout */
+  return VB_POOL.filter(function(E){return (pool==='all'||E.g===pool)&&E.fams.indexOf(q)>=0;});}
 /* ═══════════ 📘 BOYD, Intermediate ch. 6-9 (v9.19) ═══════════
    ch. 6 SUPERPOSITION : triade majeure MD sur la dominante (MG P.1 = 3-7, P.2 = 7-3 ; accord de 11 :
          MG 1-5) — 13♯11 (II), 7♯9 (♭III), 7♭9♭5 (♭V), 7♯5♯9 (♭VI), 13♭9 (VI), 11 (♭VII) ; et le °7 bâti
@@ -5984,9 +6037,12 @@ function drRender(){
   const bar=document.getElementById('drFamBar');
   if(!bar)return;
   const fam=drFamOf(DRV.ex);
-  bar.innerHTML=DR_FAM.map(function(f){
+  const _fv=DR_FAM.filter(function(f){return f.id===fam.id||ffOn('drf',f.id);});
+  bar.innerHTML=_fv.map(function(f){
     return '<button class="dfam'+(f.id===fam.id?' on':'')+'" data-drfam="'+f.id+'">'+f.lb+'</button>';
-  }).join('');
+  }).join('')
+    +'<details class="ffdet" data-ffd="drf"><summary>☑ Familles affichées : '+_fv.length+'/'+DR_FAM.length+' (la recherche trouve toujours tout)</summary>'
+    +ffBar('drf',DR_FAM.map(function(f){return [f.id,f.lb];}),'')+'</details>';
   document.getElementById('drExRow').innerHTML=fam.ex.map(function(x){
     const e=DR_EX[x];
     return '<button class="expill'+(x===DRV.ex?' on':'')+'" data-drex="'+x+'">'
@@ -6018,7 +6074,8 @@ function drRender(){
       if(oid==='passBeat'&&DRV.voic!=='tech')return ''; /* C2b : l'entrée rythmique cible le mode Règles */
     }
     return _ogHTML('data-dropt',oid,o.lb,drChoices(oid),o.multi?DRV.sclTypes:DRV[o.key],o.multi);
-  }).join('');
+  }).join('')
+    +(DRV.ex==='vbank'&&DRV.vbP==='carte'&&DRV.vbM!=='fix'?ffBar('vb',VB_POOL.map(function(E){return [E.id,E.lb];}),'☑ Voicings tirés'):'');
   let c=_ogHTML('data-drcom','scope','Portée',
     [['12','🌍 12 tonalités'],['fix','📌 Tonalité fixe · '+KEY.n]],DRV.scope);
   if(DRV.scope==='fix')c+=_ogHTML('data-drcom','tours','Tours',
@@ -8609,7 +8666,7 @@ function drBuildSteps(){
     if(GMX==='lhc')roots.forEach(function(r){_tr=r;
       ms.forEach(function(m){const mp=(r+m)%12;
         const A=LG_HC.map(function(v){return [v[0],(v[1]+m)%12,v[2],v[3],v[4],v[5],v[6]];});
-        const D=A[(m*7+r)%A.length];
+        const Af=A.filter(function(v){return ffOn('lhc',v[6].ex);}),Ad=Af.length?Af:A,D=Ad[(m*7+r)%Ad.length];
         gstep(r,D,'h@'+m,'Mélodie '+NBf(mp,r)+' — un des 55 accords de Ligon',
           'Pose un voicing qui met '+NBf(mp,r)+' AU SOMMET : maj7, m9, dominantes, 9♯11, maj7♯5, ø7♯2, 7sus, slash, polyaccords (Jazz Theory Resources p. 452-454). · Démo : '+gmName(D,r)+' ('+D[6].role+')',
           A,mp,keyName(r)+' · Ligon harmonise '+GM_DEGN[m]);});
@@ -8622,7 +8679,8 @@ function drBuildSteps(){
               (last?'Dernier accord : le plus consonant / le plus ouvert — on peut le tenir (Moody vol. 3). ':'Même mélodie au sommet, la basse change. ')+gmTen(v).lb+' · basse '+GM_BUCK[v[1]],
               [v],mp,keyName(r)+' · cycle '+GM_DEGN[m]+' '+(k+1));});}
         else if(GMX==='bas'){const L=MB_V.filter(function(v){return v[1]===m;});if(!L.length)return;
-          const A=L.slice().sort(function(a,b){return a[5][a[5].length-1]-b[5][b[5].length-1];})[0];
+          const Lf=L.filter(function(v){return ffOn('gten',gmTen(v).cls);});
+          const A=(Lf.length?Lf:L).slice().sort(function(a,b){return a[5][a[5].length-1]-b[5][b[5].length-1];})[0];
           gstep(r,A,'b@'+m,'En '+keyName(r)+' — basse : '+NBf(mp,r)+' ('+GM_BUCK[m]+')',
             'Pose un accord du catalogue sur cette basse (la note du haut est libre). '+L.length+' réponses (Moody vol. 4). · Démo : '+gmName(A,r),
             L,null,keyName(r)+' · basse '+GM_BUCK[m]);}
@@ -8639,7 +8697,8 @@ function drBuildSteps(){
       ms.forEach(function(m){
         const L=GM_V.filter(function(v){return v[0]===m;});if(!L.length)return;
         const mp=(r+m)%12;
-        const A=L.slice().sort(function(a,b){return a[5][a[5].length-1]-b[5][b[5].length-1];})[0]; /* démo : le plus compact */
+        const Lf=L.filter(function(v){return ffOn('gten',gmTen(v).cls);});
+        const A=(Lf.length?Lf:L).slice().sort(function(a,b){return a[5][a[5].length-1]-b[5][b[5].length-1];})[0]; /* démo : le plus compact */
         const gh=gmNotes(A,r),ar=(r+A[1])%12;
         const ton=stackFrom(r,[0,4,7],52),mo=((mp-60)%12+12)%12,mel=60+mo+(mo<5?12:0);
         steps.push({name:(hide?'🔊 En '+keyName(r)+' — quelle note de mélodie ?':'En '+keyName(r)+' — mélodie : '+NBf(mp,r)+' ('+GM_DEGN[m]+')'),
