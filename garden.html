@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.63 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.64 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -448,7 +448,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.63 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.64 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1309,9 +1309,9 @@ function fingering(notes,hand){
   const two=function(x){return x>=7?5:(x>=5?4:(x>=3?3:2));};
   let f;
   if(n===1)f=[hand==='MG'?5:1];
-  else if(n===2)f=hand==='MG'?[two(g[0]),1]:[1,two(g[0])];
+  else if(n===2)f=hand==='MG'?[5,g[0]>=7?1:(g[0]>=5?2:(g[0]>=3?3:4))]:[1,two(g[0])];
   else if(n===3){const span=g[0]+g[1];
-    if(hand==='MG')f=span<=4?[3,2,1]:[5,(g[1]<=2?2:(g[0]<=2?4:3)),1];
+    if(hand==='MG')f=span<=4?[5,4,3]:(span<=7?[5,(g[0]<=2?4:3),(g[1]<=2?2:1)]:[5,(g[1]<=2?2:(g[0]<=2?4:3)),1]);
     else f=span<=4?[1,2,3]:[1,(g[0]<=2?2:(g[1]<=2?4:3)),5];}
   else if(n===4)f=hand==='MG'?(g[0]<=2?[5,4,2,1]:(g[2]<=2?[5,3,2,1]:[5,3,2,1])):(g[2]<=2?[1,2,4,5]:(g[0]>=4&&g[1]<=2?[1,3,4,5]:[1,2,3,5]));
   else f=hand==='MG'?[5,4,3,2,1].slice(0,n):[1,2,3,4,5].slice(0,n);
@@ -3802,6 +3802,9 @@ function boydLayout(v,pos){
 function boydShape(v,pos){
   const L=boydLayout(v,pos),degs=L.lh.concat(L.rh),sp=[];
   degs.forEach(function(d){let x=d;while(sp.length&&x<=sp[sp.length-1])x+=12;sp.push(x);});
+  /* v9.64 — Basic P.1 : sans ça la MD (3-5-7-9) se collait sur la fondamentale, dans la zone de la MG.
+     Chez Boyd la MD Basic = la MD Variation + la 7e : pouce sur la 3ce au-dessus de la 7e de la MG. */
+  if(v.type==='basic'&&pos==='P1'&&L.lh.length===1&&sp.length>1&&sp[1]<12)for(let i=1;i<sp.length;i++)sp[i]+=12;
   return {sp:sp,lh:L.lh.length,degs:degs,sym:L.sym};
 }
 function boydStack(v,pos){return boydShape(v,pos).sp;}
