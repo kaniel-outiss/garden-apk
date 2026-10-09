@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.61 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.62 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -448,7 +448,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.61 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.62 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -2204,6 +2204,34 @@ const REPERT_LIB=[
   {id:'gsp_pdim2',lb:GOSP_PROGS.pdim2.lb,style:'gospel',mood:['tendu'],st:GOSP_PROGS.pdim2.st},
   {id:'gsp_bvi',lb:GOSP_PROGS.bvi.lb,style:'gospel',mood:['sombre','planant'],st:GOSP_PROGS.bvi.st},
   {id:'gsp_mixo',lb:GOSP_PROGS.mixo.lb,style:'gospel',mood:['dansant'],st:GOSP_PROGS.mixo.st},
+  /* 📗 Ligon — Jazz Theory Resources, ch. 8 « Turnaround Progressions » (v9.62) */
+  {id:'ljt_1',lb:"Turnaround vers I · I–ii7–V7–I",style:'jazz',mood:['lumineux'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le I précédé de son ii et de son V : la basse descend par quintes.",st:[[0, "maj7", "I"], [2, "m7", "ii7"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_2',lb:"Turnaround vers I · I–vi7–ii7–V7",style:'jazz',mood:['lumineux'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"On remonte d’un cran : vi–ii–V–I, une chaîne de quintes descendantes plus longue.",st:[[0, "maj7", "I"], [9, "m7", "vi7"], [2, "m7", "ii7"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_3',lb:"Turnaround vers I · I–V7/ii–V7/V–V7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Les dominantes secondaires remplacent vi et ii : des voix chromatiques qui poussent vers l’avant.",st:[[0, "maj7", "I"], [9, "7", "V7/ii"], [2, "7", "V7/V"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_4',lb:"Turnaround vers I · I–♯i°7–ii7–V7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le vii°7/ii à la place du V7/ii : la basse monte chromatiquement, puis reprend les quintes.",st:[[0, "maj7", "I"], [1, "dim7", "vii°7/ii"], [2, "m7", "ii7"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_5',lb:"Turnaround vers I · I–♭III7–♭VI7–♭II7 (substituts tritoniques)",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Chaque dominante remplacée par son substitut tritonique : les fondamentales descendent encore par quintes.",st:[[0, "maj7", "I"], [3, "7", "TT/V7/ii"], [8, "7", "TT/V7/V"], [1, "7", "TT/V7"], [0, "maj7", "I"]]},
+  {id:'ljt_6',lb:"Turnaround vers I · iii7–♭III7–ii7–♭II7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le iii7 à la place du I, et les substituts tritoniques : une basse chromatique descendante.",st:[[4, "m7", "iii7"], [3, "7", "TT/V7/ii"], [2, "m7", "ii7"], [1, "7", "TT/V7"], [0, "maj7", "I"]]},
+  {id:'ljt_7',lb:"Turnaround vers I · III7–♭III7–II7–♭II7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Basse chromatique descendante tout en dominantes ; sur E7, la triade de C donne ♭13 et ♯9.",st:[[4, "7", "V7/vi"], [3, "7", "TT/V7/ii"], [2, "7", "V7/V"], [1, "7", "TT/V7"], [0, "maj7", "I"]]},
+  {id:'ljt_8',lb:"Turnaround vers I · ♭VII7–♭III7–♭VI7–♭II7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Tous substituts tritoniques, basse par quintes ; sur B♭7 la triade de C donne 9, ♯11 et 13.",st:[[10, "7", "TT/V7/vi"], [3, "7", "TT/V7/ii"], [8, "7", "TT/V7/V"], [1, "7", "TT/V7"], [0, "maj7", "I"]]},
+  {id:'ljt_9',lb:"Turnaround vers I · ♭VII7–VI7–♭VI7–V7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Substituts tritoniques et dominantes secondaires mêlés : basse chromatique.",st:[[10, "7", "TT/V7/vi"], [9, "7", "V7/ii"], [8, "7", "TT/V7/V"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_10',lb:"Turnaround vers I · I–♯ii°7–ii7–V7",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le vii°7/iii employé de façon trompeuse (on peut partir de Em7).",st:[[0, "maj7", "I"], [3, "dim7", "vii°7/iii"], [2, "m7", "ii7"], [7, "7", "V7"], [0, "maj7", "I"]]},
+  {id:'ljt_11',lb:"Turnaround vers I · I–♭VImaj7–iiø7–V7 (emprunt mineur)",style:'jazz',mood:['lumineux'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"vi–ii–V remplacés par les accords du mineur parallèle : le G7 prend ♭13 et ♭9.",st:[[0, "maj7", "I"], [8, "maj7", "♭VI"], [2, "m7b5", "iiø7"], [7, "7b9", "V7♭9"], [0, "maj7", "I"]]},
+  {id:'ljt_12',lb:"Turnaround vers I · I–vi7–IV–♭VII7 (backdoor)",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Rare, mais possible : la résolution « backdoor » par ♭VII7.",st:[[0, "maj7", "I"], [9, "m7", "vi7"], [5, "maj7", "IV"], [10, "7", "♭VII7"], [0, "maj7", "I"]]},
+  {id:'ljt_13',lb:"Turnaround vers ii · I–iiø7/ii–V7/ii → ii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Tout accord peut être précédé de son ii et de son V : on vise le ii.",st:[[0, "maj7", "I"], [4, "m7b5", "iiø7/ii"], [9, "7", "V7/ii"], [2, "min", "ii"]]},
+  {id:'ljt_14',lb:"Turnaround vers ii · I–IV–iiø7/ii–V7/ii → ii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"I → IV par quinte, puis le demi-ton IV → iiø7/ii ; le F est commun à C (IV) et à Dm (♭VI).",st:[[0, "maj7", "I"], [5, "maj7", "IV"], [4, "m7b5", "iiø7/ii"], [9, "7", "V7/ii"], [2, "min", "ii"]]},
+  {id:'ljt_15',lb:"Turnaround vers ii · I–V7/iii–iii7–V7/ii → ii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le iii7 diatonique retarde le moment où l’on vise le ii.",st:[[0, "maj7", "I"], [11, "7", "V7/iii"], [4, "m7", "iii7"], [9, "7", "V7/ii"], [2, "min", "ii"]]},
+  {id:'ljt_16',lb:"Turnaround vers ii · I–V7/iii–♭VII9–V7/ii → ii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Basse chromatique avec un substitut tritonique secondaire.",st:[[0, "maj7", "I"], [11, "7", "V7/iii"], [10, "9", "TT/V7/vi"], [9, "7", "V7/ii"], [2, "min", "ii"]]},
+  {id:'ljt_17',lb:"Turnaround vers ii · I–IV9–♭VII9–♭III9 → ii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Une chaîne de substituts tritoniques, basse par quintes, jusqu’au ii.",st:[[0, "maj7", "I"], [5, "9", "TT/V7/iii"], [10, "9", "TT/V7/vi"], [3, "9", "TT/V7/ii"], [2, "min", "ii"]]},
+  {id:'ljt_18',lb:"Turnaround vers vi · I–iiø7/vi–V7/vi → vi",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"L’approche la plus courante du vi : son iiø7 et son V7.",st:[[0, "maj7", "I"], [11, "m7b5", "iiø7/vi"], [4, "7", "V7/vi"], [9, "min", "vi"]]},
+  {id:'ljt_19',lb:"Turnaround vers vi · I–IV–iiø7/vi–V7/vi → vi",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"I → IV par quinte, puis IV → iiø7/vi (quinte diminuée, toujours forte).",st:[[0, "maj7", "I"], [5, "maj7", "IV"], [11, "m7b5", "iiø7/vi"], [4, "7", "V7/vi"], [9, "min", "vi"]]},
+  {id:'ljt_20',lb:"Turnaround vers vi · I–IV9–V7/vi → vi",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le IV devenu dominante = substitut tritonique du V7/iii (sixte augmentée).",st:[[0, "maj7", "I"], [5, "9", "TT/V7/iii"], [4, "7", "V7/vi"], [9, "min", "vi"]]},
+  {id:'ljt_21',lb:"Turnaround vers vi · I–IV9–♭VII9 → vi",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Avec le substitut du V7/vi : basse par quintes qui se résout un demi-ton plus bas.",st:[[0, "maj7", "I"], [5, "9", "TT/V7/iii"], [10, "9", "TT/V7/vi"], [9, "min", "vi"]]},
+  {id:'ljt_22',lb:"Turnaround vers IV · I–ii7/IV–V7/IV → IV",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"On change de tonalité en insérant le ii–V du IV.",st:[[0, "maj7", "I"], [7, "m7", "ii7/IV"], [0, "7", "V7/IV"], [5, "maj", "IV"]]},
+  {id:'ljt_23',lb:"Turnaround vers IV · I–vi7–(♭vi7)–ii7/IV–V7/IV → IV",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"On glisse chromatiquement vers le ii7/IV (le A♭m7 est un accord de passage).",st:[[0, "maj7", "I"], [9, "m7", "vi"], [8, "m7", "(♭vi7)"], [7, "m7", "ii7/IV"], [0, "7", "V7/IV"], [5, "maj", "IV"]]},
+  {id:'ljt_24',lb:"Turnaround vers IV · I–♭VI7–V7–♭V7 → IV",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Basse chromatique : substituts tritoniques et dominantes secondaires.",st:[[0, "maj7", "I"], [8, "7", "TT/V7/V"], [7, "7", "V7/IV"], [6, "7", "TT/V7/IV"], [5, "maj", "IV"]]},
+  {id:'ljt_25',lb:"Turnaround vers IV · I–♭II7–I7 → IV",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le substitut tritonique du V7/IV, puis le V7/IV.",st:[[0, "maj7", "I"], [1, "7", "TT/V7/IV"], [0, "7", "V7/IV"], [5, "maj", "IV"]]},
+  {id:'ljt_26',lb:"Turnaround vers iii · I–vi7–♯ivø7–V7/iii → iii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Fondamentales qui descendent par tierces : chaque accord garde trois notes du précédent.",st:[[0, "maj7", "I"], [9, "m7", "vi"], [6, "m7b5", "iiø7/iii"], [11, "7", "V7/iii"], [4, "min", "iii"]]},
+  {id:'ljt_27',lb:"Turnaround vers iii · I–I7–V7/iii → iii",style:'jazz',mood:['tendu'],src:'Ligon, Jazz Theory Resources, ch. 8',why:"Le I devient dominante : sixte augmentée (ou substitut du V7/vii) vers le V7/iii.",st:[[0, "maj7", "I"], [0, "7", "sixte aug."], [11, "7", "V7/iii"], [4, "min", "iii"]]},
   /* 🎷 jazz (seeds) */
   {id:'jz_v7ii',lb:JAZZP_PROGS.v7ii.lb,style:'jazz',mood:['lumineux'],st:JAZZP_PROGS.v7ii.st},
   {id:'jz_chain',lb:JAZZP_PROGS.chain.lb,style:'jazz',mood:['tendu'],st:JAZZP_PROGS.chain.st},
@@ -2315,6 +2343,7 @@ function repertRender(){
       +'<span class="hint" style="margin:0;white-space:nowrap">'+(g.mood||[]).join(' \u00b7 ')+'</span></div>'
       +'<div class="hint" style="margin:4px 0 2px">'+romans+'</div>'
       +'<div style="font-size:13px;color:var(--or);font-weight:700">'+resolved+'</div>'
+      +(g.why?'<div class="hint" style="margin:4px 0 0">'+g.why+(g.src?' <i>— '+g.src+'</i>':'')+'</div>':'')
       +'<div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">'
       +'<button class="opill" data-rp-play="'+g.id+'">\ud83c\udfa7</button>'
       +'<button class="opill" data-rp-cond="'+g.id+'">\u25b6</button>'
@@ -5278,7 +5307,7 @@ const DR_OPTS={
   b4NO:{lb:'Cellules chaînées',key:'b4N',ch:[['1','1'],['2','2'],['4','4']]},
   b4XfO:{lb:'Transformation',key:'b4Xf',ch:[['none','—'],['retro','Rétrograde'],['mirror','Miroir'],['mirretro','Miroir rétrograde']]},
   lgOO:{lb:'Outline',key:'lgO',ch:[['1','1 · la gamme qui descend'],['2','2 · l’arpège qui monte'],['3','3 · descend puis remonte'],['all','🌀 Les 3'],['1o','1 · déplacement d’octave'],['1v','1 · V en 3-5-7-9'],['2o','2 · déplacement d’octave'],['2v','2 · V en 3-5-7-9'],['3d','3 · descend jusqu’à la 3ce du I'],['3o','3 · changement de direction'],['2r','2 · arpège qui descend (ii–V)'],['3r','3 · arpège qui monte (ii–V)'],['var','🌀 Toutes les variantes'],['3.1','3.1 · Gamme qui remplit la mesure'],['3.2','3.2 · Notes d’arpège'],['3.3','3.3 · Broderies supérieures en séquence'],['3.4','3.4 · Notes d’arpège au-dessus, en séquence (« baroque »)'],['3.5','3.5 · Encerclement et notes d’arpège'],['3.6','3.6 · Broderies sup. et inf. — cibles du G7 et du C anticipées'],['3.7','3.7 · Saut de la tierce à la ♭9 dans la 2e mesure'],['3.8','3.8 · Outline simple avec notes de levée'],['3.9','3.9 · Arpège en déplacement d’octave, approches chromatiques, arpège déplacé sur G7'],['3.10','3.10 · Encerclement, broderie sup., dernière cible anticipée'],['3.11','3.11 · Encerclement, broderie sup., approche chromatique de la dernière cible'],['dev','🎨 Les 11 procédés (ex. 3.1–3.11)'],['tout','🌀 Tout Ligon']]},
-  lgMO:{lb:'Mode',key:'lgM',ch:[['maj','ii–V–I majeur'],['min','iiø–V7–i mineur'],['both','Les deux']]},
+  lgMO:{lb:'Mode',key:'lgM',ch:[['maj','ii–V–I majeur'],['min','iiø–V7–i mineur'],['both','Les deux'],['blues','🎷 Sur un blues (ch. 9)']]},
   dqual:{lb:'Gamme harmonisée',key:'dqual',ch:Object.keys(GDESC_DIAT).map(function(k){return [k,GDESC_DIAT[k].lb];})},
   dsch:{lb:'Façon de jouer',key:'voic',ch:[['plaq','Plaqué (fondamentale)'],['invvl','Renversements mélangés'],['arpup','Arpège ↑'],['arpdn','Arpège ↓'],['arpalt','Arpège ↕ alterné']]},
   mch:{lb:'Chemin',key:'voic',ch:[['v7','Dominante secondaire'],['iiv','ii–V–I préparé'],['chrom','Basse chromatique'],['dim','Pivot diminué'],['all','🌀 Les 4']]},
@@ -5630,7 +5659,7 @@ let DRV=(function(){
   if(['all5','all7','maj7','7','m7','m7b5','dim7','6','m6'].indexOf(d.vbQ)<0)d.vbQ='all5';if(['1','2','3'].indexOf(String(d.vbN))<0)d.vbN='1';
   if(!(d.gmM==='dia'||d.gmM==='all'||GM_DEGN[+d.gmM]!=null))d.gmM='dia';if(['lire','oreille'].indexOf(d.gmV)<0)d.gmV='lire';if(['modes','penta','arp','all'].indexOf(d.qaT)<0)d.qaT='modes';if(['lire','oreille'].indexOf(d.qaV)<0)d.qaV='lire';if(d.tnQ!=='all'&&!TN_Q[d.tnQ])d.tnQ='maj7';if(['ct','ten','all'].indexOf(d.tnT)<0)d.tnT='ct';if(!HM_MEL[d.hmM])d.hmM='clair';
   if(!SLON_N[d.slN])d.slN='2';if(!SLON_P[d.slP])d.slP='inter1';if(['1','2'].indexOf(String(d.slR))<0)d.slR='2';
-  if(['1','2','3','all','var','dev','tout'].indexOf(String(d.lgO))<0&&!LIGON_OUT.some(function(o){return String(o.n)===String(d.lgO);}))d.lgO='1';if(['maj','min','both'].indexOf(d.lgM)<0)d.lgM='maj';
+  if(['1','2','3','all','var','dev','tout'].indexOf(String(d.lgO))<0&&!LIGON_OUT.some(function(o){return String(o.n)===String(d.lgO);}))d.lgO='1';if(['maj','min','both','blues'].indexOf(d.lgM)<0)d.lgM='maj';
   return d;
 })();
 function drvSave(){try{localStorage.setItem(DRV_KEY,JSON.stringify(DRV));}catch(e){}}
@@ -6288,7 +6317,7 @@ function pxRun(m,id,mode){
 }
 function hvRun(n,mode,ord){
   const sk=HSKM[n];if(!sk||!sk.cfg)return;
-  if(mode==='test'&&typeof n==='number'){const b=hvBlocker(n);if(b){toast('🎓 Haerle','Passe d’abord le Skill '+b+' — les skills se passent dans l’ordre');return;}}
+  if(mode==='test'&&typeof n==='number'){const b=hvBlocker(n);if(b)toast('🎓 Haerle','Conseil : le livre place le Skill '+b+' avant — à toi de voir');}
   if(DR.on)drillStop();
   drSelectEx(sk.cfg.ex);Object.assign(DRV,sk.cfg);if(typeof n==='number')HV.sel=n;drvSave();drRender();setPage('drill');
   let steps=hvSteps(sk,mode==='order'?ord:null);
@@ -6322,9 +6351,9 @@ function hvPass(n,bpm){
 }
 function hvChip(n,cur){
   const sk=HSKM[n];if(!sk)return '';
-  const st=!sk.cfg?'na':(HVS.p[n]?'ok':(hvBlocker(n)?'lk':'go'));
-  const ico={ok:'✅',go:'▶',lk:'🔒',na:'—'}[st];
-  return '<button type="button" class="hv-c '+st+(cur===n?' on':'')+'" data-hv-sel="'+n+'" title="'+sk.lb+(sk.cfg?'':' — pas encore dans Garden')+'">'+ico+' '+n+'</button>';
+  const bl=sk.cfg&&!HVS.p[n]?hvBlocker(n):null;const st=!sk.cfg?'na':(HVS.p[n]?'ok':'go');
+  const ico={ok:'✅',go:'▶',na:'—'}[st];
+  return '<button type="button" class="hv-c '+st+(cur===n?' on':'')+'" data-hv-sel="'+n+'" title="'+sk.lb+(sk.cfg?'':' — pas encore dans Garden')+(bl?' · conseillé après le Skill '+bl:'')+'">'+ico+' '+n+'</button>';
 }
 function hvMethodHTML(n){
   const sk=HSKM[n];if(!sk)return '';
@@ -6341,8 +6370,7 @@ function hvMethodHTML(n){
     +((sk.sec==='shell'||sk.sec==='block')?'<span class="hv-n">4</span>'+btn('lift','✋ Lever la main ×3'):'')
     +(sk.key==null?'<span class="hv-n">'+((sk.sec==='shell'||sk.sec==='block')?5:4)+'</span>'+btn('order','½ ton','chrom')+btn('order','Ton','w2')+btn('order','3ce m','m3')+btn('order','3ce M','M3'):'')
     +'</div>'
-    +'<div class="res-f">'+(b?'<span class="hint" style="margin:0">🔒 Examen après le Skill '+b+' (les skills se passent dans l’ordre)</span>'
-      :'<button type="button" class="btn gold" data-hv-run="'+n+'|test">🎓 Passer le skill · ♩ '+sk.tempo+'</button><span class="hint" style="margin:0">sans aide, la grille avance seule : une fausse note ou un accord en retard = pas encore</span>')+'</div></div>';
+    +'<div class="res-f">'+'<button type="button" class="btn gold" data-hv-run="'+n+'|test">🎓 Passer le skill · ♩ '+sk.tempo+'</button><span class="hint" style="margin:0">sans aide, la grille avance seule : une fausse note ou un accord en retard = pas encore'+(b?' · 💡 le livre conseille le Skill '+b+' avant':'')+'</span>'+'</div></div>';
 }
 function hvRenderFold(){
   const btn=document.getElementById('btnHv'),box=document.getElementById('hvFold');if(!btn||!box)return;
@@ -7830,7 +7858,23 @@ function drBuildSteps(){
     const BAS=function(o){return typeof o.n==='number';};
     const outs=DRV.lgO==='tout'?LIGON_OUT:(DRV.lgO==='all'?LIGON_OUT.filter(BAS):(DRV.lgO==='var'?LIGON_OUT.filter(function(o){return !BAS(o)&&!/^3\./.test(String(o.n));}):(DRV.lgO==='dev'?LIGON_OUT.filter(function(o){return /^3\./.test(String(o.n));}):LIGON_OUT.filter(function(o){return String(o.n)===String(DRV.lgO);}))));
     const modes=DRV.lgM==='both'?['maj','min']:[DRV.lgM==='min'?'min':'maj'];
-    roots.forEach(function(r){
+    if(DRV.lgM==='blues'){
+      /* Ligon, ch. 9 : sur un blues, chaque ii–V reçoit l'outline — mes. 4 (ii–V vers le IV), mes. 8 (iiø–V vers le ii),
+         mes. 9-10 et 12 (ii–V vers le I). Les outlines sont jouées dans la tonalité de leur cible. */
+      const SPOTS=[['4','IV',5,'maj'],['8','ii',2,'min'],['9-10','I',0,'maj'],['12','I',0,'maj']];
+      roots.forEach(function(r){_tr=r;
+        (outs.length?outs:[LIGON_OUT[0]]).forEach(function(o){SPOTS.forEach(function(sp){
+          const md=sp[3],L=o[md];if(!L)return;const K=(r+sp[2])%12;
+          const b=60+((K-60)%12+12)%12-((K%12)>=6?12:0);
+          const notes=L.map(function(x){return b+x[0];});
+          const ii=nnK((K+2)%12,K)+(md==='min'?'ø7':'m7'),V=nnK((K+7)%12,K)+'7',T=sp[1]==='IV'?nnK(K,r)+'7':(nnK(K,K)+(md==='min'?'m':''));
+          steps.push({name:'Blues en '+nnK(r,r)+' · mes. '+sp[0]+' : '+ii+' – '+V+' → '+T+' ('+sp[1]+')',sub:o.t.split(' — ')[0]+' · l’outline dans la tonalité de '+T+' · legato',
+            rootPc:K,seq:notes.map(function(m){return m%12;}),seqNotes:notes,forceBass:null,
+            glbSeq:L.map(function(x){return {stable:'●',tension:'7',color:'9',passage:'·',resolution:'✓'}[x[2]];}),
+            id:'ligon|'+o.n+'|bl'+sp[0]+'|'+r,grp:r,lb:'Blues '+nnK(r,r)+' mes. '+sp[0]+' · Ligon '+o.n,isSCL:true});
+        });});
+      });
+    }else roots.forEach(function(r){
       (outs.length?outs:[LIGON_OUT[0]]).forEach(function(o){modes.forEach(function(md){
         const L=o[md];if(!L)return; /* procédés 3.x en mineur : transposés par Garden selon la règle du livre (mineur harmonique) */
         const b=60+((r-60)%12+12)%12-((r%12)>=6?12:0);
@@ -9657,7 +9701,8 @@ const PARC={
     {id:'l4',lb:'Les 3 outlines en mineur',les:'t_ligon',cfg:{ex:'ligon',lgO:'all',lgM:'min'}},
     {id:'l5',lb:'Variantes (déplacement d’octave, V en 3-5-7-9…)',les:'t_ligon',cfg:{ex:'ligon',lgO:'var',lgM:'maj'}},
     {id:'l6',lb:'Les 11 procédés (ex. 3.1–3.11)',les:'t_ligon',cfg:{ex:'ligon',lgO:'dev',lgM:'maj'}},
-    {id:'l7',lb:'Les 11 procédés en mineur',les:'t_ligon',cfg:{ex:'ligon',lgO:'dev',lgM:'min'}}]},
+    {id:'l7',lb:'Les 11 procédés en mineur',les:'t_ligon',cfg:{ex:'ligon',lgO:'dev',lgM:'min'}},
+    {id:'l8',lb:'Les outlines sur un blues (ch. 9)',les:'t_ligon',cfg:{ex:'ligon',lgO:'all',lgM:'blues'}}]},
   /* v9.61 — Callipari : les 14 modes de la cartographie modale, en gammes (Modes Illustrés p. 102) */
   call:{lb:'🗺 Callipari',st:[
     {id:'c1',lb:'Lydien (♯4)',les:'c_modes',cfg:{ex:'gam',gamF:'maj',gamS:'lyd',gamH:'MD'}},
@@ -10843,6 +10888,10 @@ function routGate(m,ids){const P=PARC[m];if(!P)return true;return ids.every(func
 function routPhase(){for(let i=0;i<ROUT_PROG.length;i++)if(!routGate(ROUT_PROG[i][0],ROUT_PROG[i][1]))return i;return ROUT_PROG.length;}
 function routLast(m){let last=0;PARC[m].st.forEach(function(st){parcStat(st);(_parcCache[st.id]||[]).forEach(function(id){const it=GS.items[id];if(it&&it.last>last)last=it.last;});});return last;}
 function routParc(){
+  if(PARC[ROUTS.ord]){const m=ROUTS.ord,P=PARC[m];let prev=true,pick=null;
+    P.st.forEach(function(st){if(pick)return;const r=parcStat(st);if(prev&&!r.done)pick={st:st,r:r};prev=r.done;});
+    if(!pick){const st=P.st[P.st.length-1];pick={st:st,r:parcStat(st)};}
+    return {m:m,P:P,st:pick.st,r:pick.r};}
   if(ROUTS.ord!=='last'){
     const ph=routPhase();
     /* phase en cours = méthode à ouvrir ; tout acquis = rotation entre les 4, la moins travaillée récemment d'abord */
@@ -10892,6 +10941,11 @@ function routPlan(){
     return {k:'exam',ico:'🎯',lb:'Examen',n:0,why:'tout est validé'};
   })();
   plan.push(exam);
+  /* 5 · ⛪ gospel : une fois par semaine (rien en 7 jours → le bloc apparaît) */
+  let gl=0;Object.keys(GS.items).forEach(function(id){if(id.indexOf('gmel|')===0&&GS.items[id].last>gl)gl=GS.items[id].last;});
+  if(now-gl>7*864e5){let G=[];try{G=_withCfg({ex:'gmel',gmM:'dia',gmV:'lire'},{scope:'12',ord:'q4'},drBuildSteps);}catch(e){G=[];}
+    const kk=[KEY.pc,(KEY.pc+5)%12,(KEY.pc+7)%12];G=G.filter(function(x){return kk.indexOf(x.grp)>=0;});
+    plan.push(G.length?{k:'gos',ico:'⛪',lb:'Gospel de la semaine · mélodie au sommet (Moody) · '+kk.map(function(p){return keyName(p);}).join(', '),n:G.length,keys:kk}:{k:'gos',ico:'⛪',lb:'Gospel',n:0,why:'—'});}
   return plan;
 }
 function routMin(n){return Math.max(1,Math.round(n*7/60));}
@@ -10906,6 +10960,9 @@ function routRun(b){
     if(DR.on)drillStop();parcLoad(b.st);
     const L=_withCfg(b.st.cfg,{scope:'12',ord:'q4'},drBuildSteps).filter(function(x){return b.keys.indexOf(x.grp)>=0;});
     ROUT.pend=L;drillStart();
+  }else if(b.k==='gos'){
+    if(DR.on)drillStop();drSelectEx('gmel');Object.assign(DRV,{gmM:'dia',gmV:'lire',scope:'12'});drvSave();drRender();setPage('drill');
+    ROUT.pend=_withCfg({ex:'gmel',gmM:'dia',gmV:'lire'},{scope:'12',ord:'q4'},drBuildSteps).filter(function(x){return b.keys.indexOf(x.grp)>=0;});drillStart();
   }else if(b.k==='exam'){
     if(b.px)pxRun(b.px[0],b.px[1],'test');else hvRun(b.hv,'test');
   }
@@ -10933,7 +10990,7 @@ function routRender(){
   const allDone=!left.length,st=routStreak();
   btn.textContent='🗓 Routine du jour'+(allDone?' ✅':(ROUT.on?' ▶':''));
   let h='<div class="gp-h" style="margin-top:0"><span>🗓 Routine du jour'+(allDone?' — terminée ✅':' — environ '+tot+' min')+'</span><span style="color:var(--gris);font-size:11px">🔥 '+st+' jour'+(st>1?'s':'')+'</span></div>';
-  if(ROUTS.ord!=='last'){const ph=routPhase();h+='<div class="hint" style="margin:4px 0 8px">📈 '+ROUT_PROG.map(function(x,i){return '<b style="color:'+(i<ph?'var(--vert)':(i===ph?'var(--or)':'var(--gris)'))+'">'+(i<ph?'✓ ':'')+PARC[x[0]].lb+'</b>';}).join(' → ')+(ph<ROUT_PROG.length?' · en cours : '+PARC[ROUT_PROG[ph][0]].lb+' — '+ROUT_PROG[ph][2]+' (80 % des questions vues, 85 % de justesse)':' · socle acquis : rotation entre les quatre')+'</div>';}
+  if(!PARC[ROUTS.ord]&&ROUTS.ord!=='last'){const ph=routPhase();h+='<div class="hint" style="margin:4px 0 8px">📈 Suggestion : '+ROUT_PROG.map(function(x,i){return '<b style="color:'+(i<ph?'var(--vert)':(i===ph?'var(--or)':'var(--gris)'))+'">'+(i<ph?'✓ ':'')+PARC[x[0]].lb+'</b>';}).join(' → ')+(ph<ROUT_PROG.length?' · conseillé maintenant : '+PARC[ROUT_PROG[ph][0]].lb+' — '+ROUT_PROG[ph][2]+' (on passe à la suite vers 80 % des questions vues et 85 % de justesse) · tout reste accessible, choisis un autre parcours quand tu veux':' · socle acquis : rotation entre les quatre')+'</div>';}
   h+=plan.map(function(b,i){
     const done=ROUTS.done[b.k],cur=ROUT.on&&ROUT.cur===b.k,empty=!b.n;
     const ico=done?'✅':(cur?'▶':(empty?'—':'·'));
@@ -10942,7 +10999,7 @@ function routRender(){
   h+='<div class="dr-actions" style="border-top:none;padding-top:6px">'
     +(ROUT.on?'<button class="btn" data-rout="stop">⏹ Arrêter la routine</button>'
       :(allDone?'<button class="btn ghost" data-rout="again">↻ Recomposer une séance</button>':'<button class="btn grn" data-rout="go">▶ '+(Object.keys(ROUTS.done).length?'Continuer':'Lancer')+' la routine</button>'))
-    +(ROUT.on?'':'<span class="hint" style="margin:0">Ordre :</span><button type="button" class="opill'+(ROUTS.ord!=='last'?' on':'')+'" data-rout-ord="prog">📈 Haerle → Boyd → Ligon → Callipari</button><button type="button" class="opill'+(ROUTS.ord==='last'?' on':'')+'" data-rout-ord="last">🔁 Dernier parcours travaillé</button>')
+    +(ROUT.on?'':'<span class="hint" style="margin:0">Parcours du jour :</span><button type="button" class="opill'+((ROUTS.ord||'prog')==='prog'?' on':'')+'" data-rout-ord="prog">📈 Suggéré (Haerle → Boyd → Ligon → Callipari)</button><button type="button" class="opill'+(ROUTS.ord==='last'?' on':'')+'" data-rout-ord="last">🔁 Dernier travaillé</button>'+Object.keys(PARC).map(function(m){return '<button type="button" class="opill'+(ROUTS.ord===m?' on':'')+'" data-rout-ord="'+m+'">'+PARC[m].lb+'</button>';}).join(''))
     +(ROUT.on?'':'<span class="hint" style="margin:0">Tonalités du parcours :</span>'+[3,5,7,12].map(function(n){return '<button type="button" class="opill'+((+ROUTS.nk||3)===n?' on':'')+'" data-rout-nk="'+n+'">'+n+'</button>';}).join(''))
     +'<span class="hint" style="margin:0">Les blocs s’enchaînent seuls. ⏹ Stop pendant un bloc = pause ; tu reprends où tu en étais.</span></div>';
   box.innerHTML=h;
