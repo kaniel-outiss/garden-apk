@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.60 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.61 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -448,7 +448,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.60 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.61 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -9353,6 +9353,13 @@ const LESSONS={
     'La PERMUTATION dit dans quel ordre on les prend (24 ordres).',
     'Les cellules s’enchaînent : la dernière note de l’une est la première de la suivante.',
     'Rétrograde et miroir retournent la ligne dans le temps ou dans l’espace.']},
+  c_modes:{t:'Callipari — la cartographie modale',src:'Brian Callipari, Modes Illustrés (cartographie modale p. 102) et Tensions Illustrées',pts:[
+    'Chaque mode a une ou plusieurs notes caractéristiques : ce qui le distingue de l’ionien (modes majeurs) ou de l’éolien (modes mineurs). Lydien : ♯4. Mixolydien : ♭7. Dorien : 6. Phrygien : ♭2.',
+    'Les accords principaux d’un mode sont ceux qui contiennent sa note caractéristique : en C lydien, D et Bm (avec F♯). Les jouer sur la tonique fait entendre le mode.',
+    'Ajouter la note caractéristique à l’accord de tonique donne la « tension du 1er degré » : Cadd♯11 pour le lydien, C7 pour le mixolydien, Cm6 pour le dorien.',
+    'Deux modes voisins ne diffèrent que d’une note : on passe de l’un à l’autre en changeant une seule note (ionien → lydien : F → F♯).',
+    'Le polyaccord C/D est lydien : la triade d’une note caractéristique posée sur la tonique (Tensions Illustrées, ch. 6).',
+    'Dans Garden : page Gammes, tape un mode — la cartographie s’affiche (gamme mère, notes et accords caractéristiques, voisins).']},
   t_ligon:{t:'Ligon — les outlines ii–V–I',src:'Bert Ligon, Connecting Chords with Linear Harmony (outlines de GospelKeys)',pts:[
     'Une outline est la ligne qui relie les accords d’un ii–V–I.',
     'La 3ce (note stable) sur le temps fort ; la 7e (note tendue) juste avant de changer d’accord.',
@@ -9641,7 +9648,30 @@ const PARC={
     {id:'f18',lb:'Structures constantes',les:'f_mod',cfg:{ex:'fcs',fcsP:'all'}},
     {id:'f19',lb:'Approche diatonique (3 en tête)',les:'f_dia',cfg:{ex:'fdia',fdL:'3',fdB:'off'}},
     {id:'f20',lb:'Dominantes et II–V en chaîne',les:'f_dia',cfg:{ex:'fext',fxM:'ii5'}},
-    {id:'f21',lb:'Réharmoniser par la basse',les:'f_dia',cfg:{ex:'fbas',fbP:'all'}}]}
+    {id:'f21',lb:'Réharmoniser par la basse',les:'f_dia',cfg:{ex:'fbas',fbP:'all'}}]},
+  /* v9.61 — Ligon : les outlines nues dans toutes les tonalités, puis variantes et procédés (méthode du livre, ch. 9) */
+  lig:{lb:'🎯 Ligon',st:[
+    {id:'l1',lb:'Outline 1 · la gamme qui descend',les:'t_ligon',cfg:{ex:'ligon',lgO:'1',lgM:'maj'}},
+    {id:'l2',lb:'Outline 2 · l’arpège qui monte',les:'t_ligon',cfg:{ex:'ligon',lgO:'2',lgM:'maj'}},
+    {id:'l3',lb:'Outline 3 · descend puis remonte',les:'t_ligon',cfg:{ex:'ligon',lgO:'3',lgM:'maj'}},
+    {id:'l4',lb:'Les 3 outlines en mineur',les:'t_ligon',cfg:{ex:'ligon',lgO:'all',lgM:'min'}},
+    {id:'l5',lb:'Variantes (déplacement d’octave, V en 3-5-7-9…)',les:'t_ligon',cfg:{ex:'ligon',lgO:'var',lgM:'maj'}},
+    {id:'l6',lb:'Les 11 procédés (ex. 3.1–3.11)',les:'t_ligon',cfg:{ex:'ligon',lgO:'dev',lgM:'maj'}},
+    {id:'l7',lb:'Les 11 procédés en mineur',les:'t_ligon',cfg:{ex:'ligon',lgO:'dev',lgM:'min'}}]},
+  /* v9.61 — Callipari : les 14 modes de la cartographie modale, en gammes (Modes Illustrés p. 102) */
+  call:{lb:'🗺 Callipari',st:[
+    {id:'c1',lb:'Lydien (♯4)',les:'c_modes',cfg:{ex:'gam',gamF:'maj',gamS:'lyd',gamH:'MD'}},
+    {id:'c2',lb:'Mixolydien (♭7)',les:'c_modes',cfg:{ex:'gam',gamF:'maj',gamS:'mix',gamH:'MD'}},
+    {id:'c3',lb:'Dorien (6)',les:'c_modes',cfg:{ex:'gam',gamF:'maj',gamS:'dor',gamH:'MD'}},
+    {id:'c4',lb:'Phrygien (♭2)',les:'c_modes',cfg:{ex:'gam',gamF:'maj',gamS:'phr',gamH:'MD'}},
+    {id:'c5',lb:'Mineure mélodique (6, 7)',les:'c_modes',cfg:{ex:'gam',gamF:'mel',gamS:'mel',gamH:'MD'}},
+    {id:'c6',lb:'Lydien ♭7 (♯4, ♭7)',les:'c_modes',cfg:{ex:'gam',gamF:'mel',gamS:'lydb7',gamH:'MD'}},
+    {id:'c7',lb:'Mixolydien ♭13 (♭6, ♭7)',les:'c_modes',cfg:{ex:'gam',gamF:'mel',gamS:'mixb6',gamH:'MD'}},
+    {id:'c8',lb:'Dorien ♭2 (♭2, 6)',les:'c_modes',cfg:{ex:'gam',gamF:'mel',gamS:'dorb2',gamH:'MD'}},
+    {id:'c9',lb:'Mineure harmonique (7)',les:'c_modes',cfg:{ex:'gam',gamF:'har',gamS:'har',gamH:'MD'}},
+    {id:'c10',lb:'Mixolydien ♭9 ♭13 (♭2, ♭6, ♭7)',les:'c_modes',cfg:{ex:'gam',gamF:'har',gamS:'phrdom',gamH:'MD'}},
+    {id:'c11',lb:'Dorien ♯4 (♯4, 6)',les:'c_modes',cfg:{ex:'gam',gamF:'har',gamS:'dors4',gamH:'MD'}},
+    {id:'c12',lb:'Lydien ♯2 (♯2, ♯4)',les:'c_modes',cfg:{ex:'gam',gamF:'har',gamS:'lyds2',gamH:'MD'}}]}
 };
 const PARC_GOAL={cover:0.8,acc:0.85};
 let PARCV={m:'boyd',sel:{}};
@@ -9671,7 +9701,7 @@ function parcMatch(){ /* l'étape dont la config est celle du drill courant */
   });});
   return hit;
 }
-const PARC_EX={dg6v:'dg',dgrow:'dg',tjmode:'haer',tj5:'haer',fdia:'felts',fext:'felts',fbas:'felts',dgop:'dg',dg4:'dg',dgust:'dg',fmod:'felts',fhyb:'felts',fcs:'felts',flc:'felts',fdim:'felts',ffam:'felts',fmi:'felts',ftur:'felts',boyd:'boyd',boydp:'boyd',bsup:'boyd',bdim:'boyd',bmin:'boyd',bstr:'boyd',bapp:'boyd',hdia:'haer',hsus:'haer',hblu:'haer',wvoi:'waite',wpoly:'waite',wscl:'waite',desc:'gospel',gosp:'gospel',mod:'gospel',gsub:'gospel',mgen:'mant',mwk:'mant',mmir:'mant',mfrac:'mant',mprog:'mant',mdim:'mant',hshell:'haer',hvl:'haer',hso:'haer',qacc:'mel',topn:'mel',gmel:'mel',harm:'mel',hmodal:'haer',hsoii:'haer',hpoly:'haer',hdom:'haer',hdim:'haer'};
+const PARC_EX={ligon:'lig',gam:'call',dg6v:'dg',dgrow:'dg',tjmode:'haer',tj5:'haer',fdia:'felts',fext:'felts',fbas:'felts',dgop:'dg',dg4:'dg',dgust:'dg',fmod:'felts',fhyb:'felts',fcs:'felts',flc:'felts',fdim:'felts',ffam:'felts',fmi:'felts',ftur:'felts',boyd:'boyd',boydp:'boyd',bsup:'boyd',bdim:'boyd',bmin:'boyd',bstr:'boyd',bapp:'boyd',hdia:'haer',hsus:'haer',hblu:'haer',wvoi:'waite',wpoly:'waite',wscl:'waite',desc:'gospel',gosp:'gospel',mod:'gospel',gsub:'gospel',mgen:'mant',mwk:'mant',mmir:'mant',mfrac:'mant',mprog:'mant',mdim:'mant',hshell:'haer',hvl:'haer',hso:'haer',qacc:'mel',topn:'mel',gmel:'mel',harm:'mel',hmodal:'haer',hsoii:'haer',hpoly:'haer',hdom:'haer',hdim:'haer'};
 function parcRender(){
   const box=document.getElementById('parcBox');if(!box)return;
   /* 🧹 v9.5 : on ne montre que ce qu'on travaille — le parcours Boyd n'apparaît que sur un
@@ -10805,7 +10835,23 @@ function routStreak(){
   return n;
 }
 /* le parcours en cours : celui qu'on a touché le plus récemment, et sa première étape ouverte non terminée */
+/* v9.61 — progression de la routine : chaque méthode s'ouvre quand le socle de la précédente est acquis.
+   Haerle (shells, 3-7, ii–V–I) → Boyd (Variations + ii–V–I du livre) → Ligon (les 3 outlines) → Callipari.
+   Les méthodes déjà ouvertes continuent par la révision SM-2, la réserve, et l'examen Haerle (bloc 4). */
+const ROUT_PROG=[['haer',['h1','h2','h3','h4','h5','h6','h7','h8'],'shells 3-7, 7-3, sus4 et ii–V–I'],['boyd',['b1','b2','b3'],'Variations 7e et 9e, ii–V–I du livre'],['lig',['l1','l2','l3'],'les 3 outlines en majeur'],['call',['c1','c2','c3','c4'],'lydien, mixolydien, dorien, phrygien']];
+function routGate(m,ids){const P=PARC[m];if(!P)return true;return ids.every(function(id){const st=P.st.filter(function(x){return x.id===id;})[0];return !st||parcStat(st).done;});}
+function routPhase(){for(let i=0;i<ROUT_PROG.length;i++)if(!routGate(ROUT_PROG[i][0],ROUT_PROG[i][1]))return i;return ROUT_PROG.length;}
+function routLast(m){let last=0;PARC[m].st.forEach(function(st){parcStat(st);(_parcCache[st.id]||[]).forEach(function(id){const it=GS.items[id];if(it&&it.last>last)last=it.last;});});return last;}
 function routParc(){
+  if(ROUTS.ord!=='last'){
+    const ph=routPhase();
+    /* phase en cours = méthode à ouvrir ; tout acquis = rotation entre les 4, la moins travaillée récemment d'abord */
+    const m=ph<ROUT_PROG.length?ROUT_PROG[ph][0]:ROUT_PROG.map(function(x){return x[0];}).sort(function(a,b){return routLast(a)-routLast(b);})[0];
+    const P=PARC[m];let prev=true,pick=null;
+    P.st.forEach(function(st){if(pick)return;const r=parcStat(st);if(prev&&!r.done)pick={st:st,r:r};prev=r.done;});
+    if(!pick){const st=P.st[P.st.length-1];pick={st:st,r:parcStat(st)};}
+    return {m:m,P:P,st:pick.st,r:pick.r};
+  }
   let best=null,bt=-1;
   Object.keys(PARC).forEach(function(m){
     let last=0;PARC[m].st.forEach(function(st){parcStat(st);(_parcCache[st.id]||[]).forEach(function(id){const it=GS.items[id];if(it&&it.last>last)last=it.last;});});
@@ -10887,6 +10933,7 @@ function routRender(){
   const allDone=!left.length,st=routStreak();
   btn.textContent='🗓 Routine du jour'+(allDone?' ✅':(ROUT.on?' ▶':''));
   let h='<div class="gp-h" style="margin-top:0"><span>🗓 Routine du jour'+(allDone?' — terminée ✅':' — environ '+tot+' min')+'</span><span style="color:var(--gris);font-size:11px">🔥 '+st+' jour'+(st>1?'s':'')+'</span></div>';
+  if(ROUTS.ord!=='last'){const ph=routPhase();h+='<div class="hint" style="margin:4px 0 8px">📈 '+ROUT_PROG.map(function(x,i){return '<b style="color:'+(i<ph?'var(--vert)':(i===ph?'var(--or)':'var(--gris)'))+'">'+(i<ph?'✓ ':'')+PARC[x[0]].lb+'</b>';}).join(' → ')+(ph<ROUT_PROG.length?' · en cours : '+PARC[ROUT_PROG[ph][0]].lb+' — '+ROUT_PROG[ph][2]+' (80 % des questions vues, 85 % de justesse)':' · socle acquis : rotation entre les quatre')+'</div>';}
   h+=plan.map(function(b,i){
     const done=ROUTS.done[b.k],cur=ROUT.on&&ROUT.cur===b.k,empty=!b.n;
     const ico=done?'✅':(cur?'▶':(empty?'—':'·'));
@@ -10895,6 +10942,7 @@ function routRender(){
   h+='<div class="dr-actions" style="border-top:none;padding-top:6px">'
     +(ROUT.on?'<button class="btn" data-rout="stop">⏹ Arrêter la routine</button>'
       :(allDone?'<button class="btn ghost" data-rout="again">↻ Recomposer une séance</button>':'<button class="btn grn" data-rout="go">▶ '+(Object.keys(ROUTS.done).length?'Continuer':'Lancer')+' la routine</button>'))
+    +(ROUT.on?'':'<span class="hint" style="margin:0">Ordre :</span><button type="button" class="opill'+(ROUTS.ord!=='last'?' on':'')+'" data-rout-ord="prog">📈 Haerle → Boyd → Ligon → Callipari</button><button type="button" class="opill'+(ROUTS.ord==='last'?' on':'')+'" data-rout-ord="last">🔁 Dernier parcours travaillé</button>')
     +(ROUT.on?'':'<span class="hint" style="margin:0">Tonalités du parcours :</span>'+[3,5,7,12].map(function(n){return '<button type="button" class="opill'+((+ROUTS.nk||3)===n?' on':'')+'" data-rout-nk="'+n+'">'+n+'</button>';}).join(''))
     +'<span class="hint" style="margin:0">Les blocs s’enchaînent seuls. ⏹ Stop pendant un bloc = pause ; tu reprends où tu en étais.</span></div>';
   box.innerHTML=h;
@@ -10914,6 +10962,8 @@ function routRender(){
 document.addEventListener('click',function(e){
   const b=e.target.closest('#btnRout');
   if(b){const f=document.getElementById('routFold');const on=!f.classList.contains('ux-open');f.classList.toggle('ux-open',on);b.classList.toggle('on',on);if(on)routRender();return;}
+  const rord=e.target.closest('[data-rout-ord]');
+  if(rord){ROUTS.ord=rord.dataset.routOrd;routSave();ROUT.plan=[];routRender();return;}
   const nk=e.target.closest('[data-rout-nk]');
   if(nk){ROUTS.nk=+nk.dataset.routNk;routSave();ROUT.plan=[];routRender();return;}
   const a=e.target.closest('[data-rout]');
@@ -11310,6 +11360,41 @@ document.addEventListener('click',function(e){
 })();
 
 /* ═══ 🧭 v9.21 — interface compacte : on RANGE l'existant (mêmes boutons, mêmes fonctions) ═══ */
+/* ═══ 💾 v9.61 — sauvegarde de la progression : toutes les clés garden_* du stockage local, en un texte JSON.
+   Dans l'APK, le téléchargement de fichier n'est pas garanti : le texte se copie (presse-papiers) et se colle où l'on veut. ═══ */
+function bkDump(){const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('garden')===0)d[k]=localStorage.getItem(k);}
+  return JSON.stringify({app:'Garden',version:(document.title.match(/v[0-9.]+/)||[''])[0],date:new Date().toISOString(),data:d});}
+function bkOpen(mode){
+  let ov=document.getElementById('bkOv');if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='bkOv';ov.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px';
+  const save=mode==='save',txt=save?bkDump():'';
+  const nk=save?Object.keys(JSON.parse(txt).data).length:0;
+  ov.innerHTML='<div class="card" style="max-width:640px;width:100%;margin:0">'
+    +'<h2>'+(save?'💾 Sauvegarder ma progression':'📂 Restaurer une sauvegarde')+'</h2>'
+    +'<div class="csub">'+(save?'Tout ce que Garden retient ('+nk+' blocs : SM-2, stats, skills Haerle, routine, grilles importées, réglages). Copie ce texte et garde-le où tu veux (notes, e-mail, WhatsApp). Un fichier .json est aussi proposé quand l’appareil le permet.'
+      :'Colle ici le texte d’une sauvegarde (ou choisis le fichier .json). ⚠ Ta progression actuelle sera remplacée.')+'</div>'
+    +'<textarea id="bkTxt" style="width:100%;height:180px;background:var(--bg3);color:var(--blanc);border:1px solid var(--gris2);border-radius:10px;padding:8px;font-size:11px;font-family:monospace" '+(save?'readonly':'')+'>'+(save?txt.replace(/</g,'&lt;'):'')+'</textarea>'
+    +'<div class="dr-actions" style="border-top:none">'
+    +(save?'<button class="btn grn" type="button" data-bk="copy">📋 Copier</button><button class="btn" type="button" data-bk="file">⬇ Fichier .json</button>'
+      :'<input type="file" id="bkFile" accept=".json,application/json,text/plain" style="max-width:220px"><button class="btn grn" type="button" data-bk="restore">✅ Restaurer</button>')
+    +'<button class="btn ghost" type="button" data-bk="close">Fermer</button></div></div>';
+  document.body.appendChild(ov);
+  ov.addEventListener('click',function(e){
+    const b=e.target.closest('[data-bk]');if(e.target===ov){ov.remove();return;}if(!b)return;
+    const a=b.dataset.bk,ta=document.getElementById('bkTxt');
+    if(a==='close'){ov.remove();return;}
+    if(a==='copy'){const t=ta.value;(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('💾 sauvegarde','Copiée — colle-la dans tes notes');},function(){ta.select();try{document.execCommand('copy');toast('💾 sauvegarde','Copiée');}catch(err){toast('💾 sauvegarde','Sélectionne le texte et copie-le');}});return;}
+    if(a==='file'){try{const bl=new Blob([ta.value],{type:'application/json'}),u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download='garden-sauvegarde-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(l);l.click();setTimeout(function(){URL.revokeObjectURL(u);l.remove();},1500);}catch(err){toast('💾 sauvegarde','Fichier impossible ici — utilise 📋 Copier');}return;}
+    if(a==='restore'){
+      let o=null;try{o=JSON.parse(ta.value.trim());}catch(err){}
+      if(!o||o.app!=='Garden'||!o.data){toast('📂 restauration','Texte non reconnu — colle une sauvegarde Garden complète');return;}
+      if(!confirm('Remplacer ta progression actuelle par la sauvegarde du '+String(o.date||'').slice(0,10)+' ?'))return;
+      Object.keys(localStorage).filter(function(k){return k.indexOf('garden')===0;}).forEach(function(k){localStorage.removeItem(k);});
+      Object.keys(o.data).forEach(function(k){if(k.indexOf('garden')===0)localStorage.setItem(k,o.data[k]);});
+      toast('📂 restauration','Sauvegarde restaurée — redémarrage');setTimeout(function(){location.reload();},900);}
+  });
+  const f=document.getElementById('bkFile');if(f)f.onchange=function(){const fl=f.files&&f.files[0];if(!fl)return;const r=new FileReader();r.onload=function(){document.getElementById('bkTxt').value=r.result;};r.readAsText(fl);};
+}
 const UX_GRP=[['jouer','Jouer',['renv','voi','fam','deg','all']],['drill','Drill',['drill']],['gammes','Gammes',['scales']],
   ['harm','Harmonie',['prisme','sub','gos','bous']],['repert','Répertoire',['repert']],['stats','Stats',['stats']]];
 const UXS={pick:false,set:false,les:false,last:{}};
@@ -11386,6 +11471,8 @@ function uxInit(){
   hz.appendChild(more);
   const menu=document.getElementById('uxMenu');
   ['btnColor','btnTrsc','btnClear'].forEach(function(id){const b=document.getElementById(id);if(b)menu.appendChild(b);});
+  const bk=document.createElement('button');bk.className='btn';bk.type='button';bk.textContent='💾 Sauvegarder ma progression';bk.onclick=function(){menu.classList.remove('ux-open');bkOpen('save');};menu.appendChild(bk);
+  const rs=document.createElement('button');rs.className='btn';rs.type='button';rs.textContent='📂 Restaurer une sauvegarde';rs.onclick=function(){menu.classList.remove('ux-open');bkOpen('load');};menu.appendChild(rs);
   const lg=document.createElement('button');lg.className='btn';lg.type='button';lg.textContent='⌨ Afficher la liste des raccourcis MIDI';
   lg.onclick=function(){document.body.classList.toggle('ux-legend');};menu.appendChild(lg);
   document.getElementById('uxMoreBtn').onclick=function(e){e.stopPropagation();menu.classList.toggle('ux-open');};
