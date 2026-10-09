@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.69 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.70 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -453,7 +453,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.69 · 🎯 Mode concentration</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.70 · 🎯 Mode concentration</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -563,6 +563,7 @@ body.ux-focus #uxStopBar{display:flex}
     </div>
     <div class="dr-stage" id="drStage">
       <div class="dr-target" id="drTarget">Choisis un exercice et démarre</div>
+      <div id="drInv" style="text-align:center"></div>
       <div class="dr-sub" id="drSub"></div>
       <div class="fb-box" id="fbBox"></div>
       <div class="dr-sub" id="bandNext" style="color:var(--bleu);font-weight:600"></div>
@@ -10440,6 +10441,11 @@ function drShow(){
   }
   document.getElementById('drTarget').textContent=tgt;
   document.getElementById('drSub').textContent=sub;
+  /* v9.70 — pastille courte du renversement (renversements de 7e et triades) : couleur = fonction de la note de basse */
+  (function(){const el=document.getElementById('drInv');if(!el)return;
+    const m=/^t?renv\|[^|]+\|(\d)\|/.exec(s.id||'');if(!m){el.innerHTML='';return;}
+    const k=+m[1],P=[['PF','fondamentale','var(--vert)'],['R1','3ce à la basse','var(--or)'],['R2','5te à la basse','var(--bleu)'],['R3','7e à la basse','#A78BFA']][k];
+    el.innerHTML='<span style="display:inline-block;margin:2px auto 4px;padding:3px 14px;border-radius:999px;font-weight:800;font-size:15px;letter-spacing:.04em;border:2px solid '+P[2]+';color:'+P[2]+'" title="'+P[1]+'">'+P[0]+'</span>';})();
   document.getElementById('stStep').textContent=(DR.idx+1)+'/'+DR.steps.length;
   const sclFrac=isSCL?(DR.sclPtr/s.seq.length):0;
   document.getElementById('drProg').style.width=((DR.idx+sclFrac)/DR.steps.length*100)+'%';
