@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.95 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.96 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -489,7 +489,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.95 · 🎯 Défi transposition</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.96 · 🎛 Atelier transposable</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -2027,9 +2027,13 @@ function liveCirc(){try{if(!STFA.live)return;const H=Array.from(held);
     if(RD){const bad=H.some(function(m){return AT.cur.map(function(e){return e.m%12;}).indexOf(m%12)<0;});el.innerHTML=bad?circSVG(AT.cur,AT.root,null,{size:260,w:260,key:key,live:H})+'<div class="hint">une note n’est pas dans l’accord : la flèche montre la plus proche</div>':'';}
     else el.innerHTML=circSVG(AT.cur,AT.root,AT.prev,{size:300,w:window.innerWidth>900?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null,live:H.length?H:null,fresh:LIVE_FRESH});}}}catch(e){}
   LIVE_FRESH=null;}
-function atTranspose(dextre){const d=dextre?7:5;
+/* v9.96 — transposer l'atelier d'un intervalle quelconque (en demi-tons) ; utilisé par C7/B6 ET par le bouton de tonalité de l'en-tête */
+function atShift(d){d=((d%12)+12)%12;if(!d)return;
   if(AT.seq){const i=AT.seq.i;atSeqStop();AT.k0=(AT.k0+d)%12;atSave();AT.seq={list:atSeqBuild(),i:i,t:null,loop:AT.seq.loop};atSeqGo(i);}
-  else atChange(function(){AT.root=(AT.root+d)%12;});
+  else atChange(function(){AT.root=(AT.root+d)%12;});}
+function atTranspose(dextre){const d=dextre?7:5;atShift(d);
+  /* l'en-tête suit l'atelier (même logique que la page Jouer : 🟢 voir / 🔴 jouer) */
+  const k=KEYS.filter(function(x){return x.pc===((KEY.pc+d)%12+12)%12;})[0];if(k){setKey(k);if(typeof xpShift==='function')xpShift(d>6?d-12:d);}
   toast(dextre?'↻ dextre (+5te)':'↺ senestre (+4te)','Atelier → '+AT.curName);}
 
 
@@ -12528,6 +12532,8 @@ function setKey(k){
    tonalité : Cmaj7 en C → B♭maj7 en B♭), comme les touches MIDI C7/B6. Pas pendant un drill ni une démo. */
 function setKeyUser(k){
   const from=KEY.pc;setKey(k);
+  /* v9.96 — dans l'atelier des formes, le bouton de l'en-tête transpose la forme / l'enchaînement de l'atelier */
+  if(typeof PAGE!=='undefined'&&PAGE==='atel'&&typeof atShift==='function'&&!(typeof DR!=='undefined'&&DR.on)){let da=((k.pc-from)%12+12)%12;if(da){atShift(da);try{toast(XMODE==='play'?'🔴 jouer':'🟢 voir','Atelier → '+AT.curName);}catch(e){}}}
   {let d0=((k.pc-from)%12+12)%12;if(d0>6)d0-=12;if(d0&&!(typeof DR!=='undefined'&&DR.on)&&!(typeof DEMO!=='undefined'&&DEMO.on)&&!(typeof COND!=='undefined'&&COND.on))xpShift(d0);}
   if(!cur||(typeof DR!=='undefined'&&DR.on)||(typeof DEMO!=='undefined'&&DEMO.on)||(typeof COND!=='undefined'&&COND.on))return;
   let d=((k.pc-from)%12+12)%12;if(d>6)d-=12;if(!d)return;
