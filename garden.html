@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.88 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.89 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -486,7 +486,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.88 · 🔄 Bouton du cercle</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.89 · ➰ Flèches doigt par doigt</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1535,6 +1535,8 @@ const VL_COL={0:'#F5C842',1:'#3ECF8E',2:'#4F9EFF',x:'#FF9F43'};
 /* appariement des voix entre deux accords : par main, la note la plus proche (sans réutiliser) */
 function vlPairs(A,B){const out=[];['MG','MD'].forEach(function(h){
   const a=A.filter(function(n){return n.hand===h;}),b=B.filter(function(n){return n.hand===h;});
+  /* v9.89 — même nombre de notes dans la main : les voix ne se croisent pas (du grave à l'aigu, doigt par doigt) */
+  if(a.length&&a.length===b.length){const sa=a.slice().sort(function(x,y){return x.m-y.m;}),sb=b.slice().sort(function(x,y){return x.m-y.m;});sa.forEach(function(x,i){out.push([x,sb[i]]);});return;}
   const cand=[];a.forEach(function(x,i){b.forEach(function(y,j){cand.push([Math.abs(y.m-x.m),i,j]);});});
   cand.sort(function(p,q){return p[0]-q[0]||p[1]-q[1];});const ua={},ub={};
   cand.forEach(function(c){if(ua[c[1]]||ub[c[2]])return;ua[c[1]]=ub[c[2]]=1;out.push([a[c[1]],b[c[2]]]);});});
