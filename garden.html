@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.77 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.78 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -471,7 +471,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.77 · 🧭 Flèches &amp; cercle des formes</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.78 · 🧭 Flèches &amp; cercle des formes</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1415,7 +1415,7 @@ function _stfDraw(cols,o){
   const ksMap={};for(let i=0;i<ksL.length;i++)ksMap[ksL[i]]=ksSharp?'♯':'♭';
   const KS_STEP={'♯':{F:8,C:5,G:9,D:6,A:3,E:7,B:4},'♭':{B:4,E:7,A:3,D:6,G:2,C:5,F:1}};
   const ksW=ksL.length?ksL.length*sp*.95+sp*.6:0;
-  const clefW=sp*4.4+ksW,colW=sp*(o.deg&&o.vl?10:(o.deg?7.8:(o.vl?7.4:6.2))),x0=sp*1.2;const HD=[];
+  const clefW=sp*4.4+ksW,colW=sp*(o.vl?7.4:(o.deg?6.6:6.2)),x0=sp*1.2;const HD=[];
   const W=o.w||Math.max(sp*14,x0+clefW+cols.length*colW+sp);
   /* marges dynamiques : assez de place pour les lignes supplémentaires et les étiquettes */
   const ext={G:[0,8],F:[0,8]};
@@ -1438,7 +1438,7 @@ function _stfDraw(cols,o){
     +'<path d="M'+(x0-sp*.4)+','+topY(0)+' Q'+(x0-sp*1.5)+','+((topY(0)+topY(1)+hS)/2)+' '+(x0-sp*.4)+','+(topY(1)+hS)+'" fill="none" stroke="#B8C0DA" stroke-width="'+(sp*.25)+'"/>';}
   cols.forEach(function(c,ci){
     const cx=x0+clefW+sp*2.2+ci*colW;
-    /* 🧭 v9.77 — colonne estompée (accord précédent) / cadre « suivant » */
+    /* 🧭 v9.78 — colonne estompée (accord précédent) / cadre « suivant » */
     if(c.box)out+='<rect x="'+(cx-sp*3)+'" y="'+(sp*.5)+'" width="'+(colW-sp*.5)+'" height="'+(H-sp*1)+'" rx="'+sp+'" fill="#F5C842" fill-opacity=".05" stroke="#F5C842" stroke-width="'+(sp*.12)+'" stroke-dasharray="'+(sp*.5)+' '+(sp*.4)+'"/><text x="'+(cx+sp*.4)+'" y="'+(H-sp*.9)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="'+(sp*.95)+'" fill="#F5C842">'+(c.box===true?'suivant ▸':c.box)+'</text>';
     out+='<g'+(c.op!=null?' opacity="'+c.op+'"':'')+'>';
     const cRp=c.rootPc!=null?c.rootPc:o.rootPc,cIvs=c.ivs||(cRp==null?null:c.notes.map(function(n){return ((n.m-cRp)%12+12)%12;}));
@@ -1466,21 +1466,19 @@ function _stfDraw(cols,o){
         const col=n.bad?'#EF4444':(mode==='read'?'#E8ECF5':(n.col||'#E8ECF5'));
         if(q.acc)out+='<text x="'+q.ax+'" y="'+(cy+sp*.5)+'" text-anchor="middle" font-family="Noto Music,Bravura,serif" font-size="'+(sp*2)+'" fill="'+(n.ghost?'#F5C842':col)+'">'+q.acc+'</text>';
         if(n.ghost)out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*.7)+'" ry="'+(sp*.5)+'" transform="rotate(-20 '+x+' '+cy+')" fill="none" stroke="#F5C842" stroke-width="'+(sp*.16)+'" stroke-dasharray="'+(sp*.3)+' '+(sp*.22)+'"/>';
+        else if(o.deg&&cRp!=null&&mode!=='read'&&!n.bad){/* 🔢 v9.78 — le degré écrit dans la tête de note */
+          const lb=degName(((n.m-cRp)%12+12)%12,cIvs),L=lb.length;
+          out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*(L>2?.95:(L>1?.85:.72)))+'" ry="'+(sp*.54)+'" fill="'+col+'"/>'
+            +'<text x="'+x+'" y="'+(cy+sp*.27)+'" text-anchor="middle" font-family="Arial Narrow,Arial" font-weight="900" font-size="'+(sp*(L>2?.6:(L>1?.68:.78)))+'" fill="#12162B">'+lb+'</text>';}
         else out+='<ellipse cx="'+x+'" cy="'+cy+'" rx="'+(sp*.7)+'" ry="'+(sp*.5)+'" transform="rotate(-20 '+x+' '+cy+')" fill="'+col+'"/>';
         if(n.bad)out+='<text x="'+(x+sp*1.1)+'" y="'+(cy+sp*.42)+'" font-family="Arial" font-weight="900" font-size="'+(sp*1.2)+'" fill="#EF4444">✕</text>';
         if(n.lb!=null)out+='<text x="'+x+'" y="'+(cy-sp*.95)+'" text-anchor="middle" font-family="Arial" font-weight="800" font-size="'+(sp*.95)+'" fill="#F5C842">'+n.lb+'</text>';
         HD.push({ci:ci,m:n.m,x:x,y:cy,hand:handOf(n),ghost:!!n.ghost,acc:!!q.acc,cx:cx});
       });
-      /* 🔢 v9.77 — pastilles de degré (couleur fonctionnelle), à droite de la colonne */
-      if(o.deg&&cRp!=null&&mode!=='read'){const mdx=Math.max.apply(null,N.map(function(q){return q.dx||0;}));let lastY=null,alt=0;
-        N.forEach(function(q){const iv=((q.n.m-cRp)%12+12)%12,lb=degName(iv,cIvs),cy=bot-q.step*sp/2,w=sp*(lb.length>1?1.9:1.3);
-          alt=(lastY!=null&&lastY-cy<sp*.9)?(alt?0:1):0;lastY=cy;
-          const px=cx+mdx+sp*1.05+alt*sp*2,fc=stfColOf(q.n.m,cRp,cIvs,q.n.hand);
-          out+='<rect x="'+px+'" y="'+(cy-sp*.48)+'" width="'+w+'" height="'+(sp*.96)+'" rx="'+(sp*.48)+'" fill="'+fc+'"/><text x="'+(px+w/2)+'" y="'+(cy+sp*.34)+'" text-anchor="middle" font-family="Arial" font-weight="900" font-size="'+(sp*.85)+'" fill="#12162B">'+lb+'</text>';});}
       /* hampe : du grave à l'aigu, à droite des têtes (sauf fantômes seuls) */
       const real=N.filter(function(q){return !q.n.ghost;});
       if(real.length){const lo=real[0],hi=real[real.length-1];
-        out+='<line x1="'+(cx+sp*.66)+'" x2="'+(cx+sp*.66)+'" y1="'+(bot-lo.step*sp/2-sp*.15)+'" y2="'+(bot-hi.step*sp/2-sp*3.2)+'" stroke="#E8ECF5" stroke-width="'+(sp*.11)+'"/>';}
+        const stx=cx+sp*(o.deg&&cRp!=null&&mode!=='read'?.95:.66);out+='<line x1="'+stx+'" x2="'+stx+'" y1="'+(bot-lo.step*sp/2-sp*.15)+'" y2="'+(bot-hi.step*sp/2-sp*3.2)+'" stroke="#E8ECF5" stroke-width="'+(sp*.11)+'"/>';}
     });
     if(c.lb)out+='<text x="'+cx+'" y="'+(o.lb?sp*2.4:sp*1.3)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(sp*1.1)+'" fill="#B8C0DA">'+c.lb+'</text>';
     out+='</g>';
@@ -1497,9 +1495,9 @@ function stfFromEntries(entries,rootPc,o){
   return staffSVG(entries.map(function(e){return {m:e.m,hand:e.hand,col:stfColOf(e.m,rootPc,ivs,e.hand)};}),Object.assign({rootPc:rootPc,ivs:ivs,sp:9},o||{}));
 }
 
-/* ═══════════ 🧭 v9.77 — AIDES DE LECTURE + ⭕ CERCLE DES FORMES ═══════════
+/* ═══════════ 🧭 v9.78 — AIDES DE LECTURE + ⭕ CERCLE DES FORMES ═══════════
    Portée : flèches de conduite des voix (vert = ½ ton, bleu = 1 ton, orange = saut), notes tenues en pointillé + halo doré,
-   pastilles de degré aux couleurs fonctionnelles, accord suivant annoncé (cadre pointillé).
+   degré écrit dans la tête de note (couleur fonctionnelle), accord suivant annoncé (cadre pointillé).
    Cercle : les 12 notes en rond ; un accord = une forme (triangle = triade, quadrilatère = 4 sons, pentagone et plus = 9e/11e/13e).
    Polygone MG en violet, MD en or (selon le voicing joué), sommets aux couleurs des degrés, accord précédent en fantôme,
    notes communes avec halo, flèches pour les notes qui glissent. Réglages : localStorage garden_stfaid_v1. */
@@ -1521,7 +1519,7 @@ function stfVL(HD,cols,sp,o){let s='';
     const op=Math.min(cols[ci-1].op!=null?cols[ci-1].op:1,cols[ci].op!=null?cols[ci].op:1,cols[ci].box?.7:1);
     s+='<g opacity="'+Math.max(.45,op)+'">';
     vlPairs(A,B).forEach(function(p){const a=p[0],b=p[1],d=b.m-a.m,ad=Math.abs(d);
-      const x1=a.cx+sp*(o.deg?3.6:1.1),x2=b.x-sp*(b.acc?2.9:1.05);
+      const x1=a.cx+sp*1.3,x2=b.x-sp*(b.acc?2.9:1.05);
       if(d===0){s+='<line x1="'+(a.x+sp*.8)+'" y1="'+a.y+'" x2="'+(b.x-sp*.8)+'" y2="'+b.y+'" stroke="#F5C842" stroke-width="'+(sp*.16)+'" stroke-dasharray="'+(sp*.35)+' '+(sp*.3)+'" opacity=".85"/>'
         +'<ellipse cx="'+b.x+'" cy="'+b.y+'" rx="'+(sp*1.15)+'" ry="'+(sp*.9)+'" fill="#F5C842" fill-opacity=".18" stroke="#F5C842" stroke-width="'+(sp*.12)+'" stroke-opacity=".7"/>';return;}
       const col=VL_COL[ad]||VL_COL.x,mx=(x1+x2)/2,my=(a.y+b.y)/2-sp*.6;
