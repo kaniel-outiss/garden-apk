@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.89 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.90 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -486,7 +486,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.89 · ➰ Flèches doigt par doigt</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.90 · ⟳ Toucher le cercle</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1398,6 +1398,7 @@ function stfSet(m){STFM=m;try{localStorage.setItem('garden_staff_v1',m);}catch(e
   if(typeof repertRender==='function'&&PAGE==='repert')repertRender();
   if(typeof gosRender==='function'&&PAGE==='gos')gosRender();
   if(typeof panoRender==='function'&&PAGE==='pano')panoRender();
+  if(typeof atRender==='function'&&PAGE==='atel')atRender(false);
   document.querySelectorAll('[data-stf]').forEach(function(b){b.classList.toggle('on',b.dataset.stf===STFM);});}
 function stfSel(){return '<span class="stf-sel"><span class="og-lb">🎼 Portée</span>'+[['color','🎨 couleurs'],['read','📖 lecture'],['off','✕ masquée']].map(function(x){return '<button class="opill'+(STFM===x[0]?' on':'')+'" data-stf="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</span>'+(typeof stfaSel==='function'?stfaSel():'');}
 document.addEventListener('click',function(e){const b=e.target&&e.target.closest?e.target.closest('[data-stf]'):null;if(b)stfSet(b.dataset.stf);});
@@ -1627,11 +1628,12 @@ function circSVG(entries,rootPc,prev,o){
   s+='<text x="'+c+'" y="'+(c-S*.01)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="900" font-size="'+(S*.07)+'" fill="#F5C842">'+(o.lb||'')+'</text>'
     +'<text x="'+c+'" y="'+(c+S*.07)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.048)+'" fill="#9AA3C7">'+(CIRC_SHAPE[pcs.length]||(pcs.length+' côtés'))+'</text>';
   if(o.pick)for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+S*.1);s+='<circle data-atroot="'+pc+'" cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.07)+'" fill="transparent" style="cursor:pointer"/><circle data-atroot="'+pc+'" cx="'+t[0]+'" cy="'+t[1]+'" r="'+(S*.05)+'" fill="transparent" style="cursor:pointer"/>';}
-  return '<svg class="circ" viewBox="0 0 '+S+' '+S+'" width="'+(o.w||S)+'" height="'+(o.w||S)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
+  s+='<text x="'+c+'" y="'+(S-S*.012)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.038)+'" fill="#5B6390">⟳ '+(Q5?'quintes':'chromatique')+((STFA.cm||'auto')==='auto'?' (auto)':'')+'</text>';
+  return '<svg class="circ" style="cursor:pointer" title="toucher le cercle : chromatique / quintes" viewBox="0 0 '+S+' '+S+'" width="'+(o.w||S)+'" height="'+(o.w||S)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
 
 /* 🔄 v9.86 — ordre du cercle : 'chr' chromatique · 'q5' quintes · 'auto' (quintes quand un enchaînement tourne) */
 function circMode(o){const m=STFA.cm||'auto';if(m!=='auto')return m;return (o&&o.seq)?'q5':'chr';}
-function circLegend(){return '<div style="text-align:center;margin:4px 0 0"><button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes'}[STFA.cm||'auto'])+'</button></div><div class="hint" style="margin:2px 0 0;font-size:11px;text-align:center"><b style="color:#A78BFA">▲ MG</b> · <b style="color:#F5C842">▲ MD</b> · <span style="color:#7A85A8">┄ accord précédent</span> · <span style="color:#F5C842">◉ note commune</span> · <span style="color:#3ECF8E">½ ton</span> · <span style="color:#4F9EFF">1 ton</span> · <span style="color:#FF9F43">saut</span></div>';}
+function circLegend(){return '<div class="hint" style="margin:2px 0 0;font-size:11px;text-align:center"><b style="color:#A78BFA">▲ MG</b> · <b style="color:#F5C842">▲ MD</b> · <span style="color:#7A85A8">┄ accord précédent</span> · <span style="color:#F5C842">◉ note commune</span> · <span style="color:#3ECF8E">½ ton</span> · <span style="color:#4F9EFF">1 ton</span> · <span style="color:#FF9F43">saut</span></div>';}
 /* 🎯 dans la fenêtre de concentration : précédent (estompé) → actuel → suivant (cadre) + cercle */
 function duoEntries(s){const split=+DRV.split||60,bass=36+((s.duo.root-36)%12+12)%12,fifth=bass+((s.duo.fifth-bass)%12+12)%12;
   return [{m:bass,hand:'MG'},{m:fifth,hand:'MG'}].concat(stackFrom(s.duo.root,s.ivs.filter(function(x){return x%12!==0;}),split).map(function(m){return {m:m,hand:'MD'};}));}
@@ -2022,6 +2024,10 @@ function atTranspose(dextre){const d=dextre?7:5;
   else atChange(function(){AT.root=(AT.root+d)%12;});
   toast(dextre?'↻ dextre (+5te)':'↺ senestre (+4te)','Atelier → '+AT.curName);}
 
+
+/* 🔄 v9.90 — toucher le cercle change son ordre : chromatique → quintes → auto (toucher une note de l'atelier reste « choisir la fondamentale ») */
+document.addEventListener('click',function(e){const sv=e.target&&e.target.closest?e.target.closest('svg.circ'):null;if(!sv)return;if(e.target.closest('[data-atroot]'))return;
+  e.preventDefault();e.stopPropagation();stfaSet('cm');},true);
 /* ═══════════ 🖐 v9.72 — HANON, Le Pianiste virtuose (éd. Schott Frères, rev. A. Schotte) — 1re et 2e parties ═══════════
    Domaine public (1873). Chaque exercice est une CELLULE : a = cellule montante, d = cellule descendante, en degrés
    diatoniques depuis la fondamentale de la cellule (0 = C, 7 = C de l'octave) ; la cellule monte d'un degré par mesure
