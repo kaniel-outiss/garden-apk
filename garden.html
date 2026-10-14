@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.81 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.82 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -474,12 +474,13 @@ body.ux-focus #uxStopBar{display:flex}
 .at-inv{display:inline-block;min-width:44px;text-align:center;font-weight:800;color:#F5C842}.at-kb{background:#12162B;border-radius:14px;padding:10px;margin-top:10px;text-align:center}
 .at-why{font-size:14px;color:#B8C0DA;margin-top:6px;line-height:1.6}.at-why small{color:#7A85A8}
 .at-strip{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:6px}.at-key{font:800 11px Inter,Arial;color:#A78BFA;margin:0 2px 0 8px;letter-spacing:.04em}.at-ch{background:#1B2142;border:1.5px solid #2C3560;color:#E8ECF5;border-radius:10px;padding:5px 9px;font:700 13px Inter,Arial;cursor:pointer}.at-ch.on{border-color:#F5C842;color:#12162B;background:#F5C842}
+.at-p{display:block;font-size:10px;color:#A78BFA;font-weight:800;line-height:1}.at-ch.on .at-p{color:#3b2a00}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.81 · 🎛 Atelier des formes</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.82 · 🎛 Atelier des formes</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1567,9 +1568,10 @@ function circSVG(entries,rootPc,prev,o){
   const hasH=entries.some(function(e){return e.hand==='MG';})&&entries.some(function(e){return e.hand==='MD';});
   const poly=function(ps,attr){if(ps.length<2)return '';const pts=ps.map(function(p){return P(p).join(',');}).join(' ');return ps.length===2?'<polyline points="'+pts+'" '+attr+'/>':'<polygon points="'+pts+'" '+attr+'/>';};
   let s='<circle cx="'+c+'" cy="'+c+'" r="'+R+'" fill="none" stroke="#2C3560" stroke-width="'+(S*.008)+'"/>';
+  const lbOf=function(pc){if(rootPc!=null&&pcs.indexOf(pc)>=0){const e=entries.filter(function(x){return ((x.m%12)+12)%12===pc;})[0];try{return stfSpell(e.m,key,rootPc,ivs).nm;}catch(_){}}return ((key%12)+12)%12===0?NF[pc]:nnK(pc,key);};
   for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+S*.1),on=pcs.indexOf(pc)>=0;
     s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.012)+'" fill="#3A4477"/>'
-      +'<text x="'+t[0]+'" y="'+(t[1]+S*.018)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="'+(on?900:600)+'" font-size="'+(S*.05)+'" fill="'+(on?'#E8ECF5':'#5B6390')+'">'+nnK(pc,key)+'</text>';}
+      +'<text x="'+t[0]+'" y="'+(t[1]+S*.018)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="'+(on?900:600)+'" font-size="'+(S*.05)+'" fill="'+(on?'#E8ECF5':'#5B6390')+'">'+lbOf(pc)+'</text>';}
   if(pp.length>1)s+=poly(pp,'fill="none" stroke="#7A85A8" stroke-width="'+(S*.008)+'" stroke-dasharray="'+(S*.02)+' '+(S*.015)+'" opacity=".8"');
   s+=poly(pcs,'fill="#E8ECF5" fill-opacity=".08" stroke="'+(hasH?'#E8ECF5':'#F5C842')+'" stroke-opacity="'+(hasH?.35:.95)+'" stroke-width="'+(S*(hasH?.008:.016))+'" stroke-linejoin="round"');
   if(hasH){const mg=uniq(entries.filter(function(e){return e.hand==='MG';})),md=uniq(entries.filter(function(e){return e.hand==='MD';}));
@@ -1631,11 +1633,11 @@ function drCirc(entries,rootPc){
 const AT_FAM={maj:{lb:'maj',b:[0,4,7]},min:{lb:'min',b:[0,3,7]},dom:{lb:'dom 7',b:[0,4,7],f:[10]},hd:{lb:'ø7',b:[0,3,6],f:[10]},
   dim:{lb:'°7',b:[0,3,6],f:[9]},sus:{lb:'sus4',b:[0,5,7]},aug:{lb:'aug',b:[0,4,8]}};
 const AT_COL=[['6',9],['7',10],['maj7',11],['♭9',13],['9',14],['♯9',15],['11',17],['♯11',18],['♭13',20],['13',21]];
-const AT_VOI=[['serre','serré'],['drop2','drop 2'],['drop3','drop 3'],['shell','shell 1-7'],['rlA','rootless A'],['rlB','rootless B'],['quart','quartal'],['gospel','gospel 1-7 / 3-9-13'],['open','ouvert 1-5 / 3-7-ext']];
-let AT=(function(){const d={root:0,fam:'dom',col:{'7':1,'9':1,'13':1},voi:'gospel',inv:0,vl:1,snd:1,midi:0,bpm:60,prog:'251',chain:'quarte',mode:'maj',k0:0};
+const AT_VOI=[['serre','serré'],['drop2','drop 2'],['drop3','drop 3'],['shell','shell 1-7'],['rlA','rootless A'],['rlB','rootless B'],['quart','quartal'],['gospel','gospel 1-7 / 3-9-13'],['open','ouvert 1-5 / 3-7-ext'],['bBasic','📘 Boyd Basic'],['bVar','📘 Boyd Variation'],['bMini','📘 Boyd Mini'],['bRev','📘 Boyd Reverse']];
+let AT=(function(){const d={root:0,fam:'dom',col:{'7':1,'9':1,'13':1},voi:'gospel',inv:0,vl:1,snd:1,midi:0,bpm:60,prog:'251',chain:'quarte',mode:'maj',k0:0,bpos:'auto'};
   try{const v=JSON.parse(localStorage.getItem('garden_atel_v1')||'null');if(v)Object.keys(d).forEach(function(k){if(v[k]!=null)d[k]=v[k];});}catch(e){}
   d.prev=null;d.cur=null;d.played=null;d.cyc=null;return d;})();
-function atSave(){try{const o={};['root','fam','col','voi','inv','vl','snd','midi','bpm','prog','chain','mode','k0'].forEach(function(k){o[k]=AT[k];});localStorage.setItem('garden_atel_v1',JSON.stringify(o));}catch(e){}}
+function atSave(){try{const o={};['root','fam','col','voi','inv','vl','snd','midi','bpm','prog','chain','mode','k0','bpos'].forEach(function(k){o[k]=AT[k];});localStorage.setItem('garden_atel_v1',JSON.stringify(o));}catch(e){}}
 /* intervalles de l'accord (avec les extensions au-dessus de l'octave) */
 function atIvs(){const F=AT_FAM[AT.fam];let iv=F.b.slice();
   (F.f||[]).forEach(function(x){if(iv.indexOf(x)<0)iv.push(x);});
@@ -1702,17 +1704,49 @@ function atPlace(iv){const H=atHands(iv),r=AT.root,pv=AT.prev;
       if(sc<bs){bs=sc;best=v;}}});
   best=best||[];
   return mg.map(function(m){return {m:m,hand:'MG'};}).concat(best.map(function(m){return {m:m,hand:'MD'};}));}
+
+/* 📘 v9.82 — positions de BOYD dans l'atelier (moteur Boyd de Garden : boydVoicing / boydShape / boydRule / boydRealize)
+   Basic, Variation, Mini, Reverse · P.1 / P.2 / règle auto (même fondamentale → même · 4te/5te → on alterne ·
+   2de/½ ton → même · 3ce/6te/triton → la plus proche), registre du livre, « switch » quand on sort du registre. */
+const AT_BOYD={bBasic:'basic',bVar:'var',bMini:'mini',bRev:'rev'};
+function atBoydV(fam,col){const c=function(k){return !!col[k];};
+  if(fam==='dom'){if(c('♭9')||c('♯9')||c('♭13')){const k=c('♭9')&&c('13')?'13b9':(c('♯9')&&c('♭13')?'7s5s9':(c('♭9')&&c('♭13')?'7s5b9':(c('♯9')?'7s9':(c('♭13')?'9s5':'7b9'))));return {q:'7',lvl:'alt',alt:k};}
+    return {q:'7',lvl:c('13')?'13':(c('♯11')?'11':(c('9')?'9':'7'))};}
+  if(fam==='min')return {q:'m7',lvl:c('6')||c('13')?'13':(c('11')?'11':(c('9')?'9':'7'))};
+  if(fam==='hd')return {q:'m7b5',lvl:'7'};if(fam==='dim')return {q:'dim7',lvl:'7'};
+  if(fam==='sus')return {q:'7',lvl:'9'};
+  return {q:'maj7',lvl:c('13')||c('6')?'13':(c('♯11')?'11':(c('9')?'9':'7'))};}
+function atBoydItem(root,fam,col){const b=atBoydV(fam,col);return {pc:root,v:boydVoicing(b.q,b.lvl,b.lvl==='alt'?'alt':'',b.alt||null,AT_BOYD[AT.voi])};}
+function atBoydEnt(o){return o.notes.map(function(m,i){return {m:m,hand:i<o.shp.lh?'MG':'MD'};});}
+/* un accord seul : position selon le réglage, placé au plus près de l'accord précédent */
+function atBoydOne(){const it=atBoydItem(AT.root,AT.fam,AT.col);let pos=AT.bpos,rule=null;
+  if(pos==='auto'){if(AT.prev&&AT.prevPos&&AT.prevRoot!=null){rule=boydRule(AT.root-AT.prevRoot);pos=rule.k==='alt'?(AT.prevPos==='P1'?'P2':'P1'):AT.prevPos;
+      if(rule.k==='near'){const pv=AT.prev.map(function(e){return e.m;});const a=boydForced([{pc:AT.prevRoot,v:it.v},it],['P1','P1']),b=boydForced([{pc:AT.prevRoot,v:it.v},it],['P2','P2']);
+        pos=_boydMove(pv,a[1].notes)<=_boydMove(pv,b[1].notes)?'P1':'P2';}}
+    else pos='P1';}
+  let o;if(AT.prev&&AT.prev.length){const pv=AT.prev.map(function(e){return e.m;}).sort(function(x,y){return x-y;});const shp=boydShape(it.v,pos),R=BOYD_REGT[it.v.type]||BOYD_REG;let best=null,any=null;
+    for(let m=12;m<=84;m++){if(m%12!==it.pc)continue;const notes=shp.sp.map(function(x){return m+x;}),c={pos:pos,notes:notes,shp:shp,mv:_boydMove(pv,notes)};if(!any||c.mv<any.mv)any=c;if(notes[0]>=R[pos]&&notes[notes.length-1]<=R.top&&(!best||c.mv<best.mv))best=c;}
+    o=best||any;}
+  else{const shp=boydShape(it.v,pos),m=boydRootNear(it.pc,shp.sp,pos,48,it.v.type);o={pos:pos,notes:shp.sp.map(function(x){return m+x;}),shp:shp};}
+  o.rule=rule;o.sym=it.v.sym;return o;}
+/* un enchaînement : réalisé d'un bloc par le moteur de Boyd (positions + switch) */
+function atBoydSeq(){const S=AT.seq;const key=AT.voi+'|'+AT.bpos;if(S.boyd&&S.boydKey===key)return S.boyd;
+  const items=S.list.map(function(x){return atBoydItem(x.root,x.fam,x.col);});
+  S.boyd=AT.bpos==='auto'?boydRealize(items,null):boydForced(items,items.map(function(){return AT.bpos;}));S.boydKey=key;return S.boyd;}
+function atBoydCur(){if(AT.seq){const o=atBoydSeq()[AT.seq.i];return o;}return atBoydOne();}
 function atName(){return nnK(AT.root,atKey())+atSym(atIvs());}
-function atBuild(){if(AT.played)return AT.played;return atPlace(atIvs());}
+function atBuild(){AT.boydO=null;if(AT.played)return AT.played;if(AT_BOYD[AT.voi]){const o=atBoydCur();AT.boydO=o;return atBoydEnt(o);}return atPlace(atIvs());}
 /* une modification = l'accord actuel devient « avant » */
-function atChange(fn){const before=AT.cur,bR=AT.root;fn();AT.played=null;AT.prev=before;AT.prevRoot=bR;AT.prevName=AT.curName;atSave();atRender(true);}
+function atChange(fn){const before=AT.cur,bR=AT.root,bP=AT.curPos;fn();AT.played=null;AT.prev=before;AT.prevRoot=bR;AT.prevPos=bP;AT.prevName=AT.curName;atSave();atRender(true);}
 function atRender(sound){const box=document.getElementById('atelBox');if(!box)return;
-  const cur=atBuild();AT.cur=cur;AT.curName=AT.played?AT.playedName:atName();
+  const cur=atBuild();AT.cur=cur;AT.curName=AT.played?AT.playedName:atName();AT.curPos=AT.boydO?AT.boydO.pos:null;
+  const posLb=AT.boydO?' · '+AT.boydO.pos.replace('P','P.'):'';
   const key=atKey(),r=AT.root,iv=atIvs(),big=window.innerWidth>900;
   const mk=function(es,rp,extra){const ivs=es.map(function(e){return ((e.m-rp)%12+12)%12;});return Object.assign({rootPc:rp,ivs:ivs,notes:es.map(function(e){return {m:e.m,hand:e.hand,col:stfColOf(e.m,rp,ivs,e.hand)};})},extra||{});};
   const cols=[];if(AT.prev&&AT.prev.length)cols.push(mk(AT.prev,AT.prevRoot!=null?AT.prevRoot:r,{op:.45,lb:(AT.prevName||'')+' (avant)'}));
-  cols.push(mk(cur,r,{lb:'▶ '+AT.curName}));
+  cols.push(mk(cur,r,{lb:'▶ '+AT.curName+posLb}));
   if(AT.seq&&!AT.played){const nx=AT.seq.list[(AT.seq.i+1)%AT.seq.list.length],sv={root:AT.root,fam:AT.fam,col:AT.col,prev:AT.prev};AT.prev=cur;atSeqApply(nx);const ne=atPlace(atIvs()),nn2=atName(),nr=AT.root;AT.root=sv.root;AT.fam=sv.fam;AT.col=sv.col;AT.prev=sv.prev;cols.push(mk(ne,nr,{op:.7,box:nn2+' ▸'}));}
+  if(AT.seq&&!AT.played&&AT_BOYD[AT.voi]&&cols.length===(AT.prev&&AT.prev.length?3:2)){const nxo=atBoydSeq()[(AT.seq.i+1)%AT.seq.list.length];cols[cols.length-1]=mk(atBoydEnt(nxo),AT.seq.list[(AT.seq.i+1)%AT.seq.list.length].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.pos.replace('P','P.')+' ▸'});}
   const stf=_stfDraw(cols,{grand:true,sp:12,key:key,vl:!!STFA.vl&&cols.length>1,deg:!!STFA.deg,scale:big?1.6:1.15});
   const circ=circSVG(cur,r,AT.prev,{size:300,w:big?340:300,lb:AT.curName,key:key,pick:1});
   const kb=miniKb(cur.map(function(e){return E(e.m,r,e.hand);}),r,Math.min(900,(box.clientWidth||900)-30));
@@ -1724,14 +1758,17 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
     +row('COULEURS',AT_COL.map(function(c){const forced=(F.f&&(c[0]==='7'||c[0]==='maj7'||c[0]==='6'));const on=forced?F.f.indexOf(c[1]%12)>=0||(c[0]==='7'&&F.f.indexOf(10)>=0):!!AT.col[c[0]];
       const xc=extCls(c[1]%12,iv.map(function(x){return x%12;}))||ROLE[c[1]%12];return pill('data-at="c:'+c[0]+'"'+(forced?' disabled':''),c[0],on,STF_COL[xc]||'#F5C842');}).join(''))
     +row('VOICING',AT_VOI.map(function(v){return pill('data-at="v:'+v[0]+'"',v[1],AT.voi===v[0]);}).join(''))
+    +(AT_BOYD[AT.voi]?row('📘 POSITION DE BOYD',['auto','P1','P2'].map(function(k){return pill('data-at="bp:'+k+'"',k==='auto'?'règle auto (alterne sur 4te/5te)':k.replace('P','P.'),AT.bpos===k,'#A78BFA');}).join('')+(AT.boydO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.boydO.pos.replace('P','P.')+(AT.boydO.rule&&AT.boydO.rule.lb?' — '+AT.boydO.rule.lb:'')+(AT.boydO.sw?' · switch (registre)':'')+'</span>':'')):'')
     +row('RENVERSEMENT · CONDUITE',pill('data-at="i:-1"','⬇ renv.',0)+'<span class="at-inv">'+(AT.vl?'auto':(AT.inv%Math.max(1,atHands(iv).md.length)===0?'PF':'R'+(((AT.inv%atHands(iv).md.length)+atHands(iv).md.length)%atHands(iv).md.length)))+'</span>'+pill('data-at="i:1"','⬆ renv.',0)
       +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0))+atSeqHTML();
   /* phrase : ce qui a bougé */
   let why='';if(AT.prev&&AT.prev.length){const pr=vlPairs(AT.prev,cur),held=[],mv=[];
-    pr.forEach(function(p){const a=nnK(p[0].m%12,key),b=nnK(p[1].m%12,key);if(p[0].m===p[1].m)held.push(b);else mv.push(a+' → '+b+(Math.abs(p[1].m-p[0].m)<=2?(Math.abs(p[1].m-p[0].m)===1?' (½)':' (1)'):''));});
+    const pIv=AT.prev.map(function(e){return ((e.m-(AT.prevRoot!=null?AT.prevRoot:r))%12+12)%12;}),cIv=cur.map(function(e){return ((e.m-r)%12+12)%12;});
+    pr.forEach(function(p){const a=stfSpell(p[0].m,key,AT.prevRoot!=null?AT.prevRoot:r,pIv).nm,b=stfSpell(p[1].m,key,r,cIv).nm;if(p[0].m===p[1].m)held.push(b);else mv.push(a+' → '+b+(Math.abs(p[1].m-p[0].m)<=2?(Math.abs(p[1].m-p[0].m)===1?' (½)':' (1)'):''));});
     why='depuis '+(AT.prevName||'')+' : '+(held.length?'<b style="color:#F5C842">'+held.join(', ')+' tenu'+(held.length>1?'s':'')+'</b>':'aucune note tenue')+(mv.length?' · '+mv.join(' · '):'');}
   const md=cur.filter(function(e){return e.hand==='MD';}),mg=cur.filter(function(e){return e.hand==='MG';});
-  const dl=function(es){return es.map(function(e){return nnK(e.m%12,key)+' <small>('+degName(((e.m-r)%12+12)%12,cur.map(function(x){return ((x.m-r)%12+12)%12;}))+')</small>';}).join(' – ');};
+  const cIv2=cur.map(function(x){return ((x.m-r)%12+12)%12;});
+  const dl=function(es){return es.map(function(e){return stfSpell(e.m,key,r,cIv2).nm+' <small>('+degName(((e.m-r)%12+12)%12,cur.map(function(x){return ((x.m-r)%12+12)%12;}))+')</small>';}).join(' – ');};
   box.innerHTML='<div class="at-top"><div class="at-name">'+AT.curName+(AT.played?' <span class="mtag tag-g">joué au clavier</span>':'')+'</div><div>'+pill('data-at="play"','🎧 écouter',1,'#3ECF8E')+stfSel()+'</div></div>'
     +'<div class="at-grid"><div class="at-circ">'+circ+circLegend()+'</div><div class="at-main"><div class="at-stf">'+stf+'</div><div class="at-ctl">'+ctl+'</div></div></div>'
     +'<div class="at-kb">'+kb+'<div class="at-why"><b style="color:#A78BFA">MG</b> '+dl(mg)+' · <b style="color:#F5C842">MD</b> '+dl(md)+(why?'<br>'+why:'')+'</div></div>';
@@ -1746,6 +1783,7 @@ document.addEventListener('click',function(e){const t=e.target&&e.target.closest
   else if(k==='v')atChange(function(){AT.voi=v;});
   else if(k==='i')atChange(function(){AT.vl=0;AT.inv+=(+v);});
   else if(k==='vl'){AT.vl=AT.vl?0:1;atSave();atRender(false);}
+  else if(k==='bp'){AT.bpos=v;atSave();if(AT.seq){AT.seq.boyd=null;atSeqGo(AT.seq.i);}else atChange(function(){});}
   else if(k==='snd'){AT.snd=AT.snd?0:1;atSave();atRender(false);}
   else if(k==='midi'){AT.midi=AT.midi?0:1;atSave();atRender(false);}
   else if(k==='play')playNotes(AT.cur.map(function(x){return x.m;}),1.6);
@@ -1797,7 +1835,7 @@ function atSeqHTML(){const pill=function(attr,t,on,c){return '<button class="opi
     +(AT.seq?pill('data-at="sgo"',AT.seq.t?'⏸ pause':'▶ jouer',!!AT.seq.t,'#3ECF8E')+pill('data-at="sst:-1"','⏮')+pill('data-at="sst:1"','⏭')+pill('data-at="sloop"','🔁 en boucle',!!AT.seq.loop,'#4F9EFF')+pill('data-at="sx"','✕ fermer'):pill('data-at="snew"','🎬 préparer l’enchaînement',1,'#3ECF8E'))+'</div>';
   if(AT.seq){const L=AT.seq.list;let lastKey=null;h+='<div class="at-strip">'+L.map(function(x,i){const nm=nnK(x.root,x.md==='min'?(x.key+3)%12:x.key)+(function(){const sv={root:AT.root,fam:AT.fam,col:AT.col};AT.root=x.root;AT.fam=x.fam;AT.col=x.col;const r=atSym(atIvs());AT.root=sv.root;AT.fam=sv.fam;AT.col=sv.col;return r;})();
       const head=(x.key+x.md)!==lastKey?'<span class="at-key">'+kname(x.key,x.md)+'</span>':'';lastKey=x.key+x.md;
-      return head+'<button class="at-ch'+(i===AT.seq.i?' on':'')+'" data-at="sj:'+i+'">'+nm+'</button>';}).join('')+'</div>';}
+      const bo=AT_BOYD[AT.voi]?atBoydSeq()[i]:null;return head+'<button class="at-ch'+(i===AT.seq.i?' on':'')+'" data-at="sj:'+i+'">'+nm+(bo?'<small class="at-p">'+bo.pos.replace('P','P.')+(bo.sw?'↯':'')+'</small>':'')+'</button>';}).join('')+'</div>';}
   return h;}
 document.addEventListener('click',function(e){const t=e.target&&e.target.closest?e.target.closest('[data-at]'):null;if(!t||!t.closest('#atelBox'))return;
   const a=t.dataset.at,k=a.split(':')[0],v=a.slice(k.length+1);if(['sp','sm','sc','sk','snew','sgo','sst','sloop','sx','sj'].indexOf(k)<0)return;
