@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.93 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.94 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -481,13 +481,15 @@ body.ux-focus #uxStopBar{display:flex}
 .lv-wait{animation:lvBreathe 1.4s ease-in-out infinite}.lv-pop{animation:lvPop .6s ease-out forwards}.lv-ring{animation:lvPop 1s ease-out infinite}
 .lv-bad{animation:lvBlink .5s linear infinite}.lv-shk{animation:lvShake .25s linear 2;transform-box:fill-box;transform-origin:center}
 .bnote{display:block;font-size:11px;font-weight:600;color:#FF9F43;margin-top:2px;line-height:1.3}
+.ux-key.xv{border:2px solid #34C77B;box-shadow:0 0 0 3px rgba(52,199,123,.15)}.ux-key.xp{border:2px solid #E5484D;box-shadow:0 0 0 3px rgba(229,72,77,.18)}
+.ux-key.xp::after{content:'🎹';position:absolute;right:-8px;top:-9px;font-size:12px}.ux-key.xv::after{content:'👁';position:absolute;right:-8px;top:-9px;font-size:12px}
 .ux-xp{margin-left:6px;padding:6px 10px;border-radius:12px;border:1px solid var(--or,#E8B04B);background:rgba(232,176,75,.15);color:var(--or,#E8B04B);font:600 13px system-ui;cursor:pointer}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.93 · 🎹 Clavier transposé</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.94 · 🟢 voir / 🔴 jouer</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -2765,7 +2767,7 @@ function transposeChord(dextre){
   const d=dextre?7:5;
   if(cur){
     /* v9.91 — la tonalité suit l'accord (même fonction : Cmaj7 en C → Fmaj7 en F), comme les flèches de l'en-tête */
-    if(!(typeof DR!=='undefined'&&DR.on)&&!(typeof COND!=='undefined'&&COND.on)){const k=KEYS.filter(function(x){return x.pc===((KEY.pc+d)%12+12)%12;})[0];if(k){setKey(k);xpShift(d>6?d-12:d);}}
+    if(!(typeof DR!=='undefined'&&DR.on)&&!(typeof COND!=='undefined'&&COND.on)){const k=KEYS.filter(function(x){return x.pc===((KEY.pc+d)%12+12)%12;})[0];if(k){if(XMODE==='view'&&XV.base==null)XV.base=KEY.pc;setKey(k);xpShift(d>6?d-12:d);}}
     let notes=cur.notes.map(function(m){return m+d;});
     /* garder l'accord dans un registre confortable */
     if(Math.max.apply(null,notes)>86)notes=notes.map(function(m){return m-12;});
@@ -2900,15 +2902,22 @@ function _cMidi(){
 }
 /* v9.93 — le clavier MIDI suit la tonalité de l'en-tête (comme le bouton « transpose » d'un clavier) :
    parti de C, passer l'en-tête en E♭ fait sonner/analyser tes formes de C en E♭. Pas pendant un drill, une démo ou la Conduite. */
-let XP=0,XP_ON=(function(){try{return localStorage.getItem('garden_xp_on')!=='0';}catch(e){return true;}})();const XMAP={};
-function xpNow(){if(!XP_ON||!XP)return 0;if(typeof DR!=='undefined'&&DR.on)return 0;if(typeof COND!=='undefined'&&COND.on)return 0;if(typeof DEMO!=='undefined'&&DEMO.on)return 0;return XP;}
-function xpShift(d){if(!XP_ON)return;XP=((XP+d+6)%12+12)%12-6;xpBadge();}
-function xpBadge(){const b=document.getElementById('uxXp');if(!b)return;b.style.display=XP_ON&&XP?'':'none';b.textContent='🎹 C→'+keyName(XP);b.title='Ton clavier MIDI est transposé : tu joues en C, tu entends et vois en '+keyName(XP)+' — touche pour revenir au clavier réel';}
+let XP=0,XP_ON=true;const XMAP={};
+/* v9.94 — un bouton, deux esprits (appui long pour changer) :
+   🟢 VOIR  : ‹ › transposent ce que tu viens de jouer (on voit et on entend le résultat) ; dès que tu rejoues, l'appli revient à ton jeu réel et à sa tonalité de départ.
+   🔴 JOUER : ‹ › règlent un décalage ; tout ce que tu joues ensuite est affiché et entendu transposé (touche « transpose » d'un clavier). */
+let XMODE=(function(){try{return localStorage.getItem('garden_xmode')||'view';}catch(e){return 'view';}})();const XV={base:null};
+function xModeSet(m){XMODE=m;try{localStorage.setItem('garden_xmode',m);}catch(e){}if(m==='view')XP=0;else XV.base=null;xpBadge();
+  toast(m==='view'?'🟢 voir':'🔴 jouer',m==='view'?'‹ › transposent ce que tu viens de jouer':'‹ › transposent tout ce que tu joues');}
+function xpNow(){if(XMODE!=='play'||!XP)return 0;if(typeof DR!=='undefined'&&DR.on)return 0;if(typeof COND!=='undefined'&&COND.on)return 0;if(typeof DEMO!=='undefined'&&DEMO.on)return 0;return XP;}
+function xpShift(d){if(XMODE!=='play')return;XP=((XP+d+6)%12+12)%12-6;xpBadge();}
+function xpBadge(){const k=document.querySelector('.ux-key');if(k){k.classList.toggle('xv',XMODE==='view');k.classList.toggle('xp',XMODE==='play');k.title=(XMODE==='view'?'🟢 VOIR : ‹ › transposent ce que tu viens de jouer':'🔴 JOUER : ‹ › transposent tout ce que tu joues')+' — appui long pour changer';}
+  const b=document.getElementById('uxXp');if(!b)return;b.style.display=XMODE==='play'&&XP?'':'none';b.textContent='🎹 tu joues C → tu entends '+keyName(XP);b.title='Ton clavier MIDI est transposé : tu joues en C, tu entends et vois en '+keyName(XP)+' — touche pour revenir au clavier réel';}
 function _onMidi(ev){
   const d=ev.data,st=d[0]&0xF0,raw=d[1];
   _midiT=ev.timeStamp||performance.now();
   const sc=typeof TRSC!=='undefined'&&TRSC&&(raw===TR_DEXTRE||raw===TR_SENESTRE||(typeof PGKEYS!=='undefined'&&PGKEYS[raw]));
-  if(st===0x90&&d[2]>0){if(typeof VEL_LAST!=='undefined')VEL_LAST=d[2];const m=sc?raw:raw+xpNow();XMAP[raw]=m;noteOn(m);}
+  if(st===0x90&&d[2]>0){if(typeof VEL_LAST!=='undefined')VEL_LAST=d[2];if(!sc&&XMODE==='view'&&XV.base!=null){const kb=KEYS.filter(function(x){return x.pc===XV.base;})[0];XV.base=null;if(kb&&kb!==KEY)setKey(kb);}const m=sc?raw:raw+xpNow();XMAP[raw]=m;noteOn(m);}
   else if(st===0x80||(st===0x90&&d[2]===0)){const m=XMAP[raw]!=null?XMAP[raw]:raw;delete XMAP[raw];noteOff(m);}
 }
 
@@ -12510,7 +12519,8 @@ function setKeyUser(k){
   if(Math.max.apply(null,notes)>86)notes=notes.map(function(m){return m-12;});
   if(Math.min.apply(null,notes)<36)notes=notes.map(function(m){return m+12;});
   const c=identify(notes);if(!c)return;
-  cur=c;render();pushHist(c);lightMain();
+  if(XMODE==='view'&&XV.base==null)XV.base=from;
+  cur=c;render();pushHist(c);lightMain();if(XMODE==='view')try{playNotes(notes,.8);}catch(e){}
 }
 function initTona(){
   const bar=document.getElementById('tonaBar');
@@ -12983,7 +12993,10 @@ function uxInit(){
   const kb=document.createElement('div');kb.className='ux-key';
   kb.innerHTML='<button type="button" aria-label="Tonalité : une quinte plus bas (B6)" id="uxKp">‹</button><button type="button" class="ux-kn" id="uxKn" aria-label="Choisir la tonalité"></button><button type="button" aria-label="Tonalité : une quinte plus haut (C7)" id="uxKs">›</button>';
   document.querySelector('header .logo').after(kb);
-  const xb=document.createElement('button');xb.type='button';xb.id='uxXp';xb.className='ux-xp';xb.style.display='none';xb.onclick=function(){XP=0;xpBadge();toast('🎹 clavier','Clavier MIDI réel (non transposé)');};kb.after(xb);
+  (function(){let t=null,lp=false;const st=function(e){lp=false;t=setTimeout(function(){lp=true;xModeSet(XMODE==='view'?'play':'view');try{navigator.vibrate&&navigator.vibrate(30);}catch(e2){}},550);};const en=function(){clearTimeout(t);};
+    kb.addEventListener('pointerdown',st);kb.addEventListener('pointerup',en);kb.addEventListener('pointerleave',en);kb.addEventListener('pointercancel',en);
+    kb.addEventListener('click',function(e){if(lp){e.stopPropagation();e.preventDefault();lp=false;}},true);kb.addEventListener('contextmenu',function(e){e.preventDefault();});})();
+  const xb=document.createElement('button');xb.type='button';xb.id='uxXp';xb.className='ux-xp';xb.style.display='none';xb.onclick=function(){XP=0;xpBadge();toast('🎹 clavier','Clavier MIDI réel (non transposé)');};kb.after(xb);setTimeout(xpBadge,0);
   document.getElementById('uxKp').onclick=function(){uxKeyShift(5);};
   document.getElementById('uxKs').onclick=function(){uxKeyShift(7);};
   document.getElementById('uxKn').onclick=function(e){e.stopPropagation();document.getElementById('tonaBar').classList.toggle('ux-open');};
@@ -12993,7 +13006,7 @@ function uxInit(){
   hz.appendChild(more);
   const menu=document.getElementById('uxMenu');
   ['btnColor','btnTrsc','btnClear'].forEach(function(id){const b=document.getElementById(id);if(b)menu.appendChild(b);});
-  const xt=document.createElement('button');xt.className='btn';xt.type='button';const xtl=function(){xt.textContent='🎹 Clavier MIDI transposé avec la tonalité : '+(XP_ON?'oui':'non');};xtl();xt.onclick=function(){XP_ON=!XP_ON;try{localStorage.setItem('garden_xp_on',XP_ON?'1':'0');}catch(e){}if(!XP_ON)XP=0;xtl();xpBadge();};menu.appendChild(xt);
+  const xt=document.createElement('button');xt.className='btn';xt.type='button';const xtl=function(){xt.textContent='Bouton de tonalité : '+(XMODE==='view'?'🟢 voir la transposition':'🔴 transposer mon jeu')+' (appui long sur le bouton)';};xtl();xt.onclick=function(){xModeSet(XMODE==='view'?'play':'view');xtl();};menu.appendChild(xt);
   const bk=document.createElement('button');bk.className='btn';bk.type='button';bk.textContent='💾 Sauvegarder ma progression';bk.onclick=function(){menu.classList.remove('ux-open');bkOpen('save');};menu.appendChild(bk);
   const rs=document.createElement('button');rs.className='btn';rs.type='button';rs.textContent='📂 Restaurer une sauvegarde';rs.onclick=function(){menu.classList.remove('ux-open');bkOpen('load');};menu.appendChild(rs);
   const lg=document.createElement('button');lg.className='btn';lg.type='button';lg.textContent='⌨ Afficher la liste des raccourcis MIDI';
