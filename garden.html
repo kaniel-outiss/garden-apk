@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.99 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v10.0 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -496,7 +496,7 @@ body.pg-atel .hero{display:none}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.99 · 🎛 Atelier en onglets</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v10.0 · voicing au cœur du cercle</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1584,6 +1584,19 @@ function vlNearest(prev,rootPc,ivs){
   return best||stackFrom(rootPc,ivs,60);}
 /* ⭕ le cercle des formes */
 const CIRC_SHAPE={1:'note seule',2:'intervalle',3:'triangle',4:'quadrilatère',5:'pentagone',6:'hexagone',7:'heptagone'};
+/* v10.0 — sous le nom de l'accord : le renversement (et la répartition des mains) au lieu du nom de la forme géométrique */
+function circVoiceLabel(entries,rootPc){if(!entries||!entries.length||rootPc==null)return '';const ms=entries.map(function(e){return e.m;}).sort(function(a,b){return a-b;});
+  const ivs=[];ms.forEach(function(m){const v=((m-rootPc)%12+12)%12;if(ivs.indexOf(v)<0)ivs.push(v);});if(ivs.length<2)return '';
+  const b=((ms[0]-rootPc)%12+12)%12;const inv=b===0?'fondamentale':({3:'1er renv.',4:'1er renv.',6:'2e renv.',7:'2e renv.',8:'2e renv.',9:'3e renv.',10:'3e renv.',11:'3e renv.'}[b]||(degName(b,ivs)+' à la basse'));
+  const mg=entries.filter(function(e){return e.hand==='MG';}),md=entries.filter(function(e){return e.hand==='MD';});
+  const dg=function(es){return es.slice().sort(function(a,b){return a.m-b.m;}).map(function(e){return degName(((e.m-rootPc)%12+12)%12,ivs);}).join('-');};
+  if(mg.length&&md.length)return 'MG '+dg(mg)+' · MD '+dg(md);
+  return inv+' · '+(ms[ms.length-1]-ms[0]<=12?'serré':'ouvert');}
+function atSub(){if(typeof AT==='undefined'||!AT.cur)return '';const v=(AT_VOI.filter(function(x){return x[0]===AT.voi;})[0]||[,''])[1].replace(/^[^A-Za-zÀ-ÿ0-9]+\s*/,'');return atSubOf(v,AT.cur,AT.root);}
+function atSubOf(v,cur,r){const ms=cur.map(function(e){return e.m;}).sort(function(a,b){return a-b;});const ivs=[];ms.forEach(function(m){const x=((m-r)%12+12)%12;if(ivs.indexOf(x)<0)ivs.push(x);});
+  const dg=function(es){return es.slice().sort(function(a,b){return a.m-b.m;}).map(function(e){return degName(((e.m-r)%12+12)%12,ivs);}).join('-');};
+  const mg=cur.filter(function(e){return e.hand==='MG';}),md=cur.filter(function(e){return e.hand!=='MG';});
+  return v+'\n'+(mg.length&&md.length?'MG '+dg(mg)+' · MD '+dg(md):dg(cur));}
 function circSVG(entries,rootPc,prev,o){
   o=o||{};const S=o.size||220,c=S/2,R=S*.34,key=o.key==null?KEY.pc:o.key;
   /* 🔄 v9.86 — ordre du cercle : chromatique (conduite des voix) ou quintes (harmonie, tonalité, mouvement des fondamentales) */
@@ -1641,7 +1654,8 @@ function circSVG(entries,rootPc,prev,o){
     const got=pcs.filter(function(p){return LV.indexOf(p)>=0;}).length,full=got===pcs.length&&!bad.length;
     if(LV.length)o.lb=(full?'✓ ':'')+got+'/'+pcs.length;}
   s+='<text x="'+c+'" y="'+(c-S*.01)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="900" font-size="'+(S*.07)+'" fill="#F5C842">'+(o.lb||'')+'</text>'
-    +'<text x="'+c+'" y="'+(c+S*.07)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.048)+'" fill="#9AA3C7">'+(CIRC_SHAPE[pcs.length]||(pcs.length+' côtés'))+'</text>';
+    +(function(){const sub=o.sub!=null?o.sub:circVoiceLabel(entries,rootPc);if(!sub)return '';const L=sub.split('\n'),mx=Math.max.apply(null,L.map(function(x){return x.length;}));const fs=S*(mx>22?.036:(mx>16?.042:.048));
+      return L.map(function(t,i){return '<text x="'+c+'" y="'+(c+S*.07+i*fs*1.2)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="'+fs+'" fill="#C9D1EE" stroke="#14182b" stroke-width="'+(fs*.28)+'" paint-order="stroke" stroke-linejoin="round">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</text>';}).join('');})();
   if(o.pick)for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+S*.1);s+='<circle data-atroot="'+pc+'" cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.07)+'" fill="transparent" style="cursor:pointer"/><circle data-atroot="'+pc+'" cx="'+t[0]+'" cy="'+t[1]+'" r="'+(S*.05)+'" fill="transparent" style="cursor:pointer"/>';}
   s+='<text x="'+c+'" y="'+(S-S*.012)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.038)+'" fill="#5B6390">⟳ '+(Q5?'quintes':'chromatique')+((STFA.cm||'auto')==='auto'?' (auto)':'')+'</text>';
   return '<svg class="circ" style="cursor:pointer" title="toucher le cercle : chromatique / quintes" viewBox="0 0 '+S+' '+S+'" width="'+(o.w||S)+'" height="'+(o.w||S)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
@@ -1830,7 +1844,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
   if(AT.seq&&!AT.played&&AT.pedal==null&&AT_BOYD[AT.voi]&&cols.length===(AT.prev&&AT.prev.length?3:2)){const nxo=atBoydSeq()[(AT.seq.i+1)%AT.seq.list.length];cols[cols.length-1]=mk(atBoydEnt(nxo),AT.seq.list[(AT.seq.i+1)%AT.seq.list.length].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.pos.replace('P','P.')+' ▸'});}
   const RD=AT.read&&!AT.reveal;if(RD){cols.forEach(function(c){c.lb=c.box?null:(c.op?null:'?');if(c.box)c.box='suivant';});}
   const stf=_stfDraw(RD?cols.filter(function(c){return !c.op||c.box;}):cols,{grand:true,sp:12,key:key,vl:!RD&&!!STFA.vl&&cols.length>1,deg:!RD&&!!STFA.deg,mode:RD?'read':undefined,scale:big?1.6:1.15});
-  const circ=circSVG(cur,r,AT.prev,{size:300,w:big?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null});
+  const vName=(AT_VOI.filter(function(v){return v[0]===AT.voi;})[0]||[,''])[1].replace(/^[^A-Za-zÀ-ÿ0-9]+\s*/,'');const circ=circSVG(cur,r,AT.prev,{size:300,w:big?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null,sub:atSubOf(vName,cur,r)});
   const kb=miniKb(cur.map(function(e){return E(e.m,r,e.hand);}),r,Math.min(900,(box.clientWidth||900)-30));
   const pill=function(attr,t,on,c){return '<button class="opill'+(on?' on':'')+'" '+attr+(c&&on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+t+'</button>';};
   const row=function(lb,h){return '<div class="at-row"><div class="at-lb">'+lb+'</div>'+h+'</div>';};
@@ -2043,7 +2057,7 @@ function liveCirc(){try{if(!STFA.live)return;const H=Array.from(held);
   if(DR.on&&DR._circ){const el=document.getElementById('drCirc');if(el&&el.innerHTML){const c=DR._circ;el.innerHTML=circSVG(c.e,c.r,c.pv,Object.assign({size:240,w:c.big?320:230,live:H.length?H:null,fresh:LIVE_FRESH},c.o||{}))+circLegend();}}
   if(PAGE==='atel'&&AT.cur&&!AT.played){const RD=AT.read&&!AT.reveal;const el=document.getElementById(RD?'atLiveC':'atCircSvg');if(el){const key=atKey();
     if(RD){const bad=H.some(function(m){return AT.cur.map(function(e){return e.m%12;}).indexOf(m%12)<0;});el.innerHTML=bad?circSVG(AT.cur,AT.root,null,{size:260,w:260,key:key,live:H})+'<div class="hint">une note n’est pas dans l’accord : la flèche montre la plus proche</div>':'';}
-    else el.innerHTML=circSVG(AT.cur,AT.root,AT.prev,{size:300,w:window.innerWidth>900?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null,live:H.length?H:null,fresh:LIVE_FRESH});}}}catch(e){}
+    else el.innerHTML=circSVG(AT.cur,AT.root,AT.prev,{size:300,w:window.innerWidth>900?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null,sub:atSub(),live:H.length?H:null,fresh:LIVE_FRESH});}}}catch(e){}
   LIVE_FRESH=null;}
 /* v9.96 — transposer l'atelier d'un intervalle quelconque (en demi-tons) ; utilisé par C7/B6 ET par le bouton de tonalité de l'en-tête */
 function atShift(d){d=((d%12)+12)%12;if(!d)return;
