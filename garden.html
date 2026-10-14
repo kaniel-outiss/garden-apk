@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v10.0 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v10.1 · drill compact — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -310,6 +310,19 @@ body.ux-focus #drStf{max-width:560px;margin:8px auto 0}
 .dr-sub{font-size:12px;color:var(--gris);margin-top:2px;min-height:16px}
 .dr-kbz{display:flex;justify-content:center;overflow-x:auto;padding:12px 0 4px}
 .dr-stats{display:flex;justify-content:center;gap:22px;margin-top:10px;flex-wrap:wrap}
+/* v10.1 — drill compact : compteurs sur la ligne du nom, portée + cercle côte à côte, mini-clavier à la demande */
+.dr-head{display:flex;align-items:center;gap:10px}.dr-head .dr-target{flex:1 1 auto;min-width:0}
+.dr-head .dr-stats{display:grid;grid-template-columns:repeat(3,auto);gap:2px 12px;margin:0;flex:0 0 auto}
+.dr-head .dr-stat .v{font-size:.95rem!important;line-height:1.1}.dr-head .dr-stat .l{font-size:8px!important;letter-spacing:.05em}
+.dr-kbt{flex:0 0 auto;font-size:15px;padding:4px 8px;align-self:center}body.drkb-on .dr-kbt{background:var(--or);color:#0C0E14}
+body:not(.drkb-on) .dr-kbz{display:none!important}
+.dr-vis{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.dr-vis #drStf{flex:1 1 58%;min-width:0;max-width:none!important;margin:0!important}
+.dr-vis #drStf svg{width:100%;height:auto;max-height:420px}
+.dr-vis #drCirc{flex:0 1 40%;min-width:0;margin:0!important;display:flex;flex-direction:column;align-items:center}.dr-vis #drCirc:empty,.dr-vis #drStf:empty{display:none!important}
+.dr-vis #drCirc svg.circ{width:100%;height:auto;max-width:400px}
+@media(max-width:640px){.dr-vis{flex-direction:column}.dr-vis #drStf,.dr-vis #drCirc{flex:1 1 auto;width:100%}
+  .dr-head{flex-wrap:wrap;justify-content:center}.dr-head .dr-target{flex-basis:100%}.dr-head .dr-stats{grid-template-columns:repeat(6,auto)}}
 .dr-stat{text-align:center}
 .dr-stat .v{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--or)}
 .dr-stat .l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gris)}
@@ -496,7 +509,7 @@ body.pg-atel .hero{display:none}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v10.0 · voicing au cœur du cercle</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v10.1 · drill compact</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -609,7 +622,16 @@ body.pg-atel .hero{display:none}
       <div class="ux-fold res-fold" id="routFold"></div>
     </div>
     <div class="dr-stage" id="drStage">
-      <div class="dr-target" id="drTarget">Choisis un exercice et démarre</div>
+      <div class="dr-head"><div class="dr-target" id="drTarget">Choisis un exercice et démarre</div>
+      <div class="dr-stats">
+          <div class="dr-stat"><div class="v" id="stReps">0</div><div class="l">Validés</div></div>
+          <div class="dr-stat"><div class="v" id="stStreak">🔥 0</div><div class="l">Série</div></div>
+          <div class="dr-stat"><div class="v" id="stErr" style="color:#f08a8c">0</div><div class="l">Erreurs</div></div>
+          <div class="dr-stat"><div class="v" id="stMs">—</div><div class="l">Réponse</div></div>
+          <div class="dr-stat"><div class="v" id="stTime">0:00</div><div class="l">Chrono</div></div>
+          <div class="dr-stat"><div class="v" id="stStep">—</div><div class="l">Progression</div></div>
+      </div>
+      <button class="tgl dr-kbt" id="btnDrKb" title="Afficher / masquer le petit clavier du drill">🎹</button></div>
       <div id="drInv" style="text-align:center"></div>
       <div class="dr-sub" id="drSub"></div>
       <div class="fb-box" id="fbBox"></div>
@@ -618,15 +640,7 @@ body.pg-atel .hero{display:none}
       <button class="btn gold" id="btnEar" style="display:none;margin:4px auto">🔊 Réécouter</button>
       <button class="tgl" id="btnPin" style="display:none;margin:4px auto;font-size:11px" title="Garder cette question dans la réserve de révision">📌 À réviser</button>
       <div class="dr-kbz"><div class="kb" id="drillKb" style="display:none"></div></div>
-      <div id="drStf"></div>
-      <div class="dr-stats">
-        <div class="dr-stat"><div class="v" id="stReps">0</div><div class="l">Validés</div></div>
-        <div class="dr-stat"><div class="v" id="stStreak">🔥 0</div><div class="l">Série</div></div>
-        <div class="dr-stat"><div class="v" id="stErr" style="color:#f08a8c">0</div><div class="l">Erreurs</div></div>
-        <div class="dr-stat"><div class="v" id="stMs">—</div><div class="l">Réponse</div></div>
-        <div class="dr-stat"><div class="v" id="stTime">0:00</div><div class="l">Chrono</div></div>
-        <div class="dr-stat"><div class="v" id="stStep">—</div><div class="l">Progression</div></div>
-      </div>
+      <div class="dr-vis"><div id="drStf"></div><div id="drCirc"></div></div>
       <div class="dr-prog"><i id="drProg" style="width:0%"></i></div>
     </div>
   </div>
@@ -1682,6 +1696,8 @@ function drAids(entries,rootPc){
   el.style.maxWidth='none';
   el.innerHTML=_stfDraw(cols,{grand:anyMG&&anyMD,sp:11,vl:!!STFA.vl,deg:!!STFA.deg,scale:(big?2.2:1.5)*(cols.length>1?1.2:1)});
   return true;}
+(function(){let on=false;try{on=localStorage.getItem('garden_drkb')==='1';}catch(e){}document.body.classList.toggle('drkb-on',on);
+  document.addEventListener('click',function(e){if(!e.target.closest('#btnDrKb'))return;const v=!document.body.classList.contains('drkb-on');document.body.classList.toggle('drkb-on',v);try{localStorage.setItem('garden_drkb',v?'1':'0');}catch(_){}});})();
 function drCirc(entries,rootPc){
   let el=document.getElementById('drCirc');const st=document.getElementById('drStf');
   if(!el&&st){el=document.createElement('div');el.id='drCirc';el.style.cssText='display:flex;flex-direction:column;align-items:center;margin:4px auto';st.parentNode.insertBefore(el,st.nextSibling);}
