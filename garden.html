@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.94 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.95 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -489,7 +489,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.94 · 🟢 voir / 🔴 jouer</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.95 · 🎯 Défi transposition</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -540,6 +540,7 @@ body.ux-focus #uxStopBar{display:flex}
       <div class="chord-voi" id="chVoi"></div>
     </div>
     <div class="chord-notes" id="chNotes"></div>
+    <div id="defBox" style="margin:6px 0"></div>
     <div class="ivrow" id="chIvs"></div>
     <div class="ivrow" id="chPoly"></div>
     <div class="vlrow" id="chVL"></div>
@@ -2324,19 +2325,34 @@ const MEMBER={
  min:[[2,'ii'],[4,'iii'],[9,'vi']],
  dim:[[11,'vii°']]
 };
+/* v9.95 — trois façons d'afficher l'harmonisation : 📍 fondamentale · 🔄 comme je joue (même renversement) · 🎻 conduite des voix (au plus près de l'accord joué) */
+let DEGV=(function(){try{return localStorage.getItem('garden_degv')||'vl';}catch(e){return 'vl';}})();
+function degInv(c){const ivs=SEVENTH[c.tpl.q]||c.tpl.iv;const b=((c.bassPc-c.rootPc)%12+12)%12;const k=ivs.indexOf(b);return k<0?0:k;}
+function degRot(notes,k){const n=notes.slice();for(let i=0;i<k;i++){const x=n.shift();n.push(x+12);}return n;}
+function degNear(cands,ref){/* candidat le plus proche (somme des écarts, notes triées) */let best=null,bc=1e9;const R=ref.slice().sort(function(a,b){return a-b;});
+  cands.forEach(function(n){const S=n.slice().sort(function(a,b){return a-b;});let c=0;for(let i=0;i<Math.max(S.length,R.length);i++){c+=Math.abs((S[Math.min(i,S.length-1)])-(R[Math.min(i,R.length-1)]));}if(c<bc){bc=c;best=S;}});return best;}
+function degVoice(r,q,c){const ivs=SEVENTH[q],root=stackFrom(r,ivs,60);if(DEGV==='root')return root;
+  const ref=c.notes;const lo=Math.min.apply(null,ref);
+  if(DEGV==='same'){let n=degRot(root,Math.min(degInv(c),ivs.length-1));while(Math.min.apply(null,n)>lo+6)n=n.map(function(m){return m-12;});while(Math.min.apply(null,n)<lo-6)n=n.map(function(m){return m+12;});return n.sort(function(a,b){return a-b;});}
+  const cands=[];for(let k=0;k<ivs.length;k++){const b=degRot(root,k);[-24,-12,0,12].forEach(function(o){cands.push(b.map(function(m){return m+o;}));});}return degNear(cands,ref);}
 function buildDegrees(c){
-  const tonic=c.rootPc;let html='';
+  const tonic=c.rootPc;
+  let html='<div class="degv" style="grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">'+[['root','📍 Fondamentale'],['same','🔄 Comme je joue'],['vl','🎻 Conduite des voix']].map(function(x){return '<button type="button" class="btn'+(DEGV===x[0]?' grn':' ghost')+'" data-degv="'+x[0]+'" style="padding:6px 10px;font-size:13px">'+x[1]+'</button>';}).join('')
+    +'<span class="hint" style="align-self:center">'+(DEGV==='root'?'chaque degré empilé depuis sa fondamentale':(DEGV==='same'?'tous les degrés dans le renversement que tu joues':'chaque degré au plus près de ton accord : le moins de mouvement possible'))+'</span></div>';
   HARM.forEach(function(h){
     const r=(tonic+h.iv)%12;
-    const notes=stackFrom(r,SEVENTH[h.q],60);
     const on=(r===c.rootPc&&h.q===c.tpl.q);
+    const notes=on&&DEGV!=='root'?c.notes.slice().sort(function(a,b){return a-b;}):degVoice(r,h.q,c);
+    const nm=function(m){const sp=stfSpell(m,tonic,r,SEVENTH[h.q]);return sp.nm+(Math.floor(m/12)-1);};
+    const mv=DEGV==='vl'&&!on?(function(){const a=c.notes.slice().sort(function(x,y){return x-y;}),b=notes;let t=0;for(let i=0;i<Math.min(a.length,b.length);i++)t+=Math.abs(b[i]-a[i]);return ' <span style="color:var(--gris);font-size:11px">('+t+' ½t)</span>';})():'';
     html+='<div class="mini" data-play="'+notes.join(',')+'" style="'+(on?'border-color:var(--or)':'')+'">'
-      +'<div class="mtitle"><span class="mname">'+h.r+' — '+nn(r)+SYMQ[h.q]+(on?' ✓':'')+'</span>'
-      +'<span class="mnotes">'+notes.map(noteName).join(' · ')+'</span></div>'
+      +'<div class="mtitle"><span class="mname">'+h.r+' — '+rootNm(r,tonic)+SYMQ[h.q]+(on?' ✓':'')+mv+'</span>'
+      +'<span class="mnotes">'+notes.map(nm).join(' · ')+'</span></div>'
       +miniKb(notes.map(function(m){return E(m,r);}),r)+'</div>';
   });
   return html;
 }
+document.addEventListener('click',function(e){const b=e.target.closest('[data-degv]');if(!b)return;e.stopPropagation();DEGV=b.dataset.degv;try{localStorage.setItem('garden_degv',DEGV);}catch(x){}if(cur)document.getElementById('degBox').innerHTML=buildDegrees(cur);},true);
 function buildMemberKeys(c){
   const list=MEMBER[c.tpl.q];
   if(!list){
@@ -2909,7 +2925,7 @@ let XP=0,XP_ON=true;const XMAP={};
 let XMODE=(function(){try{return localStorage.getItem('garden_xmode')||'view';}catch(e){return 'view';}})();const XV={base:null};
 function xModeSet(m){XMODE=m;try{localStorage.setItem('garden_xmode',m);}catch(e){}if(m==='view')XP=0;else XV.base=null;xpBadge();
   toast(m==='view'?'🟢 voir':'🔴 jouer',m==='view'?'‹ › transposent ce que tu viens de jouer':'‹ › transposent tout ce que tu joues');}
-function xpNow(){if(XMODE!=='play'||!XP)return 0;if(typeof DR!=='undefined'&&DR.on)return 0;if(typeof COND!=='undefined'&&COND.on)return 0;if(typeof DEMO!=='undefined'&&DEMO.on)return 0;return XP;}
+function xpNow(){if(XMODE!=='play'||!XP||window.__defOn)return 0;if(typeof DR!=='undefined'&&DR.on)return 0;if(typeof COND!=='undefined'&&COND.on)return 0;if(typeof DEMO!=='undefined'&&DEMO.on)return 0;return XP;}
 function xpShift(d){if(XMODE!=='play')return;XP=((XP+d+6)%12+12)%12-6;xpBadge();}
 function xpBadge(){const k=document.querySelector('.ux-key');if(k){k.classList.toggle('xv',XMODE==='view');k.classList.toggle('xp',XMODE==='play');k.title=(XMODE==='view'?'🟢 VOIR : ‹ › transposent ce que tu viens de jouer':'🔴 JOUER : ‹ › transposent tout ce que tu joues')+' — appui long pour changer';}
   const b=document.getElementById('uxXp');if(!b)return;b.style.display=XMODE==='play'&&XP?'':'none';b.textContent='🎹 tu joues C → tu entends '+keyName(XP);b.title='Ton clavier MIDI est transposé : tu joues en C, tu entends et vois en '+keyName(XP)+' — touche pour revenir au clavier réel';}
@@ -13121,6 +13137,33 @@ window.PT_SAFE={app:'Garden',file:'garden-sauvegarde.json',match:function(k){ret
     document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')backup();});window.addEventListener('pagehide',backup);};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+</script>
+<script>
+/* ═══ 🎯 v9.95 — DÉFI TRANSPOSITION : joue ta forme en do, Garden tire une tonalité, tu la rejoues, il valide ═══ */
+const DEF={on:false,model:null,target:null,baseKey:null,ok:0,tot:0,streak:0,done:false,armed:false,hint:false};
+function defKeyName(pc){return keyName(pc);}
+function defStart(){if(!cur){toast('🎯 défi','Joue d’abord un accord (ta forme en do)');return;}DEF.on=true;DEF.model={rootPc:cur.rootPc,tpl:cur.tpl,notes:cur.notes.slice(),inv:degInv(cur),keyPc:KEY.pc};DEF.baseKey=KEY;window.__defOn=true;if(typeof XV!=='undefined')XV.base=null;DEF.ok=0;DEF.tot=0;DEF.streak=0;defNext();}
+function defNext(){const d0=((DEF.model.rootPc-DEF.model.keyPc)%12+12)%12;let t;do{t=Math.floor(Math.random()*12);}while(t===DEF.model.rootPc||(DEF.target&&t===DEF.target.rootPc));
+  DEF.target={rootPc:t,keyPc:((t-d0)%12+12)%12};DEF.done=false;DEF.hint=false;const k=KEYS.filter(function(x){return x.pc===DEF.target.keyPc;})[0];if(k)setKey(k);defDraw();}
+function defStop(){DEF.on=false;window.__defOn=false;if(DEF.baseKey)setKey(DEF.baseKey);document.getElementById('defBox').innerHTML='';}
+function defShape(){const d=((DEF.target.rootPc-DEF.model.rootPc)%12+12)%12;let n=DEF.model.notes.map(function(m){return m+(d>6?d-12:d);});return n;}
+function defDraw(){const b=document.getElementById('defBox');if(!b)return;if(!DEF.on){b.innerHTML='<button type="button" class="btn ghost" id="defGo" style="font-size:13px;padding:6px 10px" title="Joue un accord, puis rejoue-le dans la tonalité tirée au sort">🎯 Défi transposition</button>';return;}
+  const nm=rootNm(DEF.target.rootPc,DEF.target.keyPc)+DEF.model.tpl.sym;const shape=defShape();
+  b.innerHTML='<div style="border:2px solid var(--or);border-radius:14px;padding:10px 12px;background:rgba(232,176,75,.08)">'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:17px">🎯 Rejoue ta forme en <span style="color:var(--or)">'+defKeyName(DEF.target.keyPc)+'</span> : '+nm+'</b>'
+    +'<span class="hint">même degré que ton modèle'+(DEF.model.inv?' · même renversement':'')+'</span><span style="margin-left:auto" class="hint">'+(DEF.streak?'🔥 '+DEF.streak+' d’affilée · ':'')+DEF.ok+'/'+DEF.tot+'</span></div>'
+    +(DEF.hint?'<div style="margin-top:6px">'+miniKb(shape.map(function(m){return E(m,DEF.target.rootPc);}),DEF.target.rootPc)+'</div>':'')
+    +'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap"><button type="button" class="btn ghost" data-def="hint" style="padding:5px 9px;font-size:13px">💡 '+(DEF.hint?'cacher':'voir la forme')+'</button><button type="button" class="btn ghost" data-def="hear" style="padding:5px 9px;font-size:13px">🎧 entendre</button><button type="button" class="btn ghost" data-def="next" style="padding:5px 9px;font-size:13px">⏭ autre tonalité</button><button type="button" class="btn ghost" data-def="stop" style="padding:5px 9px;font-size:13px">✕ fin</button></div></div>';}
+document.addEventListener('click',function(e){if(e.target.closest('#defGo')){defStart();return;}const b=e.target.closest('[data-def]');if(!b)return;const k=b.dataset.def;
+  if(k==='hint'){DEF.hint=!DEF.hint;defDraw();}if(k==='hear')playNotes(defShape(),.9);if(k==='next')defNext();if(k==='stop')defStop();});
+/* vérification à chaque accord joué */
+const _defRender=render;render=function(){_defRender.apply(this,arguments);if(!DEF.on){defDraw();return;}if(!DEF.armed||DEF.done||!cur)return;
+  if(held.size<Math.min(3,DEF.model.notes.length))return;
+  const okRoot=cur.rootPc===DEF.target.rootPc&&cur.tpl.sym===DEF.model.tpl.sym;const okInv=degInv(cur)===DEF.model.inv;
+  if(okRoot){DEF.done=true;DEF.tot++;DEF.ok++;DEF.streak++;toast('🎯 bravo',rootNm(cur.rootPc)+cur.tpl.sym+(okInv?' ✓ même renversement':' ✓ (renversement différent)'));setTimeout(function(){if(DEF.on)defNext();},1400);}
+  else if(held.size>=DEF.model.notes.length){DEF.armed=false;DEF.tot++;DEF.streak=0;toast('🎯 pas encore','Tu as joué '+rootNm(cur.rootPc)+cur.tpl.sym+' — vise '+rootNm(DEF.target.rootPc)+DEF.model.tpl.sym);defDraw();}};
+const _defOn=noteOn;noteOn=function(m){if(DEF.on&&held.size===0)DEF.armed=true;return _defOn.apply(this,arguments);};
+setTimeout(defDraw,300);
 </script>
 </body>
 </html>
