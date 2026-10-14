@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.87 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.88 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -486,7 +486,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.87 · 🎛 Atelier dans les onglets</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.88 · 🔄 Bouton du cercle</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1604,6 +1604,7 @@ function circSVG(entries,rootPc,prev,o){
       +'<text x="'+m[0]+'" y="'+(m[1]-S*.02)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="'+(S*.042)+'" fill="'+col+'">'+({5:'4te ↑',7:'5te ↑',1:'½ ↑',11:'½ ↓',2:'ton ↑',10:'ton ↓',6:'triton',3:'3ce m ↑',9:'3ce m ↓',4:'3ce M ↑',8:'3ce M ↓'}[mv]||'')+'</text>';}
   /* 🔆 v9.85 — retour en direct : attendue = anneau doré qui respire · juste = vert + onde · fausse = rouge qui clignote + flèche */
   const LV=o.live?o.live.map(function(m){return ((m%12)+12)%12;}).filter(function(p,i,a){return a.indexOf(p)===i;}):null;
+  if(LV&&pcs.every(function(p){return LV.indexOf(p)>=0;})&&LV.every(function(p){return pcs.indexOf(p)>=0;}))s+=poly(pcs,'fill="#3ECF8E" fill-opacity=".22" stroke="#3ECF8E" stroke-width="'+(S*.018)+'" stroke-linejoin="round"');
   if(LV)pcs.forEach(function(pc){const q=P(pc);if(LV.indexOf(pc)<0)s+='<circle class="lv-wait" cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.078)+'" fill="none" stroke="#F5C842" stroke-width="'+(S*.012)+'" stroke-dasharray="'+(S*.02)+' '+(S*.016)+'"/>';
     else{s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.08)+'" fill="#3ECF8E" fill-opacity=".28"/>';if(o.fresh===pc)s+='<circle class="lv-pop" cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.06)+'" fill="none" stroke="#3ECF8E" stroke-width="'+(S*.014)+'" style="--r0:'+(S*.06)+'px;--r1:'+(S*.16)+'px"/>';}});
   /* sommets : couleur fonctionnelle + anneau de la main */
@@ -1620,7 +1621,6 @@ function circSVG(entries,rootPc,prev,o){
         s+='<path d="M'+a[0]+','+a[1]+' Q'+m[0]+','+m[1]+' '+b[0]+','+b[1]+'" fill="none" stroke="#FF9F43" stroke-width="'+(S*.012)+'" stroke-dasharray="'+(S*.016)+' '+(S*.012)+'"/><path d="M'+b[0]+','+b[1]+' L'+(b[0]-ah*Math.cos(ang-.5))+','+(b[1]-ah*Math.sin(ang-.5))+' L'+(b[0]-ah*Math.cos(ang+.5))+','+(b[1]-ah*Math.sin(ang+.5))+'Z" fill="#FF9F43"/>'
           +'<text x="'+m[0]+'" y="'+(m[1]+S*.016)+'" text-anchor="middle" font-family="Arial" font-weight="900" font-size="'+(S*.048)+'" fill="#FF9F43">'+(best.d>0?'↑':'↓')+(Math.abs(best.d)===1?'½':(Math.abs(best.d)===2?'1':Math.abs(best.d)+'½t'))+'</text>';}});
     const got=pcs.filter(function(p){return LV.indexOf(p)>=0;}).length,full=got===pcs.length&&!bad.length;
-    if(full)s+=poly(pcs,'fill="#3ECF8E" fill-opacity=".22" stroke="#3ECF8E" stroke-width="'+(S*.018)+'" stroke-linejoin="round"');
     if(LV.length)o.lb=(full?'✓ ':'')+got+'/'+pcs.length;}
   s+='<text x="'+c+'" y="'+(c-S*.01)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="900" font-size="'+(S*.07)+'" fill="#F5C842">'+(o.lb||'')+'</text>'
     +'<text x="'+c+'" y="'+(c+S*.07)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.048)+'" fill="#9AA3C7">'+(CIRC_SHAPE[pcs.length]||(pcs.length+' côtés'))+'</text>';
@@ -1629,7 +1629,7 @@ function circSVG(entries,rootPc,prev,o){
 
 /* 🔄 v9.86 — ordre du cercle : 'chr' chromatique · 'q5' quintes · 'auto' (quintes quand un enchaînement tourne) */
 function circMode(o){const m=STFA.cm||'auto';if(m!=='auto')return m;return (o&&o.seq)?'q5':'chr';}
-function circLegend(){return '<div class="hint" style="margin:2px 0 0;font-size:11px;text-align:center"><b style="color:#A78BFA">▲ MG</b> · <b style="color:#F5C842">▲ MD</b> · <span style="color:#7A85A8">┄ accord précédent</span> · <span style="color:#F5C842">◉ note commune</span> · <span style="color:#3ECF8E">½ ton</span> · <span style="color:#4F9EFF">1 ton</span> · <span style="color:#FF9F43">saut</span></div>';}
+function circLegend(){return '<div style="text-align:center;margin:4px 0 0"><button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes'}[STFA.cm||'auto'])+'</button></div><div class="hint" style="margin:2px 0 0;font-size:11px;text-align:center"><b style="color:#A78BFA">▲ MG</b> · <b style="color:#F5C842">▲ MD</b> · <span style="color:#7A85A8">┄ accord précédent</span> · <span style="color:#F5C842">◉ note commune</span> · <span style="color:#3ECF8E">½ ton</span> · <span style="color:#4F9EFF">1 ton</span> · <span style="color:#FF9F43">saut</span></div>';}
 /* 🎯 dans la fenêtre de concentration : précédent (estompé) → actuel → suivant (cadre) + cercle */
 function duoEntries(s){const split=+DRV.split||60,bass=36+((s.duo.root-36)%12+12)%12,fifth=bass+((s.duo.fifth-bass)%12+12)%12;
   return [{m:bass,hand:'MG'},{m:fifth,hand:'MG'}].concat(stackFrom(s.duo.root,s.ivs.filter(function(x){return x%12!==0;}),split).map(function(m){return {m:m,hand:'MD'};}));}
