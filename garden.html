@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.83 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.84 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -475,12 +475,13 @@ body.ux-focus #uxStopBar{display:flex}
 .at-why{font-size:14px;color:#B8C0DA;margin-top:6px;line-height:1.6}.at-why small{color:#7A85A8}
 .at-strip{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:6px}.at-key{font:800 11px Inter,Arial;color:#A78BFA;margin:0 2px 0 8px;letter-spacing:.04em}.at-ch{background:#1B2142;border:1.5px solid #2C3560;color:#E8ECF5;border-radius:10px;padding:5px 9px;font:700 13px Inter,Arial;cursor:pointer}.at-ch.on{border-color:#F5C842;color:#12162B;background:#F5C842}
 .at-p{display:block;font-size:10px;color:#A78BFA;font-weight:800;line-height:1}.at-ch.on .at-p{color:#3b2a00}
+.at-week{background:#1B2142;border-radius:12px;padding:8px 10px;margin-top:4px}.at-wb{display:flex;align-items:center;gap:8px;margin:4px 0}.at-wb span{flex:1;font-size:14px}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.83 · 🎛 Atelier des formes</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.84 · 🎛 Atelier des formes</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1674,7 +1675,7 @@ function atHands(iv){const pc=function(x){return x%12;},has=function(x){return i
     case 'quart':{mg=[0,7];const st=third!=null?third:5;md=[st,st+5,st+10,st+15].map(function(x){return x;});break;}
     case 'gospel':mg=[0,sev!=null?sev:7];md=[third].concat(ext.length?ext:[five]).concat(six!=null?[six]:[]).filter(function(x){return x!=null;});break;
     case 'open':mg=[0,7];md=[third,sev!=null?sev:six].concat(ext).filter(function(x){return x!=null;});break;
-    default:{md=core.concat(ext);if(md.length>4)md=md.filter(function(x){return x!==five;});}
+    default:{md=core.concat(ext);if(md.length>4)md=md.filter(function(x){return x!==five;});if(md.length<3)md.unshift(0);}
   }
   /* sans doublon de classe de hauteur dans la MD */
   const seen={};md=md.filter(function(x){const p=pc(x);if(seen[p])return false;seen[p]=1;return true;});
@@ -1761,8 +1762,8 @@ function atHaeOne(){const q=atHQof(AT.fam,AT.col),all=hVoicings(q,false),pv=AT.p
   let best=null;cs.forEach(function(v){const n=hPlace(AT.root,v.sp,pv&&pv.length===3?pv:null);if(!n)return;const d=pv&&pv.length===3?n.reduce(function(t,x,j){return t+Math.abs(x-pv[j]);},0):0;if(!best||d<best.d)best={v:v,n:n,d:d};});
   return {pc:AT.root,q:q,v:best.v,notes:best.n,rule:rule};}
 function atHaeCur(){return AT.seq?atHaeSeq()[AT.seq.i]:atHaeOne();}
-function atName(){return nnK(AT.root,atKey())+atSym(atIvs());}
-function atBuild(){AT.boydO=null;AT.haeO=null;if(AT.played)return AT.played;if(AT.voi==='hae'){const o=atHaeCur();AT.haeO=o;return atHaeEnt(o);}if(AT_BOYD[AT.voi]){const o=atBoydCur();AT.boydO=o;return atBoydEnt(o);}return atPlace(atIvs());}
+function atName(){return nnK(AT.root,atKey())+atSym(atIvs())+(AT.pedal!=null&&AT.pedal!==AT.root?'/'+nnK(AT.pedal,atKey()):'');}
+function atBuild(){AT.boydO=null;AT.haeO=null;if(AT.played)return AT.played;if(AT.pedal!=null)return atPlace(atIvs());if(AT.voi==='hae'){const o=atHaeCur();AT.haeO=o;return atHaeEnt(o);}if(AT_BOYD[AT.voi]){const o=atBoydCur();AT.boydO=o;return atBoydEnt(o);}return atPlace(atIvs());}
 /* une modification = l'accord actuel devient « avant » */
 function atChange(fn){const before=AT.cur,bR=AT.root,bP=AT.curPos,bC=AT.curCat;fn();AT.played=null;AT.prev=before;AT.prevRoot=bR;AT.prevPos=bP;AT.prevCat=bC;AT.prevName=AT.curName;atSave();atRender(true);}
 function atRender(sound){const box=document.getElementById('atelBox');if(!box)return;
@@ -1772,10 +1773,11 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
   const mk=function(es,rp,extra){const ivs=es.map(function(e){return ((e.m-rp)%12+12)%12;});return Object.assign({rootPc:rp,ivs:ivs,notes:es.map(function(e){return {m:e.m,hand:e.hand,col:stfColOf(e.m,rp,ivs,e.hand)};})},extra||{});};
   const cols=[];if(AT.prev&&AT.prev.length)cols.push(mk(AT.prev,AT.prevRoot!=null?AT.prevRoot:r,{op:.45,lb:(AT.prevName||'')+' (avant)'}));
   cols.push(mk(cur,r,{lb:'▶ '+AT.curName+posLb}));
-  if(AT.seq&&!AT.played){const nx=AT.seq.list[(AT.seq.i+1)%AT.seq.list.length],sv={root:AT.root,fam:AT.fam,col:AT.col,prev:AT.prev};AT.prev=cur;atSeqApply(nx);const ne=atPlace(atIvs()),nn2=atName(),nr=AT.root;AT.root=sv.root;AT.fam=sv.fam;AT.col=sv.col;AT.prev=sv.prev;cols.push(mk(ne,nr,{op:.7,box:nn2+' ▸'}));}
-  if(AT.seq&&!AT.played&&AT.voi==='hae'&&cols.length===(AT.prev&&AT.prev.length?3:2)){const ni=(AT.seq.i+1)%AT.seq.list.length,nxo=atHaeSeq()[ni];cols[cols.length-1]=mk(atHaeEnt(nxo),AT.seq.list[ni].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.v.k+' ▸'});}
-  if(AT.seq&&!AT.played&&AT_BOYD[AT.voi]&&cols.length===(AT.prev&&AT.prev.length?3:2)){const nxo=atBoydSeq()[(AT.seq.i+1)%AT.seq.list.length];cols[cols.length-1]=mk(atBoydEnt(nxo),AT.seq.list[(AT.seq.i+1)%AT.seq.list.length].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.pos.replace('P','P.')+' ▸'});}
-  const stf=_stfDraw(cols,{grand:true,sp:12,key:key,vl:!!STFA.vl&&cols.length>1,deg:!!STFA.deg,scale:big?1.6:1.15});
+  if(AT.seq&&!AT.played){const nx=AT.seq.list[(AT.seq.i+1)%AT.seq.list.length],sv={root:AT.root,fam:AT.fam,col:AT.col,prev:AT.prev,pedal:AT.pedal};AT.prev=cur;atSeqApply(nx);const ne=atPlace(atIvs()),nn2=atName(),nr=AT.root;AT.root=sv.root;AT.fam=sv.fam;AT.col=sv.col;AT.prev=sv.prev;AT.pedal=sv.pedal;cols.push(mk(ne,nr,{op:.7,box:nn2+' ▸'}));}
+  if(AT.seq&&!AT.played&&AT.pedal==null&&AT.voi==='hae'&&cols.length===(AT.prev&&AT.prev.length?3:2)){const ni=(AT.seq.i+1)%AT.seq.list.length,nxo=atHaeSeq()[ni];cols[cols.length-1]=mk(atHaeEnt(nxo),AT.seq.list[ni].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.v.k+' ▸'});}
+  if(AT.seq&&!AT.played&&AT.pedal==null&&AT_BOYD[AT.voi]&&cols.length===(AT.prev&&AT.prev.length?3:2)){const nxo=atBoydSeq()[(AT.seq.i+1)%AT.seq.list.length];cols[cols.length-1]=mk(atBoydEnt(nxo),AT.seq.list[(AT.seq.i+1)%AT.seq.list.length].root,{op:.7,box:cols[cols.length-1].box.replace(' ▸','')+' · '+nxo.pos.replace('P','P.')+' ▸'});}
+  const RD=AT.read&&!AT.reveal;if(RD){cols.forEach(function(c){c.lb=c.box?null:(c.op?null:'?');if(c.box)c.box='suivant';});}
+  const stf=_stfDraw(RD?cols.filter(function(c){return !c.op||c.box;}):cols,{grand:true,sp:12,key:key,vl:!RD&&!!STFA.vl&&cols.length>1,deg:!RD&&!!STFA.deg,mode:RD?'read':undefined,scale:big?1.6:1.15});
   const circ=circSVG(cur,r,AT.prev,{size:300,w:big?340:300,lb:AT.curName,key:key,pick:1});
   const kb=miniKb(cur.map(function(e){return E(e.m,r,e.hand);}),r,Math.min(900,(box.clientWidth||900)-30));
   const pill=function(attr,t,on,c){return '<button class="opill'+(on?' on':'')+'" '+attr+(c&&on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+t+'</button>';};
@@ -1789,7 +1791,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
     +(AT_BOYD[AT.voi]?row('📘 POSITION DE BOYD',['auto','P1','P2'].map(function(k){return pill('data-at="bp:'+k+'"',k==='auto'?'règle auto (alterne sur 4te/5te)':k.replace('P','P.'),AT.bpos===k,'#A78BFA');}).join('')+(AT.boydO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.boydO.pos.replace('P','P.')+(AT.boydO.rule&&AT.boydO.rule.lb?' — '+AT.boydO.rule.lb:'')+(AT.boydO.sw?' · switch (registre)':'')+'</span>':'')):'')
     +(AT.voi==='hae'?row('🎓 CATÉGORIE DE HAERLE · la MG seule (le bassiste joue la fondamentale)',['auto','A','B'].map(function(k){return pill('data-at="hc:'+k+'"',k==='auto'?'règle auto (change sur 4te/5te)':(k==='A'?'A : 3-7-9 / 3-6-9':'B : 7-3-5 / 7-3-6'),AT.hcat===k,'#A78BFA');}).join('')+(AT.haeO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.haeO.v.k+' · cat. '+AT.haeO.v.cat+' — '+AT.haeO.rule+'</span>':'')):'')
     +row('RENVERSEMENT · CONDUITE',pill('data-at="i:-1"','⬇ renv.',0)+'<span class="at-inv">'+(AT.vl?'auto':(AT.inv%Math.max(1,atHands(iv).md.length)===0?'PF':'R'+(((AT.inv%atHands(iv).md.length)+atHands(iv).md.length)%atHands(iv).md.length)))+'</span>'+pill('data-at="i:1"','⬆ renv.',0)
-      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0))+atSeqHTML();
+      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0)+pill('data-at="rd"','📖 lecture seule (je lis, je joue)',!!AT.read,'#F5C842'))+atMelHTML()+atSeqHTML()+atWeekHTML();
   /* phrase : ce qui a bougé */
   let why='';if(AT.prev&&AT.prev.length){const pr=vlPairs(AT.prev,cur),held=[],mv=[];
     const pIv=AT.prev.map(function(e){return ((e.m-(AT.prevRoot!=null?AT.prevRoot:r))%12+12)%12;}),cIv=cur.map(function(e){return ((e.m-r)%12+12)%12;});
@@ -1798,6 +1800,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
   const md=cur.filter(function(e){return e.hand==='MD';}),mg=cur.filter(function(e){return e.hand==='MG';});
   const cIv2=cur.map(function(x){return ((x.m-r)%12+12)%12;});
   const dl=function(es){return es.map(function(e){return stfSpell(e.m,key,r,cIv2).nm+' <small>('+degName(((e.m-r)%12+12)%12,cur.map(function(x){return ((x.m-r)%12+12)%12;}))+')</small>';}).join(' – ');};
+  if(RD){box.innerHTML='<div class="at-top"><div class="at-name">📖 Lis et joue'+(AT.readOk?' <span class="mtag tag-g">'+AT.readOk+' d’affilée</span>':'')+'</div><div>'+pill('data-at="rv"','👁 montrer',0)+pill('data-at="rd"','✕ quitter la lecture',1,'#F5C842')+'</div></div><div class="at-stf" style="margin-top:8px">'+stf+'</div><div class="at-ctl"><div class="hint" style="margin:0 0 6px">Joue l’accord lu (les deux mains, la basse en bas) : s’il est juste, on passe au suivant. Les noms restent cachés.</div>'+(AT.seq?pill('data-at="sst:-1"','⏮ précédent')+'<span class="at-inv" style="min-width:90px">accord '+(AT.seq.i+1)+' / '+AT.seq.list.length+'</span>'+pill('data-at="sst:1"','⏭ passer'):pill('data-at="r:5"','⏭ un autre accord'))+'</div>';return;}
   box.innerHTML='<div class="at-top"><div class="at-name">'+AT.curName+(AT.played?' <span class="mtag tag-g">joué au clavier</span>':'')+'</div><div>'+pill('data-at="play"','🎧 écouter',1,'#3ECF8E')+stfSel()+'</div></div>'
     +'<div class="at-grid"><div class="at-circ">'+circ+circLegend()+'</div><div class="at-main"><div class="at-stf">'+stf+'</div><div class="at-ctl">'+ctl+'</div></div></div>'
     +'<div class="at-kb">'+kb+'<div class="at-why"><b style="color:#A78BFA">MG</b> '+dl(mg)+(md.length?' · <b style="color:#F5C842">MD</b> '+dl(md):'')+(why?'<br>'+why:'')+'</div></div>';
@@ -1848,11 +1851,11 @@ function atSeqBuild(){if(String(AT.prog).indexOf('h:')===0){const G=H_PROGS[AT.p
   const P=AT_PROG[AT.prog]||AT_PROG['251'],C=AT_CHAIN[AT.chain],out=[];let k=AT.k0;
   for(let j=0;j<C.n;j++){let md=AT.mode==='alt'?(j%2?'min':'maj'):(AT.mode==='rel'?(j%2?'min':'maj'):AT.mode),kk=k;
     if(AT.mode==='rel'&&j%2)kk=(k+9)%12;
-    P[md].forEach(function(x){const pre=AT_PRE[x[1]];out.push({root:(kk+x[0])%12,fam:pre.f,col:Object.assign({},pre.c),len:x[2]||1,key:kk,md:md});});
+    P[md].forEach(function(x){const pre=AT_PRE[x[1]];out.push({root:(kk+x[0])%12,fam:pre.f,col:Object.assign({},pre.c),len:x[2]||1,key:kk,md:md,pedal:x[3]!=null?(kk+x[3])%12:null});});
     if(AT.mode==='rel'&&!(j%2)){continue;}
     k=C.st==null?Math.floor(Math.random()*12):(k+C.st)%12;}
   return out;}
-function atSeqApply(x){AT.root=x.root;AT.fam=x.fam;AT.col=Object.assign({},x.col);}
+function atSeqApply(x){AT.root=x.root;AT.fam=x.fam;AT.col=Object.assign({},x.col);AT.pedal=x.pedal!=null?x.pedal:null;}
 function atSeqGo(i){const S=AT.seq;if(!S)return;S.i=i;atChange(function(){atSeqApply(S.list[i]);});}
 function atSeqStop(){if(AT.seq&&AT.seq.t)clearTimeout(AT.seq.t);if(AT.seq)AT.seq.t=null;}
 function atSeqPlay(){const S=AT.seq;if(!S)return;atSeqStop();const tick=function(){if(PAGE!=='atel'||!AT.seq||!document.getElementById('atelBox'))return;
@@ -1860,7 +1863,10 @@ function atSeqPlay(){const S=AT.seq;if(!S)return;atSeqStop();const tick=function
 function atSeqHTML(){const pill=function(attr,t,on,c){return '<button class="opill'+(on?' on':'')+'" '+attr+(c&&on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+t+'</button>';};
   const kname=function(k,md){return nnK(k,md==='min'?(k+3)%12:k)+(md==='min'?' mineur':' majeur');};
   const isH=String(AT.prog).indexOf('h:')===0;
-  let h='<div class="at-row"><div class="at-lb">ENCHAÎNEMENTS</div>'+Object.keys(AT_PROG).map(function(k){return pill('data-at="sp:'+k+'"',AT_PROG[k].lb,AT.prog===k);}).join('')+'</div>'
+  let h='<div class="at-row"><div class="at-lb">ENCHAÎNEMENTS</div>'+Object.keys(AT_PROG).filter(function(k){return !AT_PROG[k].grp;}).map(function(k){return pill('data-at="sp:'+k+'"',AT_PROG[k].lb,AT.prog===k);}).join('')+'</div>'
+    +'<div class="at-row"><div class="at-lb">🎶 VOIX INTÉRIEURES</div>'+Object.keys(AT_PROG).filter(function(k){return AT_PROG[k].grp==='inner';}).map(function(k){return pill('data-at="sp:'+k+'"',AT_PROG[k].lb,AT.prog===k,'#3ECF8E');}).join('')+'</div>'
+    +'<div class="at-row"><div class="at-lb">🔺 PAIRES DE TRIADES (Campbell) · la MG tient la basse, la MD alterne les deux triades</div>'+Object.keys(AT_PROG).filter(function(k){return AT_PROG[k].grp==='pair';}).map(function(k){return pill('data-at="sp:'+k+'"',AT_PROG[k].lb,AT.prog===k,'#FF9F43');}).join('')+'</div>'
+    +(AT_PROG[AT.prog]&&AT_PROG[AT.prog].why?'<div class="hint" style="margin:2px 0 6px">💡 '+AT_PROG[AT.prog].why+'</div>':'')
     +'<div class="at-row"><div class="at-lb">🎓 GRILLES DE HAERLE (Voicing Skills · Jazz Language) — jouées une fois depuis la tonalité de départ</div>'+Object.keys(H_PROGS).map(function(k){return pill('data-at="sp:h:'+k+'"',H_PROGS[k].lb.replace(/ :.*$/,'').replace(/\(Skill/,'(Sk.'),AT.prog==='h:'+k,'#FF9F43');}).join('')+'</div>'
     +(isH?'':'<div class="at-row">'+Object.keys(AT_MODE).map(function(k){return pill('data-at="sm:'+k+'"',AT_MODE[k],AT.mode===k,'#A78BFA');}).join('')+'</div>'
     +'<div class="at-row">'+Object.keys(AT_CHAIN).map(function(k){return pill('data-at="sc:'+k+'"',AT_CHAIN[k].lb,AT.chain===k,'#4F9EFF');}).join('')+'</div>')
@@ -1868,7 +1874,7 @@ function atSeqHTML(){const pill=function(attr,t,on,c){return '<button class="opi
     +(AT.seq?pill('data-at="sgo"',AT.seq.t?'⏸ pause':'▶ jouer',!!AT.seq.t,'#3ECF8E')+pill('data-at="sst:-1"','⏮')+pill('data-at="sst:1"','⏭')+pill('data-at="sloop"','🔁 en boucle',!!AT.seq.loop,'#4F9EFF')+pill('data-at="sx"','✕ fermer'):pill('data-at="snew"','🎬 préparer l’enchaînement',1,'#3ECF8E'))+'</div>';
   if(AT.seq){const L=AT.seq.list;let lastKey=null;h+='<div class="at-strip">'+L.map(function(x,i){const nm=nnK(x.root,isH?((x.fam==='dom'||x.fam==='aug')?(x.root+5)%12:((x.fam==='min'||x.fam==='hd')?(x.root+3)%12:x.root)):(x.md==='min'?(x.key+3)%12:x.key))+(function(){const sv={root:AT.root,fam:AT.fam,col:AT.col};AT.root=x.root;AT.fam=x.fam;AT.col=x.col;const r=atSym(atIvs());AT.root=sv.root;AT.fam=sv.fam;AT.col=sv.col;return r;})();
       const head=(x.key+x.md)!==lastKey?'<span class="at-key">'+kname(x.key,x.md)+'</span>':'';lastKey=x.key+x.md;
-      const bo=AT_BOYD[AT.voi]?atBoydSeq()[i]:null,ho=AT.voi==='hae'?atHaeSeq()[i]:null;return head+'<button class="at-ch'+(i===AT.seq.i?' on':'')+'" data-at="sj:'+i+'">'+nm+(bo?'<small class="at-p">'+bo.pos.replace('P','P.')+(bo.sw?'↯':'')+'</small>':'')+(ho?'<small class="at-p">'+ho.v.k+'</small>':'')+'</button>';}).join('')+'</div>';}
+      const np=x.pedal==null,bo=np&&AT_BOYD[AT.voi]?atBoydSeq()[i]:null,ho=np&&AT.voi==='hae'?atHaeSeq()[i]:null;return head+'<button class="at-ch'+(i===AT.seq.i?' on':'')+'" data-at="sj:'+i+'">'+nm+(bo?'<small class="at-p">'+bo.pos.replace('P','P.')+(bo.sw?'↯':'')+'</small>':'')+(ho?'<small class="at-p">'+ho.v.k+'</small>':'')+'</button>';}).join('')+'</div>';}
   return h;}
 document.addEventListener('click',function(e){const t=e.target&&e.target.closest?e.target.closest('[data-at]'):null;if(!t||!t.closest('#atelBox'))return;
   const a=t.dataset.at,k=a.split(':')[0],v=a.slice(k.length+1);if(['sp','sm','sc','sk','snew','sgo','sst','sloop','sx','sj'].indexOf(k)<0)return;
@@ -1882,8 +1888,91 @@ document.addEventListener('click',function(e){const t=e.target&&e.target.closest
   else if(k==='sst'){atSeqStop();atSeqGo(((AT.seq.i+(+v))%AT.seq.list.length+AT.seq.list.length)%AT.seq.list.length);}
   else if(k==='sj'){atSeqStop();atSeqGo(+v);}
   else if(k==='sloop'){AT.seq.loop=!AT.seq.loop;atRender(false);}
-  else if(k==='sx'){atSeqStop();AT.seq=null;atRender(false);}});
+  else if(k==='sx'){atSeqStop();AT.seq=null;AT.pedal=null;atRender(false);}});
 
+
+
+/* ═══ 🎛 v9.84 — fin du lot « atelier » : voix intérieures, paires de triades, mélodie → accords, lecture seule, programme de la semaine ═══ */
+/* 🎶 voix intérieures (line clichés) et 🔺 paires de triades (Campbell) : des enchaînements de l'atelier */
+Object.assign(AT_PRE,{mM:{f:'min',c:{}},mM7:{f:'min',c:{maj7:1}},m7s:{f:'min',c:{'7':1}},m6:{f:'min',c:{'6':1}},mb6:{f:'min',c:{'♭13':1}},
+  M:{f:'maj',c:{}},aug:{f:'aug',c:{}},M6:{f:'maj',c:{'6':1}},d7:{f:'dom',c:{}},sus7:{f:'sus',c:{'7':1}},sus9:{f:'sus',c:{'7':1,'9':1}},d9:{f:'dom',c:{'9':1}},Mmaj7:{f:'maj',c:{maj7:1}}});
+const AT_INNER={
+  clm:{lb:'Cliché mineur ↓ (1 · 7 · ♭7 · 6)',ch:[[0,'mM'],[0,'mM7'],[0,'m7s'],[0,'m6']],why:'la fondamentale descend par demi-tons à l’intérieur de l’accord : Cm → Cm(maj7) → Cm7 → Cm6'},
+  clM:{lb:'Cliché majeur ↑ (5 · ♯5 · 6 · ♭7)',ch:[[0,'M'],[0,'aug'],[0,'M6'],[0,'d7']],why:'la quinte monte par demi-tons : C → C+ → C6 → C7'},
+  clm5:{lb:'Cliché mineur ↑ (5 · ♭6 · 6 · ♭7)',ch:[[0,'mM'],[0,'mb6'],[0,'m6'],[0,'m7s']],why:'la quinte monte : Cm → Cm(♭13) → Cm6 → Cm7'},
+  maj7l:{lb:'Ligne 1 · 7 · 6 · 7 (majeur)',ch:[[0,'M'],[0,'Mmaj7'],[0,'M6'],[0,'Mmaj7']],why:'la ligne intérieure de « My Funny Valentine », en majeur'},
+  sus:{lb:'Suspension 4 → 3 (V7sus → V7 → I)',ch:[[7,'sus7'],[7,'d7'],[7,'sus9'],[7,'d13'],[0,'maj9',2]],why:'la 4te se résout sur la 3ce, la 9e reste tenue'}};
+const AT_PAIR={
+  ton:{lb:'Maj / Maj un ton au-dessus → maj7♯11 (lydien)',a:[0,'M'],b:[2,'M'],bass:0,app:'maj7♯11'},
+  tri:{lb:'Maj / Maj au triton → 7♭9 (diminuée)',a:[0,'M'],b:[6,'M'],bass:0,app:'7♭9'},
+  demi:{lb:'Maj / Maj ½ ton au-dessus → 7♭9♭13',a:[0,'M'],b:[1,'M'],bass:0,app:'7(♭9,♭13)'},
+  mmin:{lb:'Min / Min ½ ton au-dessus (majeure harmonique)',a:[0,'mM'],b:[1,'mM'],bass:0,app:'m(♭9)'},
+  mix:{lb:'Maj / Min un ton au-dessous (Fa mineur harmonique)',a:[0,'M'],b:[10,'mM'],bass:5,app:'Fm(maj7)'},
+  dor:{lb:'Min / Maj un ton au-dessous → m7 (dorien)',a:[2,'mM'],b:[0,'M'],bass:2,app:'Dm9'}};
+(function(){const add=function(src,pfx,mk){Object.keys(src).forEach(function(k){AT_PROG[pfx+k]=mk(src[k]);});};
+  add(AT_INNER,'v:',function(x){return {lb:x.lb,maj:x.ch,min:x.ch,why:x.why,grp:'inner'};});
+  add(AT_PAIR,'t:',function(x){const ch=[];for(let i=0;i<4;i++){ch.push([x.a[0],x.a[1],.5,x.bass]);ch.push([x.b[0],x.b[1],.5,x.bass]);}return {lb:x.lb,maj:ch,min:ch,why:'deux triades qui alternent sur la basse : 6 notes = '+x.app,grp:'pair'};});})();
+/* basse imposée (paires de triades) : la MG tient la basse d'application, la MD joue la triade serrée */
+const _atPlace0=atPlace;
+atPlace=function(iv){if(AT.pedal==null){const v=_atPlace0(iv);return atMel(v,iv);}
+  const tri=AT_FAM[AT.fam].b.map(function(x){return (AT.root+x)%12;}),pv=AT.prev?AT.prev.filter(function(e){return e.hand==='MD';}).map(function(e){return e.m;}):null;
+  let bass=36+((AT.pedal-36)%12+12)%12;if(bass<40)bass+=12;let best=null,bs=1e9;
+  for(let k=0;k<3;k++)for(let st=55;st<=70;st++){const v=[];let pr=st-1;tri.slice(k).concat(tri.slice(0,k)).forEach(function(p){const m=nearestAbove(p,pr+1);v.push(m);pr=m;});
+    let sc=Math.abs((v[0]+v[2])/2-66)*.3;if(pv&&pv.length)sc+=vlPairs(pv.map(function(m){return {m:m,hand:'MD'};}),v.map(function(m){return {m:m,hand:'MD'};})).reduce(function(t,p){return t+Math.abs(p[1].m-p[0].m);},0);
+    if(sc<bs){bs=sc;best=v;}}
+  return [{m:bass,hand:'MG'}].concat(best.map(function(m){return {m:m,hand:'MD'};}));};
+/* 🎵 mélodie → accords : la note du haut est imposée ; on cherche la place de la MD qui la met au sommet */
+const AT_MELDEG=[['1',0,'maj','maj7'],['3',4,'maj','maj7'],['♭3',3,'min','7'],['5',7,'maj','maj7'],['♭7',10,'dom',null],['7',11,'maj','maj7'],['♭9',13,'dom','♭9'],['9',14,'maj','9'],['♯9',15,'dom','♯9'],['11',17,'min','11'],['♯11',18,'maj','♯11'],['♭13',20,'dom','♭13'],['13',21,'dom','13']];
+function atMel(v,iv){if(AT.mel==null||!v||!v.length)return v;const md=v.filter(function(e){return e.hand==='MD';}),mg=v.filter(function(e){return e.hand==='MG';});
+  if(!md.length)return v;const top=md[md.length-1].m;if(top%12===AT.mel)return v;
+  /* monte ou descend la MD par octaves/renversements jusqu'à ce que la mélodie soit au sommet */
+  /* la mélodie au sommet (registre 67-81, près du sommet actuel), les autres notes de la MD rangées juste en dessous */
+  let tp=nearestAbove(AT.mel,top-6);if(tp<67)tp+=12;if(tp>81)tp-=12;
+  const others=md.map(function(e){return e.m%12;}).filter(function(p,i,a){return p!==AT.mel&&a.indexOf(p)===i;});
+  let notes=[tp].concat(others.map(function(p){let m=tp-(((tp-p)%12+12)%12);if(m===tp)m-=12;return m;})).sort(function(a,b){return a-b;});
+  while(notes[0]<=mg[mg.length-1].m){notes.shift();if(!notes.length)break;}
+  return mg.concat(notes.map(function(m){return {m:m,hand:'MD'};}));}
+function atMelHTML(){const pill=function(attr,t,on,c){return '<button class="opill'+(on?' on':'')+'" '+attr+(c&&on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+t+'</button>';};
+  let h='<div class="at-row"><div class="at-lb">🎵 MÉLODIE → ACCORDS · fixe la note du haut, puis choisis le degré qu’elle occupe</div>'
+    +pill('data-at="mel:off"','✕ sans mélodie',AT.mel==null)+[0,1,2,3,4,5,6,7,8,9,10,11].map(function(pc){return pill('data-at="mel:'+pc+'"',NF[pc],AT.mel===pc,'#FF2D95');}).join('')+'</div>';
+  if(AT.mel!=null)h+='<div class="at-row">'+AT_MELDEG.map(function(d){const r=((AT.mel-d[1])%12+12)%12,cur=AT.root===r;return pill('data-at="md:'+d[0]+'"',NF[AT.mel]+' = '+d[0]+' de '+nnK(r,d[2]==='dom'?(r+5)%12:(d[2]==='min'?(r+3)%12:r)),cur&&AT.melDeg===d[0],'#FF2D95');}).join('')+'</div>';
+  return h;}
+/* 📖 lecture seule : la portée sans aides ; tu lis, tu joues ; juste → accord suivant */
+function atelHeld(notes){if(!AT.read||PAGE!=='atel'||!AT.cur||!notes.length)return;
+  const want=AT.cur.map(function(e){return e.m%12;}).filter(function(p,i,a){return a.indexOf(p)===i;}).sort(),got=notes.map(function(m){return m%12;}).filter(function(p,i,a){return a.indexOf(p)===i;}).sort();
+  if(want.join()!==got.join())return;const bass=Math.min.apply(null,AT.cur.map(function(e){return e.m;}))%12;if(Math.min.apply(null,notes)%12!==bass)return;
+  AT.readOk=(AT.readOk||0)+1;AT.reveal=true;atRender(false);if(typeof toast==='function')toast('✅ Juste !',AT.curName+' · '+AT.readOk+' d’affilée');
+  setTimeout(function(){if(!AT.read)return;AT.reveal=false;if(AT.seq)atSeqGo((AT.seq.i+1)%AT.seq.list.length);else atChange(function(){AT.root=(AT.root+[5,7,2,10,3,9][Math.floor(Math.random()*6)])%12;});},900);}
+/* 📅 programme de la semaine — l'ordre d'étude : Haerle → Boyd → Ligon → Callipari ; chaque bloc règle l'atelier ou ouvre le drill */
+const AT_WEEK=[
+  {d:'Dimanche',f:'Révision libre',b:[{t:'Répertoire : une grille au choix, en Boyd Variation',a:{voi:'bVar',prog:'1625',chain:'fixe',mode:'maj'}},{t:'Lecture seule : 2-5-1 au cycle des quartes',a:{voi:'rlA',prog:'251',chain:'quarte',mode:'maj',read:1}}]},
+  {d:'Lundi',f:'Haerle',b:[{t:'Skill 37 · mineur → dominante en cycle (3 sons, règle A/B)',a:{voi:'hae',prog:'h:cyc37'}},{t:'2-5-1 majeur, 3 sons, au cycle des quartes',a:{voi:'hae',prog:'251',chain:'quarte',mode:'maj'}},{t:'Voix intérieures · cliché mineur',a:{voi:'serre',prog:'v:clm',chain:'quarte',mode:'maj'}}]},
+  {d:'Mardi',f:'Boyd',b:[{t:'2-5-1 en Variation, P.1/P.2 auto, cycle des quartes',a:{voi:'bVar',prog:'251',chain:'quarte',mode:'maj'}},{t:'1-6-2-5 en Basic, descend d’un ton',a:{voi:'bBasic',prog:'1625',chain:'ton',mode:'maj'}},{t:'Paires de triades · Maj / Maj un ton au-dessus',a:{voi:'serre',prog:'t:ton',chain:'quarte',mode:'maj'}}]},
+  {d:'Mercredi',f:'Boyd (Mini / Reverse)',b:[{t:'2-5-1 mineur en Mini',a:{voi:'bMini',prog:'251',chain:'quarte',mode:'min'}},{t:'2-♭2-1 tritonique en Reverse',a:{voi:'bRev',prog:'sub',chain:'demi',mode:'maj'}},{t:'Suspension 4 → 3',a:{voi:'gospel',prog:'v:sus',chain:'quarte',mode:'maj'}}]},
+  {d:'Jeudi',f:'Ligon · rootless et lignes',b:[{t:'Rootless A/B : 2-5-1 alterné majeur/mineur',a:{voi:'rlA',prog:'251',chain:'quarte',mode:'alt'}},{t:'Drill : guide tones 2-5-1',dr:'gtl'},{t:'Mélodie → accords : harmonise une note de 6 façons',a:{voi:'gospel',mel:2}}]},
+  {d:'Vendredi',f:'Callipari · couleurs et paires',b:[{t:'Paires de triades au triton (7♭9)',a:{voi:'serre',prog:'t:tri',chain:'quarte',mode:'maj'}},{t:'3-6-2-5-1 en gospel 1-7 / 3-9-13',a:{voi:'gospel',prog:'36251',chain:'ton',mode:'maj'}},{t:'Cliché majeur ↑',a:{voi:'drop2',prog:'v:clM',chain:'quarte',mode:'maj'}}]},
+  {d:'Samedi',f:'Blues et formes',b:[{t:'Blues des Skills 61-72 (Haerle)',a:{voi:'hae',prog:'h:bluesF'}},{t:'Bird blues (Skills 85-96)',a:{voi:'hae',prog:'h:bluesM'}},{t:'Drill : formes complètes',dr:'forme'}]}];
+function atWeekKey(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-'+Math.ceil(((d-j)/864e5+j.getDay()+1)/7);}
+function atWeekDone(){try{return JSON.parse(localStorage.getItem('garden_week_'+atWeekKey())||'{}');}catch(e){return {};}}
+function atWeekHTML(){const today=new Date().getDay(),done=atWeekDone(),sel=AT.wday==null?today:AT.wday,D=AT_WEEK[sel];
+  let h='<div class="at-row"><div class="at-lb">📅 PROGRAMME DE LA SEMAINE · Haerle → Boyd → Ligon → Callipari</div>'+AT_WEEK.map(function(w,i){const n=w.b.filter(function(_,j){return done[i+'.'+j];}).length;return '<button class="opill'+(i===sel?' on':'')+'" data-at="wd:'+i+'">'+w.d.slice(0,3)+(i===today?' •':'')+(n?' '+'✓'.repeat(n):'')+'</button>';}).join('')+'</div>';
+  h+='<div class="at-week"><b>'+D.d+' — '+D.f+'</b>'+D.b.map(function(b,j){const k=sel+'.'+j;return '<div class="at-wb"><button class="opill" data-at="wg:'+k+'">▶</button><span>'+b.t+'</span><button class="opill'+(done[k]?' on':'')+'" data-at="wk:'+k+'">'+(done[k]?'✓ fait':'☐')+'</button></div>';}).join('')+'</div>';
+  return h;}
+function atWeekGo(k){const p=k.split('.'),b=AT_WEEK[+p[0]].b[+p[1]];
+  if(b.dr){try{DRV.ex=b.dr;drvSave();drRender();}catch(e){}setPage('drill');return;}
+  const a=b.a;atSeqStop();AT.seq=null;AT.read=!!a.read;AT.mel=a.mel!=null?a.mel:null;AT.melDeg=null;AT.pedal=null;
+  ['voi','prog','chain','mode'].forEach(function(x){if(a[x]!=null)AT[x]=a[x];});atSave();
+  if(a.prog){AT.vl=1;AT.cur=null;AT.prev=null;AT.seq={list:atSeqBuild(),i:0,t:null,loop:false};atSeqGo(0);}else atRender(true);
+  const bx=document.getElementById('atelBox');if(bx&&bx.scrollIntoView)bx.scrollIntoView({behavior:'smooth',block:'start'});}
+document.addEventListener('click',function(e){const t=e.target&&e.target.closest?e.target.closest('[data-at]'):null;if(!t||!t.closest('#atelBox'))return;
+  const a=t.dataset.at,k=a.split(':')[0],v=a.slice(k.length+1);if(['mel','md','rd','rv','wd','wg','wk'].indexOf(k)<0)return;
+  if(k==='mel'){if(v==='off'){AT.mel=null;AT.melDeg=null;atChange(function(){});}else{AT.mel=+v;atChange(function(){});}}
+  else if(k==='md'){const d=AT_MELDEG.filter(function(x){return x[0]===v;})[0];atChange(function(){AT.melDeg=v;AT.root=((AT.mel-d[1])%12+12)%12;AT.fam=d[2];const c={};c[d[2]==='maj'?'maj7':'7']=1;if(d[3]&&d[3]!=='maj7'&&d[3]!=='7')c[d[3]]=1;AT.col=c;});}
+  else if(k==='rd'){AT.read=!AT.read;AT.readOk=0;AT.reveal=false;atRender(false);}
+  else if(k==='rv'){AT.reveal=!AT.reveal;atRender(false);}
+  else if(k==='wd'){AT.wday=+v;atRender(false);}
+  else if(k==='wg')atWeekGo(v);
+  else if(k==='wk'){const d=atWeekDone();d[v]=d[v]?0:1;try{localStorage.setItem('garden_week_'+atWeekKey(),JSON.stringify(d));}catch(_){}atRender(false);}});
 
 /* ═══════════ 🖐 v9.72 — HANON, Le Pianiste virtuose (éd. Schott Frères, rev. A. Schotte) — 1re et 2e parties ═══════════
    Domaine public (1873). Chaque exercice est une CELLULE : a = cellule montante, d = cellule descendante, en degrés
@@ -2699,6 +2788,7 @@ function _analyseSoon(){
   _anaReq=raf(function(){
     _anaReq=0;
     if(PAGE==='gos'&&held.size){const top=Math.max.apply(null,Array.from(held)),m=((top-KEY.pc)%12+12)%12;if(held.size===1&&m!==GOS.m)GOS.m=m;gosRender();}
+    if(PAGE==='atel'&&typeof atelHeld==='function')atelHeld(Array.from(held));
     const c=identify(Array.from(held));
     if(held.size>=5)polyRender(Array.from(held));else if(c&&held.size>=3)polyRender(null);
     if(c){
