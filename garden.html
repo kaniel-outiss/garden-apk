@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v9.90 — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v9.91 — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -486,7 +486,7 @@ body.ux-focus #uxStopBar{display:flex}
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v9.90 · ⟳ Toucher le cercle</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v9.91 · ♭ Orthographe des accords</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -843,6 +843,10 @@ function nn(pc){return (KEY.flat?NF:NS)[((pc%12)+12)%12];}
 /* orthographe selon une tonalité donnée (indépendante du tona-bar) — F/B♭/E♭/A♭/D♭ en bémols */
 const FLATKEY={1:1,3:1,5:1,8:1,10:1};
 function nnK(pc,keyPc){return (FLATKEY[((keyPc%12)+12)%12]?NF:NS)[((pc%12)+12)%12];}
+/* v9.91 — nom d'une fondamentale : diatonique → orthographe de la tonalité ; hors tonalité → orthographe usuelle
+   (♭II ♭III ♭VI ♭VII en bémols, ♯IV en dièse) — la même partout (en-tête, cartes, portées, boussole) */
+function rootNm(pc,keyPc){pc=((pc%12)+12)%12;if(keyPc==null)keyPc=KEY.pc;const iv=((pc-keyPc)%12+12)%12;
+  return [0,2,4,5,7,9,11].indexOf(iv)>=0?(keyPc===KEY.pc?nn(pc):nnK(pc,keyPc)):nnK(pc,pc);}
 function keyName(pc){const k=KEYS.filter(function(x){return x.pc===((pc%12)+12)%12;})[0];return k?k.n:NS[((pc%12)+12)%12];}
 function noteName(m){return nn(m%12)+(Math.floor(m/12)-1);}
 function roleOf(m,rootPc){return rootPc==null?'N':ROLE[((m-rootPc)%12+12)%12];}
@@ -1291,7 +1295,7 @@ function identify(notes){
   return {rootPc:best.root,tpl:best.tpl,notes:sorted,bassPc:bassPc};
 }
 function chordName(c){
-  let n=nn(c.rootPc)+c.tpl.sym;
+  let n=rootNm(c.rootPc)+c.tpl.sym;
   if(c.bassPc!==c.rootPc)n+='<span class="slash"> /'+nn(c.bassPc)+'</span>';
   return n;
 }
@@ -1413,7 +1417,7 @@ function stfSpell(m,key,rootPc,ivs){
   const pc=((m%12)+12)%12;let nm;
   if(rootPc!=null){const iv=((pc-rootPc)%12+12)%12;let st=null;
     if(ivs){const xc=extCls(iv,ivs);if(iv===6&&xc==='x11')st=3;if(iv===3&&xc==='x9')st=1;if(iv===8&&xc==='x13')st=5;}
-    nm=spellIv(rootPc,iv,st);}
+    nm=spellIv(rootPc,iv,st,rootNm(rootPc,key==null?KEY.pc:key));}
   else nm=nnK(pc,key==null?KEY.pc:key);
   const L='CDEFGAB';let li=L.indexOf(nm.charAt(0));if(li<0){nm=NS[pc];li=L.indexOf(nm.charAt(0));}
   return {step:(Math.floor(m/12)-1)*7+li,acc:nm.slice(1),nm:nm};
@@ -1867,7 +1871,7 @@ function atelMidi(notes,c){if(!AT.midi||PAGE!=='atel'||!c||notes.length<3)return
   const s=notes.slice().sort(function(a,b){return a-b;});const key=AT.played?null:1;
   const ent=s.map(function(m,i){return {m:m,hand:(i===0||m<55)?'MG':'MD'};});
   if(AT.cur&&AT.cur.length&&AT.cur.map(function(e){return e.m;}).join()===s.join())return;
-  AT.prev=AT.cur;AT.prevName=AT.curName;AT.prevRoot=AT.root;AT.root=c.rootPc;AT.played=ent;AT.playedName=nn(c.rootPc)+c.tpl.sym;
+  AT.prev=AT.cur;AT.prevName=AT.curName;AT.prevRoot=AT.root;AT.root=c.rootPc;AT.played=ent;AT.playedName=rootNm(c.rootPc)+c.tpl.sym;
   const q=c.tpl.q||'';AT.fam=/m7b5|ø/.test(q)?'hd':(/dim/.test(q)?'dim':(/^m|min/.test(q)?'min':(/sus/.test(q)?'sus':(/aug|#5|s5/.test(q)?'aug':(/^7|^9|^13|^11|dom/.test(q)?'dom':'maj')))));
   atRender(false);}
 function atelRender(){atRender(false);}
@@ -2340,7 +2344,7 @@ function buildMemberKeys(c){
     const tonic=((c.rootPc-x[0])%12+12)%12;
     return '<div class="sub-line" data-setkey="'+tonic+'" style="cursor:pointer">'
       +'<span class="sname">'+nn(tonic)+' majeur</span>'
-      +'<span class="swhy">'+nn(c.rootPc)+c.tpl.sym+' y est le <b style="color:var(--violet)">'+x[1]+'</b>'
+      +'<span class="swhy">'+rootNm(c.rootPc)+c.tpl.sym+' y est le <b style="color:var(--violet)">'+x[1]+'</b>'
       +(KEY.pc===tonic?' · <b style="color:var(--vert)">tonalité active ✓</b>':'')+'</span></div>';
   }).join('');
 }
@@ -2349,7 +2353,7 @@ function buildMemberKeys(c){
 function buildScales(c){
   const list=SCALES[c.tpl.q]||[];
   if(!list.length)return '<span class="empty">—</span>';
-  return list.map(function(s){return '<span class="schip">🎼 '+nn(c.rootPc)+' <b>'+s+'</b></span>';}).join('');
+  return list.map(function(s){return '<span class="schip">🎼 '+rootNm(c.rootPc)+' <b>'+s+'</b></span>';}).join('');
 }
 function buildSubs(c){
   const r=c.rootPc,q=c.tpl.q,L=[];
@@ -2458,7 +2462,7 @@ function vlRender(prev,c){
   if(!prev||!c){el.innerHTML='';return;}
   const v=voiceLead(prev.notes,c.notes);
   const sg=function(d){return (d>0?'+':'−')+Math.abs(d);};
-  let h='↔ depuis <b>'+nn(prev.rootPc)+prev.tpl.sym+'</b> : ';
+  let h='↔ depuis <b>'+rootNm(prev.rootPc)+prev.tpl.sym+'</b> : ';
   h+='<span class="keep">'+v.keep.length+' tenue'+(v.keep.length>1?'s':'')+'</span>';
   if(v.mv.length)h+=' · <span class="mv">'+v.mv.map(function(x){return noteName(x[0])+'→'+noteName(x[1])+' ('+sg(x[1]-x[0])+')';}).join(' · ')+'</span>';
   if(v.add.length)h+=' · +'+v.add.map(noteName).join(' ');
@@ -2493,7 +2497,7 @@ let SCLV=null; /* {sid,rootPc,ivs} — gamme affichée sur le clavier maître */
 function buildScales(c){
   const list=CS_BY_Q[c.tpl.q]||[];
   if(!list.length)return '<span class="empty">Pas de chord-scale répertoriée pour cette forme.</span>';
-  return list.map(function(x){return '<button class="schip'+(SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===c.rootPc?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+c.rootPc+'" title="'+x[1]+'">🎼 '+nn(c.rootPc)+' <b>'+GAM[x[0]].lb+'</b></button>';}).join('');
+  return list.map(function(x){return '<button class="schip'+(SCLV&&SCLV.sid===x[0]&&SCLV.rootPc===c.rootPc?' on':'')+'" data-scl="'+x[0]+'" data-sclr="'+c.rootPc+'" title="'+x[1]+'">🎼 '+rootNm(c.rootPc)+' <b>'+GAM[x[0]].lb+'</b></button>';}).join('');
 }
 function sclInfoRender(){
   const el=document.getElementById('sclInfo');if(!el)return;
@@ -2553,7 +2557,7 @@ function sclDrill(){
   if(!SCLV)return;
   const G=GAM[SCLV.sid],k=KEYS.filter(function(x){return x.pc===SCLV.rootPc;})[0];
   drSelectEx('gam');DRV.gamF=G.fam;DRV.gamS=SCLV.sid;DRV.scope='fix';if(k)setKey(k);
-  drvSave();drRender();setPage('drill');toast('🎵 gammes',nn(SCLV.rootPc)+' '+G.lb);
+  drvSave();drRender();setPage('drill');toast('🎵 gammes',rootNm(SCLV.rootPc)+' '+G.lb);
 }
 /* ── v9.52 : harmonisation de la gamme — tierces empilées DANS la gamme ── */
 const _BASE_SYM={'4,7,11':'maj7','4,7,10':'7','3,7,10':'m7','3,6,10':'m7♭5','3,6,9':'°7','3,7,11':'m(maj7)','4,8,11':'maj7♯5','4,8,10':'7♯5','4,6,10':'7♭5','4,6,11':'maj7♭5','3,6,11':'°(maj7)','3,8,10':'m7♯5','4,7':'','3,7':'m','3,6':'°','4,8':'+','4,6':'(♭5)','3,8':'m(♯5)'};
@@ -2562,8 +2566,8 @@ function stackName(rootPc,ivs){ /* ivs = degrés en demi-tons, empilés (0, tier
   const t=ivs[1],f=ivs[2],sv=n>3?ivs[3]:null;
   let base=_BASE_SYM[[t,f].concat(sv!=null?[sv]:[]).join(',')];
   if(base==null){ /* empilement non tertien (quarte, seconde…) : on nomme par degrés */
-    return nn(rootPc)+'('+ivs.slice(1).map(function(x){return GAM_DEG[x];}).join(' ')+')';}
-  if(n<=4)return nn(rootPc)+base;
+    return rootNm(rootPc)+'('+ivs.slice(1).map(function(x){return GAM_DEG[x];}).join(' ')+')';}
+  if(n<=4)return rootNm(rootPc)+base;
   const ext=[],alt=[];
   const ALT={9:{1:'♭9',3:'♯9'},11:{4:'♭11',6:'♯11'},13:{8:'♭13',10:'♯13'}};
   const push=function(x,nat,slot){if(x===nat)ext.push(slot);else alt.push(ALT[slot][x]||(GAM_DEG[x]+'→'+slot));};
@@ -2573,7 +2577,7 @@ function stackName(rootPc,ivs){ /* ivs = degrés en demi-tons, empilés (0, tier
   if(top!=null&&/7/.test(base)){sym=base.replace('7',String(top));}
   else if(top!=null)sym=base+'(add'+top+')';
   if(alt.length)sym+='('+alt.join(',')+')';
-  return nn(rootPc)+sym;
+  return rootNm(rootPc)+sym;
 }
 let SCLH=null; /* accord d'harmonisation allumé : {deg,n} */
 function sclHarmRender(){
@@ -2677,7 +2681,7 @@ function render(){
   const fnEl=document.getElementById('chFn');
   fnEl.textContent=fn.t;fnEl.className='chord-fn'+(fn.ok?'':' nd');
   document.getElementById('chInv').textContent=invLabel(cur);
-  document.getElementById('chNotes').textContent='Notes : '+cur.notes.map(noteName).join(' · ');
+  document.getElementById('chNotes').textContent='Notes : '+cur.notes.map(function(m){const sp=stfSpell(m,KEY.pc,cur.rootPc,cur.tpl.iv);return sp.nm+(Math.floor(m/12)-1+(sp.nm==='C♭'?1:0)-(sp.nm==='B♯'?1:0));}).join(' · ');
   ivsRender(cur);kbDegLabels(cur);
   /* ⚡ v9.2 : seules les cartes VISIBLES sont reconstruites — chaque carte cachée coûtait des
      mini-claviers à chaque note ; setPage() redessine la carte qu'on ouvre. */
@@ -2687,7 +2691,7 @@ function render(){
   if(vis('fam'))document.getElementById('famBox').innerHTML=buildFamilies(cur);
   if(vis('scales')){if(SCLV&&(SCLV.rootPc!==cur.rootPc))SCLV=null; /* nouvel accord : on repart */
     document.getElementById('scaleBox').innerHTML=buildScales(cur);sclInfoRender();sclHarmRender();sclAllRender();sclModesRender();}
-  if(vis('deg')){document.getElementById('degTitle').textContent='Harmonisation de '+nn(cur.rootPc)+' majeur (accord joué = I)';
+  if(vis('deg')){document.getElementById('degTitle').textContent='Harmonisation de '+rootNm(cur.rootPc)+' majeur (accord joué = I)';
     document.getElementById('degBox').innerHTML=buildDegrees(cur);
     document.getElementById('keysBox').innerHTML=buildMemberKeys(cur);}
   if(typeof prismeRender==='function'&&PAGE==='prisme')prismeRender();
@@ -2697,7 +2701,7 @@ function render(){
   voRender(cur);
 }
 function pushHist(c){
-  const name=nn(c.rootPc)+c.tpl.sym;
+  const name=rootNm(c.rootPc)+c.tpl.sym;
   if(hist.length&&hist[0].name===name)return;
   hist.unshift({name:name,notes:c.notes.slice()});
   if(hist.length>10)hist.pop();
@@ -2759,13 +2763,15 @@ function toast(dir,key){
 function transposeChord(dextre){
   const d=dextre?7:5;
   if(cur){
+    /* v9.91 — la tonalité suit l'accord (même fonction : Cmaj7 en C → Fmaj7 en F), comme les flèches de l'en-tête */
+    if(!(typeof DR!=='undefined'&&DR.on)&&!(typeof COND!=='undefined'&&COND.on)){const k=KEYS.filter(function(x){return x.pc===((KEY.pc+d)%12+12)%12;})[0];if(k)setKey(k);}
     let notes=cur.notes.map(function(m){return m+d;});
     /* garder l'accord dans un registre confortable */
     if(Math.max.apply(null,notes)>86)notes=notes.map(function(m){return m-12;});
     if(Math.min.apply(null,notes)<38)notes=notes.map(function(m){return m+12;});
     const c=identify(notes);
     if(c){cur=c;render();pushHist(c);lightMain();}
-    toast(dextre?'↻ dextre (+5te)':'↺ senestre (+4te)','Accord → '+nn(cur.rootPc)+cur.tpl.sym);
+    toast(dextre?'↻ dextre (+5te)':'↺ senestre (+4te)','Accord → '+rootNm(cur.rootPc)+cur.tpl.sym);
     playNotes(notes,.8);
   }else{
     const newPc=((KEY.pc+d)%12+12)%12;
@@ -3491,7 +3497,7 @@ function bousDrillGo(i){
   DRV.ex='bous';DRV.bqa=b.c.tpl.q;DRV.bd=String(s.d);DRV.bqb=s.q;
   DRV.ord='weak';DRV.scope='12';
   drvSave();drRender();setPage('drill');
-  toast('\ud83e\udded boussole',nn(b.c.rootPc)+b.c.tpl.sym+' \u2192 '+_bousName(b,s)+' \u00b7 12 tons');
+  toast('\ud83e\udded boussole',rootNm(b.c.rootPc)+b.c.tpl.sym+' \u2192 '+_bousName(b,s)+' \u00b7 12 tons');
 }
 /* 🧷 v9.60 — tensions glue : les notes de la triade d'arrivée absentes de l'accord actuel, nommées comme tensions
    de l'accord actuel (G7 → C : C = 11, E = 13 ; G7 → Cm : E♭ = ♭13). Le livre : on choisit à l'oreille. */
@@ -3503,7 +3509,7 @@ function glueCands(c,rp,q){
 }
 function glueHTML(c,rp,q,i){
   const G=glueCands(c,rp,q);if(!G.length)return '';
-  return '<div class="hint" style="margin:2px 0 4px">🧷 Tension glue : '+G.map(function(g){const gn=(g.lab.charAt(0)==='♭'?NF:(g.lab.charAt(0)==='♯'?NS:null));const nm=gn?gn[g.pc]:nn(g.pc);return '<button class="opill" data-glue="'+i+'|'+g.pc+'" title="'+nn(c.rootPc)+c.tpl.sym+' + '+nm+', puis l’accord d’arrivée">'+nm+' ('+g.lab+')</button>';}).join(' ')+'</div>';
+  return '<div class="hint" style="margin:2px 0 4px">🧷 Tension glue : '+G.map(function(g){const gn=(g.lab.charAt(0)==='♭'?NF:(g.lab.charAt(0)==='♯'?NS:null));const nm=gn?gn[g.pc]:nn(g.pc);return '<button class="opill" data-glue="'+i+'|'+g.pc+'" title="'+rootNm(c.rootPc)+c.tpl.sym+' + '+nm+', puis l’accord d’arrivée">'+nm+' ('+g.lab+')</button>';}).join(' ')+'</div>';
 }
 function gluePlay(i,pc){
   const b=_BOUSL;if(!b||!b.list[i])return;const s=b.list[i],c=b.c,rp=((c.rootPc+s.d)%12+12)%12;
@@ -3516,7 +3522,7 @@ function bousRender(){
   const box=document.getElementById('bousBox');if(!box)return;
   const b=_bousFor();
   if(!b){box.innerHTML='<div class="empty">Joue un accord au clavier MIDI — la Boussole proposera les suites les plus fortes.</div>';return;}
-  let h='<div style="grid-column:1/-1" class="hint">Depuis <b style="color:var(--or)">'+nn(b.c.rootPc)+b.c.tpl.sym+'</b> ('+romanFn(b.c).t+') :</div>';
+  let h='<div style="grid-column:1/-1" class="hint">Depuis <b style="color:var(--or)">'+rootNm(b.c.rootPc)+b.c.tpl.sym+'</b> ('+romanFn(b.c).t+') :</div>';
   const mk=mgNodeOf(b.c),mp=mgPath(b.c);_MGP=mp;
   /* 🔺 v9.56 — Callipari, Harmonie Illustrée 2 : néo-riemannien (P, R, L) et axes de Bartók (sur la triade) */
   const fm=_bousFam(b.c.tpl.q),r0=b.c.rootPc;
@@ -3565,7 +3571,7 @@ function bousHit(c){
   for(let i=0;i<L.length;i++){
     const s=L[i],rp=((b.c.rootPc+s.d)%12+12)%12;
     if(rp===c.rootPc&&_bousFam(s.q)===_bousFam(c.tpl.q)){
-      _BOUSHIT={from:nn(b.c.rootPc)+b.c.tpl.sym,name:_bousName(b,s)};
+      _BOUSHIT={from:rootNm(b.c.rootPc)+b.c.tpl.sym,name:_bousName(b,s)};
       clearTimeout(_BOUSHITT);_BOUSHITT=setTimeout(function(){_BOUSHIT=null;bousInline();},2500);
       return;
     }
@@ -3609,7 +3615,7 @@ function panoRender(){
     +sec('\ud83d\udd90\ufe0f Voicings',false,buildVoicings(c))
     +sec('7\ufe0f\u20e3 Formes de 7e',false,buildFamilies(c))
     +secL('\ud83c\udfbc Chord-scales',false,'<div class="sgrid">'+buildScales(c)+'</div>')
-    +sec('\ud83e\udded Harmonisation de '+nn(c.rootPc)+' majeur (accord jou\u00e9 = I)',false,buildDegrees(c))
+    +sec('\ud83e\udded Harmonisation de '+rootNm(c.rootPc)+' majeur (accord jou\u00e9 = I)',false,buildDegrees(c))
     +secL('\ud83d\uddfa\ufe0f Tonalit\u00e9s d\u2019appartenance',false,buildMemberKeys(c));
 }
 /* ================= 🎹 C4 — CONDUITE + 🛤️ RAIL (v8.4) =================
@@ -3660,9 +3666,9 @@ function condPanel(){
   if(!COND.on)return;
   const g=_condGrid(),s=_condStepInfo(COND.i),nx=_condStepInfo(COND.i+1);
   if(!g||!s)return;
-  document.getElementById('condNow').textContent=nn(s.rootPc)+s.sym;
-  document.getElementById('condFn').textContent=s.roman+' \u00b7 rail : '+nn(s.rootPc)+' '+s.sclb;
-  document.getElementById('condNext').textContent='puis \u2192 '+nn(nx.rootPc)+nx.sym+' ('+nx.roman+')';
+  document.getElementById('condNow').textContent=rootNm(s.rootPc)+s.sym;
+  document.getElementById('condFn').textContent=s.roman+' \u00b7 rail : '+rootNm(s.rootPc)+' '+s.sclb;
+  document.getElementById('condNext').textContent='puis \u2192 '+rootNm(nx.rootPc)+nx.sym+' ('+nx.roman+')';
   document.getElementById('condPos').textContent=g.lb+' \u00b7 accord '+((COND.i%g.st.length)+1)+'/'+g.st.length+' \u00b7 tour '+(COND.loops+1)+' \u00b7 tonalit\u00e9 '+KEY.n;
   const n=COND.win.length;
   const rail=n?Math.round(100*COND.win.filter(function(v){return v>0;}).length/n):null;
@@ -3727,7 +3733,7 @@ function condStop(announce){
     const ps=COND.perStep[si];
     if(ps.all>=4){
       const p=Math.round(100*ps.inR/ps.all);
-      if(!worst||p<worst.p){const s=_condStepInfo(+si);worst={p:p,lb:nn(s.rootPc)+s.sym};}
+      if(!worst||p<worst.p){const s=_condStepInfo(+si);worst={p:p,lb:rootNm(s.rootPc)+s.sym};}
     }
   });
   const id='cond|'+gid+'|'+KEY.pc;
@@ -3986,9 +3992,9 @@ const GRIPS={
 /* v9.23 — orthographe d'une note par son DEGRÉ depuis une tonique (D♭9 et non C♯9 sous un Fø7) :
    step = nombre de lettres au-dessus de la tonique (par défaut déduit de l'intervalle) */
 const IV_STEP={0:0,1:1,2:1,3:2,4:2,5:3,6:4,7:4,8:5,9:5,10:6,11:6};
-function spellIv(r,iv,step){
+function spellIv(r,iv,step,rn){
   const L='CDEFGAB',NAT=[0,2,4,5,7,9,11];
-  const t0=L.indexOf(nnK(r,r)[0]);if(t0<0)return nnK((r+iv)%12,r);
+  const t0=L.indexOf((rn||nnK(r,r))[0]);if(t0<0)return nnK((r+iv)%12,r);
   const li=(t0+(step==null?IV_STEP[((iv%12)+12)%12]:step))%7,pc=(((r+iv)%12)+12)%12;
   let d=((pc-NAT[li])%12+12)%12;if(d>6)d-=12;
   const nm=L[li]+(d===-1?'♭':(d===1?'♯':''));
