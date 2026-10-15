@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v11.0 · Standards — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v11.1 · Standards — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -508,12 +508,14 @@ body.pg-atel .hero{display:none}
 .sd-about{margin:0 0 10px;border:1px solid var(--gris2);border-radius:10px;padding:6px 12px;background:var(--bg3)}
 .sd-about summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--or)}
 .sd-wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-.sd-wrap.list-open{grid-template-columns:270px minmax(0,1fr)}
+.sd-wrap.list-open{grid-template-columns:minmax(0,1fr)}
 .sd-wrap:not(.list-open) .sd-list{display:none}
-.sd-list{position:sticky;top:8px;border:1px solid var(--gris2);border-radius:12px;padding:8px;background:var(--bg2);max-height:82vh;display:flex;flex-direction:column;gap:6px}
+.sd-list{border:1px solid var(--gris2);border-radius:12px;padding:8px;background:var(--bg2);max-height:52vh;display:flex;flex-direction:column;gap:6px}
+.sd-lfilt{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}.sd-lfilt .sd-search{flex:1 1 240px;width:auto}
 .sd-search{width:100%;box-sizing:border-box;background:var(--bg3);color:var(--blanc);border:1px solid var(--gris2);border-radius:8px;padding:8px 10px;font-size:14px}
 .sd-pills{display:flex;flex-wrap:wrap;gap:4px}.sd-pills .opill{padding:3px 8px;font-size:11px}
-.sd-items{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:2px;min-height:120px}
+.sd-items{overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 8px;align-content:start;min-height:120px}
+@media(max-width:760px){.sd-items{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:460px){.sd-items{grid-template-columns:minmax(0,1fr)}}
 .sd-item{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 8px;color:var(--blanc);cursor:pointer;font-size:13px}
 .sd-item small{color:var(--gris);font-size:11px}.sd-item:hover{background:var(--bg3)}
 .sd-item.on{border-color:var(--or);background:rgba(245,200,66,.08)}
@@ -525,7 +527,7 @@ body.pg-atel .hero{display:none}
 .sd-tabs button.on{color:var(--or);border-bottom-color:var(--or)}
 .sd-body{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
 .sd-body.with-focus{grid-template-columns:minmax(0,1fr) 300px}
-@media(max-width:1100px){.sd-wrap.list-open{grid-template-columns:minmax(0,1fr)}.sd-wrap.list-open .sd-list{position:static;max-height:50vh}.sd-body.with-focus{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1100px){.sd-body.with-focus{grid-template-columns:minmax(0,1fr)}}
 .sd-why{border:1px solid var(--gris2);border-radius:10px;padding:6px 12px;margin:0 0 6px;background:var(--bg3);font-size:13px;line-height:1.55}
 .sd-why summary{cursor:pointer;color:var(--blanc)}.sd-why p{margin:6px 0}.sd-trap{color:#FFB4B4}
 .sd-trapline{font-size:13px;color:#FFB4B4;background:rgba(239,68,68,.08);border-left:3px solid var(--rouge);padding:6px 10px;border-radius:6px;margin:0 0 6px}
@@ -573,12 +575,13 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .sd-opt{background:var(--bg2);border:1px solid var(--gris2);border-radius:10px;color:var(--blanc);padding:12px 8px;font-size:16px;font-weight:700;cursor:pointer}
 .sd-opt:hover{border-color:var(--or)}.sd-opt.ok{border-color:var(--vert);background:rgba(62,207,142,.18)}.sd-opt.ko{border-color:var(--rouge);background:rgba(239,68,68,.15)}
 .sd-qex{font-size:13px;line-height:1.55;border-radius:8px;padding:8px 10px;margin-top:6px}.sd-qex.ok{background:rgba(62,207,142,.1)}.sd-qex.ko{background:rgba(239,68,68,.1)}
+.sd-nav{cursor:pointer;color:var(--or);font-weight:800;font-size:11px;padding:2px 6px;border:1px solid var(--gris2);border-radius:8px}.sd-nav:hover{background:var(--bg3)}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v11.0 · standards</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v11.1 · standards</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1505,6 +1508,7 @@ function stfSet(m){STFM=m;try{localStorage.setItem('garden_staff_v1',m);}catch(e
   if(typeof repertRender==='function'&&PAGE==='repert')repertRender();
   if(typeof gosRender==='function'&&PAGE==='gos')gosRender();
   if(typeof panoRender==='function'&&PAGE==='pano')panoRender();
+  if(typeof sdFocusRender==='function'&&PAGE==='std')sdFocusRender(false);
   if(typeof atRender==='function'&&PAGE==='atel')atRender(false);
   document.querySelectorAll('[data-stf]').forEach(function(b){b.classList.toggle('on',b.dataset.stf===STFM);});}
 function stfSel(){return '<span class="stf-sel"><span class="og-lb">🎼 Portée</span>'+[['color','🎨 couleurs'],['read','📖 lecture'],['off','✕ masquée']].map(function(x){return '<button class="opill'+(STFM===x[0]?' on':'')+'" data-stf="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</span>'+(typeof stfaSel==='function'?stfaSel():'');}
@@ -1637,9 +1641,9 @@ function stfFromEntries(entries,rootPc,o){
    Polygone MG en violet, MD en or (selon le voicing joué), sommets aux couleurs des degrés, accord précédent en fantôme,
    notes communes avec halo, flèches pour les notes qui glissent. Réglages : localStorage garden_stfaid_v1. */
 let STFA=(function(){const d={vl:1,deg:1,nx:1,circ:1,live:1,cm:'auto'};try{const v=JSON.parse(localStorage.getItem('garden_stfaid_v1')||'null');if(v)Object.keys(d).forEach(function(k){if(v[k]!=null)d[k]=k==='cm'?v[k]:(v[k]?1:0);});}catch(e){}return d;})();
-function stfaSet(k){if(k==='cm'){STFA.cm={auto:'chr',chr:'q5',q5:'auto'}[STFA.cm||'auto'];}else STFA[k]=STFA[k]?0:1;try{localStorage.setItem('garden_stfaid_v1',JSON.stringify(STFA));}catch(e){}stfSet(STFM);}
-function stfaSel(){return '<span class="stf-sel"><span class="og-lb">🧭 Aides</span>'+[['vl','➰ flèches'],['deg','🔢 degrés'],['nx','⏭ suivant'],['circ','⭕ cercle'],['live','🔆 clignote']].map(function(x){return '<button class="opill'+(STFA[x[0]]?' on':'')+'" data-stfa="'+x[0]+'">'+x[1]+'</button>';}).join('')+'<button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes'}[STFA.cm||'auto'])+'</button></span>';}
-document.addEventListener('click',function(e){const b=e.target&&e.target.closest?e.target.closest('[data-stfa]'):null;if(b){stfaSet(b.dataset.stfa);document.querySelectorAll('[data-stfa]').forEach(function(x){if(x.dataset.stfa==='cm'){x.textContent={auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes'}[STFA.cm||'auto'];return;}x.classList.toggle('on',!!STFA[x.dataset.stfa]);});}});
+function stfaSet(k,nx){if(k==='cm'){STFA.cm=nx||{auto:'chr',chr:'q5',q5:'q4',q4:'auto'}[STFA.cm||'auto'];}else STFA[k]=STFA[k]?0:1;try{localStorage.setItem('garden_stfaid_v1',JSON.stringify(STFA));}catch(e){}stfSet(STFM);}
+function stfaSel(){return '<span class="stf-sel"><span class="og-lb">🧭 Aides</span>'+[['vl','➰ flèches'],['deg','🔢 degrés'],['nx','⏭ suivant'],['circ','⭕ cercle'],['live','🔆 clignote']].map(function(x){return '<button class="opill'+(STFA[x[0]]?' on':'')+'" data-stfa="'+x[0]+'">'+x[1]+'</button>';}).join('')+'<button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm||'auto'])+'</button></span>';}
+document.addEventListener('click',function(e){const b=e.target&&e.target.closest?e.target.closest('[data-stfa]'):null;if(b){stfaSet(b.dataset.stfa);document.querySelectorAll('[data-stfa]').forEach(function(x){if(x.dataset.stfa==='cm'){x.textContent={auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm||'auto'];return;}x.classList.toggle('on',!!STFA[x.dataset.stfa]);});}});
 const VL_COL={0:'#F5C842',1:'#3ECF8E',2:'#4F9EFF',x:'#FF9F43'};
 /* appariement des voix entre deux accords : par main, la note la plus proche (sans réutiliser) */
 function vlPairs(A,B){const out=[];['MG','MD'].forEach(function(h){
@@ -1693,7 +1697,7 @@ function atSubOf(v,cur,r){const ms=cur.map(function(e){return e.m;}).sort(functi
 function circSVG(entries,rootPc,prev,o){
   o=o||{};const S=o.size||220,c=S/2,R=S*.34,key=o.key==null?KEY.pc:o.key;
   /* 🔄 v9.86 — ordre du cercle : chromatique (conduite des voix) ou quintes (harmonie, tonalité, mouvement des fondamentales) */
-  const Q5=circMode(o)==='q5',POS=function(pc){return Q5?(((pc*7)%12)+12)%12:(((pc%12)+12)%12);};
+  const CM=circMode(o),Q4=CM==='q4',Q5=CM==='q5'||Q4,POS=function(pc){return Q4?(((pc*5)%12)+12)%12:(Q5?(((pc*7)%12)+12)%12:(((pc%12)+12)%12));};
   const P=function(pc,r){const a=(-90+POS(pc)*30)*Math.PI/180;return [c+Math.cos(a)*(r||R),c+Math.sin(a)*(r||R)];};
   const uniq=function(es){const u=[];es.forEach(function(e){const p=((e.m%12)+12)%12;if(u.indexOf(p)<0)u.push(p);});return u.sort(function(a,b){return POS(a)-POS(b);});};
   const pcs=uniq(entries),pp=prev?uniq(prev):[];
@@ -1701,7 +1705,7 @@ function circSVG(entries,rootPc,prev,o){
   const hasH=entries.some(function(e){return e.hand==='MG';})&&entries.some(function(e){return e.hand==='MD';});
   const poly=function(ps,attr){if(ps.length<2)return '';const pts=ps.map(function(p){return P(p).join(',');}).join(' ');return ps.length===2?'<polyline points="'+pts+'" '+attr+'/>':'<polygon points="'+pts+'" '+attr+'/>';};
   let s='<circle cx="'+c+'" cy="'+c+'" r="'+R+'" fill="none" stroke="#2C3560" stroke-width="'+(S*.008)+'"/>';
-  if(Q5){const k=((key%12)+12)%12,a0=(-90+(POS(k)-1.5)*30)*Math.PI/180,a1=(-90+(POS(k)+5.5)*30)*Math.PI/180,rr=R;
+  if(Q5){const k=((key%12)+12)%12,a0=(-90+(POS(k)-(Q4?5.5:1.5))*30)*Math.PI/180,a1=(-90+(POS(k)+(Q4?1.5:5.5))*30)*Math.PI/180,rr=R;
     s+='<path d="M'+(c+Math.cos(a0)*rr)+','+(c+Math.sin(a0)*rr)+' A'+rr+','+rr+' 0 1 1 '+(c+Math.cos(a1)*rr)+','+(c+Math.sin(a1)*rr)+'" fill="none" stroke="#3ECF8E" stroke-opacity=".2" stroke-width="'+(S*.05)+'" stroke-linecap="round"/>';}
   const lbOf=function(pc){if(rootPc!=null&&pcs.indexOf(pc)>=0){const e=entries.filter(function(x){return ((x.m%12)+12)%12===pc;})[0];try{return stfSpell(e.m,key,rootPc,ivs).nm;}catch(_){}}return ((key%12)+12)%12===0?NF[pc]:nnK(pc,key);};
   for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+S*.1),on=pcs.indexOf(pc)>=0;
@@ -1750,7 +1754,7 @@ function circSVG(entries,rootPc,prev,o){
     +(function(){const sub=o.sub!=null?o.sub:circVoiceLabel(entries,rootPc);if(!sub)return '';const L=sub.split('\n'),mx=Math.max.apply(null,L.map(function(x){return x.length;}));const fs=S*(mx>22?.036:(mx>16?.042:.048));
       return L.map(function(t,i){return '<text x="'+c+'" y="'+(c+S*.07+i*fs*1.2)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="'+fs+'" fill="#C9D1EE" stroke="#14182b" stroke-width="'+(fs*.28)+'" paint-order="stroke" stroke-linejoin="round">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</text>';}).join('');})();
   if(o.pick)for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+S*.1);s+='<circle data-atroot="'+pc+'" cx="'+q[0]+'" cy="'+q[1]+'" r="'+(S*.07)+'" fill="transparent" style="cursor:pointer"/><circle data-atroot="'+pc+'" cx="'+t[0]+'" cy="'+t[1]+'" r="'+(S*.05)+'" fill="transparent" style="cursor:pointer"/>';}
-  s+='<text x="'+c+'" y="'+(S-S*.012)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.038)+'" fill="#5B6390">⟳ '+(Q5?'quintes':'chromatique')+((STFA.cm||'auto')==='auto'?' (auto)':'')+'</text>';
+  s+='<text x="'+c+'" y="'+(S-S*.012)+'" text-anchor="middle" font-family="Inter,Arial" font-weight="700" font-size="'+(S*.038)+'" fill="#5B6390">⟳ '+(Q4?'quartes':(Q5?'quintes':'chromatique'))+((STFA.cm||'auto')==='auto'?' (auto)':'')+'</text>';
   return '<svg class="circ" style="cursor:pointer" title="toucher le cercle : chromatique / quintes" viewBox="0 0 '+S+' '+S+'" width="'+(o.w||S)+'" height="'+(o.w||S)+'" xmlns="http://www.w3.org/2000/svg">'+s+'</svg>';}
 
 /* 🔄 v9.86 — ordre du cercle : 'chr' chromatique · 'q5' quintes · 'auto' (quintes quand un enchaînement tourne) */
@@ -2166,7 +2170,10 @@ function atTranspose(dextre){const d=dextre?7:5;atShift(d);
 
 /* 🔄 v9.90 — toucher le cercle change son ordre : chromatique → quintes → auto (toucher une note de l'atelier reste « choisir la fondamentale ») */
 document.addEventListener('click',function(e){const sv=e.target&&e.target.closest?e.target.closest('svg.circ'):null;if(!sv)return;if(e.target.closest('[data-atroot]'))return;
-  e.preventDefault();e.stopPropagation();stfaSet('cm');},true);
+  e.preventDefault();e.stopPropagation();
+  /* v11.1 — le toucher alterne ce que le cercle MONTRE : chromatique → quintes → quartes → chromatique */
+  const tx=sv.textContent||'',shown=tx.indexOf('⟳ quartes')>=0?'q4':(tx.indexOf('⟳ quintes')>=0?'q5':'chr');
+  stfaSet('cm',{chr:'q5',q5:'q4',q4:'chr'}[shown]);document.querySelectorAll('[data-stfa="cm"]').forEach(function(x){x.textContent={auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm];});},true);
 /* ═══════════ 🖐 v9.72 — HANON, Le Pianiste virtuose (éd. Schott Frères, rev. A. Schotte) — 1re et 2e parties ═══════════
    Domaine public (1873). Chaque exercice est une CELLULE : a = cellule montante, d = cellule descendante, en degrés
    diatoniques depuis la fondamentale de la cellule (0 = C, 7 = C de l'octave) ; la cellule monte d'un degré par mesure
@@ -13669,10 +13676,10 @@ function sdListRender(){
     .sort(function(a,b){return a.title.replace(/^(The|A) /,'').localeCompare(b.title.replace(/^(The|A) /,''));});
   const cnt={};STD.forEach(function(S){cnt[S.style]=(cnt[S.style]||0)+1;});
   const drilled={};Object.keys(STDS).forEach(function(k){if(STDS[k].sid)drilled[STDS[k].sid]=1;});
-  el.innerHTML='<input class="sd-search" id="sdSearch" placeholder="🔎 Chercher un standard ('+STD.length+')" value="'+String(SD.q||'').replace(/"/g,'&quot;')+'">'
+  el.innerHTML='<div class="sd-lfilt"><input class="sd-search" id="sdSearch" placeholder="🔎 Chercher un standard ('+STD.length+')" value="'+String(SD.q||'').replace(/"/g,'&quot;')+'">'
     +'<div class="sd-pills">'+[['all','Tous']].concat(Object.keys(SD_STYLE).filter(function(k){return cnt[k];}).map(function(k){return [k,SD_STYLE[k]+' <small>'+cnt[k]+'</small>'];}))
       .map(function(x){return '<button class="opill'+(SD.style===x[0]?' on':'')+'" data-sd="style" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
-    +'<div class="sd-pills"><span class="og-lb" style="align-self:center">Difficulté</span>'+['all','1','2','3','4'].map(function(d){return '<button class="opill'+(String(SD.diff)===d?' on':'')+'" data-sd="diff" data-v="'+d+'">'+(d==='all'?'toutes':'★'.repeat(+d))+'</button>';}).join('')+'</div>'
+    +'<div class="sd-pills"><span class="og-lb" style="align-self:center">Difficulté</span>'+['all','1','2','3','4'].map(function(d){return '<button class="opill'+(String(SD.diff)===d?' on':'')+'" data-sd="diff" data-v="'+d+'">'+(d==='all'?'toutes':'★'.repeat(+d))+'</button>';}).join('')+'</div></div>'
     +'<div class="sd-items">'+(L.length?L.map(function(S){return '<button class="sd-item'+(S.id===SD.sel?' on':'')+'" data-sd="pick" data-v="'+S.id+'"><span>'+(drilled[S.id]?'🏋️ ':'')+S.title+'</span><small>'+S.key+' · '+(SD_STYLE[S.style]||S.style).split(' ')[0]+' '+'★'.repeat(S.diff)+'</small></button>';}).join(''):'<div class="empty">Aucun standard</div>')+'</div>';
 }
 function sdTabs(){
@@ -13715,7 +13722,7 @@ function sdGridHTML(S){
     h+='<details class="sd-why" '+(S.why&&S.why.trap?'':'')+'><summary>💡 '+S.info.slice(0,120)+(S.info.length>120?'…':'')+'</summary>'
       +(S.info.length>120?'<p>'+S.info+'</p>':'')
       +(S.why?[['core','🔍 Le cœur'],['gospel','🙌 Côté gospel'],['listen','🎧 À écouter'],['pattern','🧩 Motifs'],['trap','⚠️ Le piège']].map(function(x){return S.why[x[0]]?'<p class="'+(x[0]==='trap'?'sd-trap':'')+'"><b>'+x[1]+'</b> — '+S.why[x[0]]+'</p>':'';}).join(''):'')+'</details>';
-    if(S.why&&S.why.trap)h+='<div class="sd-trapline">⚠️ '+S.why.trap.replace(/^Piège\s*:\s*/i,'')+'</div>';
+    if(S.why&&S.why.trap)h+='<div class="sd-trapline">⚠️ '+(function(t){return t.charAt(0).toUpperCase()+t.slice(1);})(S.why.trap.replace(/^Piège\s*:\s*/i,''))+'</div>';
   }
   h+='<div class="sd-ctl" style="margin:6px 0"><span class="og-lb">Afficher</span><button class="opill'+(SD.fn?' on':'')+'" data-sd="fn">degrés</button><button class="opill'+(SD.sc?' on':'')+'" data-sd="sc">chord-scales</button>'
     +'<span class="hint" style="margin:0 0 0 auto">'+Object.keys(SD_FC).filter(function(k){return k!=='x';}).map(function(k){return '<span style="color:'+SD_FC[k]+'">■</span> '+SD_FCL[k];}).join(' · ')+' · <b>→</b> résout d’une quinte · <b>⇢</b> SubV · <u>souligné</u> ii–V</span></div>';
@@ -13773,10 +13780,10 @@ function sdFocusRender(play){
     mv='<div class="sd-mv"><b>Basse</b> : '+(MV[d]||d+' ½t')+'<br><b>Notes communes</b> : '+(common.length?common.map(function(p){return sdRootNm(p,S);}).join(' · '):'aucune')
       +'<br><b>Guide tone</b> : la '+(ga[1]===9?'6te':'7e')+' ('+sdRootNm(s7,S)+') '+(dd===0?'reste et devient la 3ce':(dd===11?'descend d’½ ton sur la 3ce':(dd===1?'monte d’½ ton sur la 3ce':'va vers la 3ce'))+' ('+sdRootNm(t3,S)+')')+'</div>';}
   el.innerHTML='<div class="sd-fname"><b>'+sdNm(c,S)+'</b> <span style="color:'+SD_FC[sdFnCls(c.fn)]+'">'+sdAcc(c.fn)+'</span><small>'+sdAcc(c.sc)+' · mes. '+(c.bar+1)+'</small></div>'
-    +'<div class="sd-cbox"><span>maintenant · l’accord d’avant en fantôme</span>'+circ(E,v.rp,EP,EP?V[pv].rp:null,sdNm(c,S),230)+'</div>'
+    +'<div class="sd-cbox"><span>maintenant · l’accord d’avant en fantôme · <b>touche le cercle</b> : chromatique ⇄ quintes ⇄ quartes</span>'+circ(E,v.rp,EP,EP?V[pv].rp:null,sdNm(c,S),230)+'</div>'
     +'<div class="sd-circs">'
-      +(EP?'<div class="sd-cbox sm" data-sdc="'+pv+'"><span>◀ avant</span>'+circ(EP,V[pv].rp,null,null,sdNm(S.ch[pv],S),128)+'</div>':'')
-      +(EN?'<div class="sd-cbox sm" data-sdc="'+nx+'"><span>après ▶</span>'+circ(EN,V[nx].rp,E,v.rp,sdNm(S.ch[nx],S),128)+'</div>':'')
+      +(EP?'<div class="sd-cbox sm"><span class="sd-nav" data-sdc="'+pv+'">◀ avant</span>'+circ(EP,V[pv].rp,null,null,sdNm(S.ch[pv],S),128)+'</div>':'')
+      +(EN?'<div class="sd-cbox sm"><span class="sd-nav" data-sdc="'+nx+'">après ▶</span>'+circ(EN,V[nx].rp,E,v.rp,sdNm(S.ch[nx],S),128)+'</div>':'')
     +'</div>'+(typeof circLegend==='function'?circLegend():'')+mv
     +'<div style="margin-top:6px">'+miniKb(E.map(function(e){return E_(e,v.rp);}),v.rp,250)+'</div>'
     +'<div class="sd-ctl" style="margin-top:6px"><button class="opill" data-sd="hear" data-v="'+i+'">🎧 l’accord</button><button class="opill" data-sd="hear3" data-v="'+i+'">🎧 avant → maintenant → après</button></div>';
@@ -13943,7 +13950,7 @@ document.addEventListener('click',function(e){
     return;}
   const b=e.target.closest('[data-sd]');if(!b)return;
   const a=b.dataset.sd,v=b.dataset.v;const S=sdCur();
-  if(a==='pick'){if(SDP.on)sdPlayStop(true);SD.sel=v;SD.focus=null;SD.hl=null;SD.sec='all';SDQ=null;if(window.innerWidth<1100)SD.list=false;sdSave();sdListRender();sdMainRender();return;}
+  if(a==='pick'){if(SDP.on)sdPlayStop(true);SD.sel=v;SD.focus=null;SD.hl=null;SD.sec='all';SDQ=null;SD.list=false;sdSave();sdListRender();sdMainRender();return;}
   if(a==='style'){SD.style=v;sdSave();sdListRender();if(SD.tab==='game'){SDQ=null;sdMainRender();}return;}
   if(a==='diff'){SD.diff=v;sdSave();sdListRender();return;}
   if(a==='list'){SD.list=!SD.list;sdSave();sdMainRender();return;}
