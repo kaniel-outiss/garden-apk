@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.3 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.4 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -670,7 +670,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.3 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.4 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1967,9 +1967,10 @@ function atPlace(iv){const H=atHands(iv),r=AT.root,pv=AT.prev;
       if(AT.vl&&pvMD&&pvMD.length){const a=pvMD.slice().sort(function(x,y){return x-y;});const pairs=vlPairs(pvMD.map(function(m){return {m:m,hand:'MD'};}),v.map(function(m){return {m:m,hand:'MD'};}));
         sc=pairs.reduce(function(t,p){return t+Math.abs(p[1].m-p[0].m);},0)+Math.abs(a.length-v.length)*3+sc*.8;}
       if(v[v.length-1]>79)sc+=(v[v.length-1]-79)*2.5;if(v[0]<53)sc+=(53-v[0])*2;
+      if(typeof H2PREF!=='undefined'&&H2PREF.split!==0&&v[v.length-1]-v[0]>12)sc+=(v[v.length-1]-v[0]-12)*4;
       if(!AT.vl&&st!==60&&best)sc+=Math.abs(st-60)*.2;
       if(sc<bs){bs=sc;best=v;}}});
-  best=best||[];
+  best=(best||[]).slice();if(typeof atRehand==='function')atRehand(mg,best);
   return mg.map(function(m){return {m:m,hand:'MG'};}).concat(best.map(function(m){return {m:m,hand:'MD'};}));}
 
 /* 📘 v9.82 — positions de BOYD dans l'atelier (moteur Boyd de Garden : boydVoicing / boydShape / boydRule / boydRealize)
@@ -2057,7 +2058,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
     +(AT_BOYD[AT.voi]?row('📘 POSITION DE BOYD',['auto','P1','P2'].map(function(k){return pill('data-at="bp:'+k+'"',k==='auto'?'règle auto (alterne sur 4te/5te)':k.replace('P','P.'),AT.bpos===k,'#A78BFA');}).join('')+(AT.boydO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.boydO.pos.replace('P','P.')+(AT.boydO.rule&&AT.boydO.rule.lb?' — '+AT.boydO.rule.lb:'')+(AT.boydO.sw?' · switch (registre)':'')+'</span>':'')):'')
     +(AT.voi==='hae'?row('🎓 CATÉGORIE DE HAERLE · la MG seule (le bassiste joue la fondamentale)',['auto','A','B'].map(function(k){return pill('data-at="hc:'+k+'"',k==='auto'?'règle auto (change sur 4te/5te)':(k==='A'?'A : 3-7-9 / 3-6-9':'B : 7-3-5 / 7-3-6'),AT.hcat===k,'#A78BFA');}).join('')+(AT.haeO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.haeO.v.k+' · cat. '+AT.haeO.v.cat+' — '+AT.haeO.rule+'</span>':'')):'')
     ;const ctlB=row('RENVERSEMENT · CONDUITE',pill('data-at="i:-1"','⬇ renv.',0)+'<span class="at-inv">'+(AT.vl?'auto':(AT.inv%Math.max(1,atHands(iv).md.length)===0?'PF':'R'+(((AT.inv%atHands(iv).md.length)+atHands(iv).md.length)%atHands(iv).md.length)))+'</span>'+pill('data-at="i:1"','⬆ renv.',0)
-      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="h2v"','🖐🖐 clavier deux mains',typeof H2PREF!=='undefined'&&!!H2PREF.at,'#A78BFA')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0)+pill('data-at="rd"','📖 lecture seule (je lis, je joue)',!!AT.read,'#F5C842'));
+      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="h2v"','🖐🖐 clavier deux mains',typeof H2PREF!=='undefined'&&!!H2PREF.at,'#A78BFA')+pill('data-at="h2sp"','✋ partage auto des mains',typeof H2PREF!=='undefined'&&H2PREF.split!==0,'#A78BFA')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0)+pill('data-at="rd"','📖 lecture seule (je lis, je joue)',!!AT.read,'#F5C842'));
   /* v9.99 — réglages en onglets (un seul ouvert) + barre de raccourcis toujours visible */
   const seqAll=atSeqHTML(),hm=seqAll.indexOf('<!--HAE-->'),hz=seqAll.indexOf('<!--/HAE-->');
   const seqMain=hm>=0?seqAll.slice(0,hm)+seqAll.slice(hz+11):seqAll,seqHae=hm>=0?seqAll.slice(hm+10,hz):'';
@@ -2078,7 +2079,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
   if(RD){box.innerHTML='<div class="at-top"><div class="at-name">📖 Lis et joue'+(AT.readOk?' <span class="mtag tag-g">'+AT.readOk+' d’affilée</span>':'')+'</div><div>'+pill('data-at="rv"','👁 montrer',0)+pill('data-at="rd"','✕ quitter la lecture',1,'#F5C842')+'</div></div><div class="at-stf" style="margin-top:8px">'+stf+'</div><div id="atLiveC" style="text-align:center"></div><div class="at-ctl"><div class="hint" style="margin:0 0 6px">Joue l’accord lu (les deux mains, la basse en bas) : s’il est juste, on passe au suivant. Les noms restent cachés.</div>'+(AT.seq?pill('data-at="sst:-1"','⏮ précédent')+'<span class="at-inv" style="min-width:90px">accord '+(AT.seq.i+1)+' / '+AT.seq.list.length+'</span>'+pill('data-at="sst:1"','⏭ passer'):pill('data-at="r:5"','⏭ un autre accord'))+'</div>';return;}
   box.innerHTML='<div class="at-top"><div class="at-name">'+AT.curName+(AT.played?' <span class="mtag tag-g">joué au clavier</span>':'')+'</div><div>'+pill('data-at="play"','🎧 écouter',1,'#3ECF8E')+stfSel()+'</div></div>'
     +'<div class="at-grid"><div class="at-circ"><div id="atCircSvg">'+circ+'</div>'+circLegend()+'</div><div class="at-main"><div class="at-stf">'+stf+'</div></div></div>'
-    +'<div class="at-kb">'+kb+'<div class="at-why"><b style="color:#A78BFA">MG</b> '+dl(mg)+(md.length?' · <b style="color:#F5C842">MD</b> '+dl(md):'')+(why?'<br>'+why:'')+'</div></div>'+ctlTab;
+    +'<div class="at-kb">'+kb+'<div class="at-why">'+(AT._rh&&!AT.played?'<span style="color:'+(AT._rh.charAt(0)==='⚠'?'#EF4444':'#A78BFA')+';font-weight:700">'+AT._rh+'</span><br>':'')+'<b style="color:#A78BFA">MG</b> '+dl(mg)+(md.length?' · <b style="color:#F5C842">MD</b> '+dl(md):'')+(why?'<br>'+why:'')+'</div></div>'+ctlTab;
   if(sound&&AT.snd)playNotes(cur.map(function(e){return e.m;}),1.4);}
 /* clics : contrôles + sommets du cercle */
 document.addEventListener('click',function(e){const t=e.target&&e.target.closest?e.target.closest('[data-at],[data-atroot]'):null;if(!t||!document.getElementById('atelBox')||!t.closest('#atelBox'))return;
@@ -2094,6 +2095,7 @@ document.addEventListener('click',function(e){const t=e.target&&e.target.closest
   else if(k==='hc'){AT.hcat=v;atSave();if(AT.seq){AT.seq.hae=null;atSeqGo(AT.seq.i);}else atChange(function(){});}
   else if(k==='bp'){AT.bpos=v;atSave();if(AT.seq){AT.seq.boyd=null;atSeqGo(AT.seq.i);}else atChange(function(){});}
   else if(k==='h2v'){H2PREF.at=H2PREF.at?0:1;h2PrefSave();atRender(false);}
+  else if(k==='h2sp'){H2PREF.split=H2PREF.split===0?1:0;h2PrefSave();atRender(true);}
   else if(k==='snd'){AT.snd=AT.snd?0:1;atSave();atRender(false);}
   else if(k==='midi'){AT.midi=AT.midi?0:1;atSave();atRender(false);}
   else if(k==='play')playNotes(AT.cur.map(function(x){return x.m;}),1.6);
@@ -14813,7 +14815,7 @@ function h2KbHTML(es,o){
     const d=h2Deg(e.m,o.rp,o.ivs);if(d)k+='<em class="h2-d" style="left:'+(cx(e.m)-14)+'px;top:'+(y-Math.round(P*.75))+'px;font-size:'+Math.max(9,Math.round(P*.48))+'px">'+d+'</em>';});
   /* arcs d'étendue par main */
   let arcs='';['MG','MD'].forEach(function(h){const ns=es.filter(function(e){return e.hand===h;}).map(function(e){return e.m;});if(!ns.length)return;
-    const a=Math.min.apply(null,ns),b=Math.max.apply(null,ns),x1=cx(a)-W*.6,x2=cx(b)+W*.6,span=b-a,c=h==='MG'?'#A78BFA':'#F5C842',lim=h==='MG'?16:12,warn=span>lim;
+    const a=Math.min.apply(null,ns),b=Math.max.apply(null,ns),x1=cx(a)-W*.6,x2=cx(b)+W*.6,span=b-a,c=h==='MG'?'#A78BFA':'#F5C842',lim=h==='MG'?16:14,warn=span>lim;
     arcs+='<span class="h2-arc" style="left:'+x1+'px;width:'+(x2-x1)+'px;border-color:'+(warn?'#EF4444':c)+';background:'+(h==='MG'?'rgba(167,139,250,.07)':'rgba(245,200,66,.07)')+'"><small style="color:'+(warn?'#EF4444':c)+'">'+h+(span?' · '+span+' ½t'+(warn?' ⚠ trop écarté':''):'')+'</small></span>';});
   return '<div class="h2-kb'+(o.ghost?' ghost':'')+'">'+(o.lb?'<div class="h2-lb">'+o.lb+'</div>':'')+'<div class="h2-arcs" style="width:'+(nW*W)+'px">'+arcs+'</div><div class="h2-keys" style="width:'+(nW*W)+'px;height:'+KH+'px">'+k+'</div></div>';
 }
@@ -14870,6 +14872,20 @@ function atH2(cur,r,iv,w){
   if(AT.prev&&AT.prev.length){const pr=AT.prevRoot!=null?AT.prevRoot:r;
     return h2SeqHTML([{es:h2Ent(AT.prev),rp:pr,ivs:h2Ivs(AT.prev,pr),lb:(AT.prevName||'')+' · avant'},{es:h2Ent(cur),rp:r,ivs:ivs,lb:'▶ '+(AT.curName||''),cur:true}],{w:w,dimOthers:true});}
   return h2KbHTML(h2Ent(cur),{rp:r,ivs:ivs,w:w,lb:'▶ '+(AT.curName||'')});
+}
+/* ✋ Atelier : partage des mains — la main droite ne dépasse pas l'octave ; sinon ses notes graves passent à la main gauche (≤ une dixième) */
+function atRehand(mg,md){
+  AT._rh='';if(!H2PREF||H2PREF.split===0||!md||md.length<3)return;
+  md.sort(function(a,b){return a-b;});const moved=[];
+  while(md.length>2&&md[md.length-1]-md[0]>12){const m=md[0];if(m>mg[mg.length-1]&&m-mg[0]<=16){mg.push(m);md.shift();moved.push(m);}else break;}
+  /* encore trop large : on retire la quinte juste (la note la moins utile), puis on resserre la note du haut d'une octave si possible */
+  let omit=null;const r=AT.root;
+  if(md.length>3&&md[md.length-1]-md[0]>12){const k=md.findIndex(function(m){return ((m-r)%12+12)%12===7;});if(k>=0){omit=md[k];md.splice(k,1);}}
+  if(md.length>2&&md[md.length-1]-md[0]>12){const t=md[md.length-1]-12;if(t>md[0]&&md.indexOf(t)<0&&md.every(function(m){return m%12!==t%12||m===md[md.length-1];})){md.pop();md.push(t);md.sort(function(a,b){return a-b;});}}
+  const nm=function(m){try{return nnK(m%12,KEY.pc);}catch(e){return String(m);}};
+  const sp=md[md.length-1]-md[0];
+  if(sp>14)AT._rh='⚠ main droite encore à '+sp+' ½t : essaie un autre renversement ou un autre voicing';
+  else if(moved.length||omit!=null)AT._rh='✋ '+(moved.length?'partage ajusté : '+moved.map(nm).join(', ')+' passe'+(moved.length>1?'nt':'')+' à la main gauche':'')+(omit!=null?(moved.length?' · ':'')+'quinte ('+nm(omit)+') omise':'')+' — sinon la main droite s’étalait au-delà de l’octave';
 }
 
 /* ═══════════ ⚡ v11.9 — RÉFLEXE : lire un accord sur le cercle et poser la main sans épeler ═══════════
