@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.4 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.5 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -665,12 +665,20 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-kbv{width:min(340px,92vw);display:flex;flex-direction:column;gap:6px}.rx-kbnm{font-size:30px;font-weight:900;color:#F5C842;text-align:center}.rx-kbnm small{font-size:15px;color:#7A85A8}
 .rx-stf{background:var(--bg3);border-radius:10px;padding:4px;overflow-x:auto}.rx-stf svg{max-width:100%;height:auto}
 .rx-roots{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}.rx-roots .opill{padding:5px 0;font-size:13px}
+/* v12.5 — vue clavier pleine largeur */
+.rx-kbmain{display:flex;flex-direction:column;gap:10px;margin-top:8px}.rx-kbhead{display:flex;flex-direction:column;gap:6px}
+.rx-kbv.wide{width:100%}.rx-kbv.wide .sd-kbox{overflow-x:auto}
+.rx-kbrow{display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(220px,.8fr) minmax(260px,1.1fr);gap:14px;align-items:start}
+.rx-kbstf,.rx-kbcirc{background:var(--bg3);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center}
+@media (max-width:820px){.rx-kbrow{grid-template-columns:1fr}}
+.rx-roots.wide{grid-template-columns:repeat(12,1fr);max-width:900px}.rx-hm{color:#A78BFA!important}
+@media (max-width:600px){.rx-roots.wide{grid-template-columns:repeat(6,1fr)}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.4 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.5 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -14799,7 +14807,7 @@ function h2KbHTML(es,o){
   o=o||{};if(!es||!es.length)return '<div class="h2-kb empty">…</div>';
   const R=o.range||h2Range(es.map(function(e){return e.m;})),lo=R[0],hi=R[1];
   let nW=0;for(let m=lo;m<=hi;m++)if(H2_WPC[m%12]!=null)nW++;
-  const W=Math.max(9,Math.min(30,Math.floor((o.w||320)/nW))),BW=Math.round(W*.62),KH=Math.round(W*4.3),BH=Math.round(KH*.62);
+  const W=Math.max(9,Math.min(o.kmax||30,Math.floor((o.w||320)/nW))),BW=Math.round(W*.62),KH=Math.round(W*(W>30?3.3:4.3)),BH=Math.round(KH*.62);
   const wi=function(m){let n=0;for(let x=lo;x<m;x++)if(H2_WPC[x%12]!=null)n++;return n;};
   const cx=function(m){return H2_WPC[m%12]!=null?wi(m)*W+(W-1)/2:wi(m)*W-0.5;};
   const on={};es.forEach(function(e){on[e.m]=e;});
@@ -14823,12 +14831,12 @@ function h2KbHTML(es,o){
 function h2SeqHTML(L,o){
   o=o||{};L=L.filter(function(x){return x&&x.es&&x.es.length;});if(!L.length)return '';
   const all=[];L.forEach(function(x){x.es.forEach(function(e){all.push(e.m);});});const R=h2Range(all);
-  let nW=0;for(let m=R[0];m<=R[1];m++)if(H2_WPC[m%12]!=null)nW++;const W=Math.max(9,Math.min(30,Math.floor((o.w||320)/nW)));
+  let nW=0;for(let m=R[0];m<=R[1];m++)if(H2_WPC[m%12]!=null)nW++;const W=Math.max(9,Math.min(o.kmax||30,Math.floor((o.w||320)/nW)));
   const wi=function(m){let n=0;for(let x=R[0];x<m;x++)if(H2_WPC[x%12]!=null)n++;return n;};const cx=function(m){return H2_WPC[m%12]!=null?wi(m)*W+(W-1)/2:wi(m)*W-0.5;};
   const MC=function(d){return d===0?'#3ECF8E':(d===1?'#FF9F43':(d===2?'#4F9EFF':'#7A85A8'));},ML=function(d){return d===0?'reste':(d===1?'½':(d===2?'1t':d+'½t'));};
   let h='<div class="h2-seq">';
   L.forEach(function(x,i){
-    h+='<div class="h2-row'+(x.cur?' cur':'')+'"'+(x.nav!=null?' data-sdc="'+x.nav+'"':'')+'>'+h2KbHTML(x.es,{rp:x.rp,ivs:x.ivs,w:nW*W,range:R,lb:x.lb,bad:x.bad,ghost:!x.cur&&o.dimOthers})+'</div>';
+    h+='<div class="h2-row'+(x.cur?' cur':'')+'"'+(x.nav!=null?' data-sdc="'+x.nav+'"':'')+'>'+h2KbHTML(x.es,{rp:x.rp,ivs:x.ivs,w:nW*W,kmax:o.kmax,range:R,lb:x.lb,bad:x.bad,ghost:!x.cur&&o.dimOthers})+'</div>';
     const nx=L[i+1];if(!nx)return;
     /* flèches : voix appariées par main, dans l'ordre */
     let ar='',tot=0;const H=34;
@@ -14936,6 +14944,7 @@ function rxSame(a,b){return a.length===b.length&&a.every(function(x){return b.in
 /* retire une basse « main gauche » sur la fondamentale, jouée au moins une quinte sous le reste */
 function rxStripBass(ns,rp){const s=ns.slice().sort(function(a,b){return a-b;});if(s.length>=4&&((s[0]-rp)%12+12)%12===0&&s[1]-s[0]>=7)return s.slice(1);return s;}
 function rxCheck(ns,ch){
+  if(ch.hm&&typeof rxCheckHand==='function')return rxCheckHand(ns,ch);
   const G=RX_GRIPS[ch.g],rp=ch.rp,q=ch.q,s=ns.slice().sort(function(a,b){return a-b;});
   const rel=function(m){return ((m-rp)%12+12)%12;};
   if(ch.g==='shell'){const want=G.set[q];if(s.length<want.length)return {ok:false};
@@ -14979,6 +14988,7 @@ function rxCheck(ns,ch){
 }
 /* voicings candidats (pour le coût optimal de conduite des voix) */
 function rxCands(ch){
+  if(ch.hm&&typeof rxCandsHand==='function')return rxCandsHand(ch);
   const G=RX_GRIPS[ch.g],rp=ch.rp,q=ch.q,out=[];
   const stack=function(start,ivs){const v=[start];let cur=start;ivs.forEach(function(iv){let n=cur+1;while(((n-rp)%12+12)%12!==iv)n++;v.push(n);cur=n;});return v;};
   if(ch.g==='shell'){const w=G.set[q];for(let b=36;b<=55;b++)if(((b-rp)%12+12)%12===0){const r=w.slice(1);[r,r.slice().reverse()].forEach(function(o){out.push(stack(b,o));});}}
@@ -14996,7 +15006,7 @@ function rxCost(A,B){const a=A.slice().sort(function(x,y){return x-y;}),b=B.slic
   b.forEach(function(m){let d=99;a.forEach(function(n){d=Math.min(d,Math.abs(m-n));});c+=d;});return c;}
 
 /* ── la mémoire : un temps de réaction (moyenne glissante) par grip × qualité × fondamentale ── */
-function rxK(ch){return ch.g+'|'+ch.q+'|'+ch.rp+(ch.ust?'|'+ch.ust[0]:'');}
+function rxK(ch){return ch.g+'|'+ch.q+'|'+ch.rp+(ch.ust?'|'+ch.ust[0]:'')+(ch.hm?'|'+ch.hm:'');}
 function rxStat(ch){return RX.st[rxK(ch)]||null;}
 function rxRecord(ch,ms,ok){const k=rxK(ch),s=RX.st[k]||{n:0,ok:0,ms:0,err:0,t:0};s.n++;if(ok){s.ok++;s.ms=s.ms?Math.round(s.ms*.7+ms*.3):Math.round(ms);}else s.err++;s.t=Date.now();RX.st[k]=s;if(ok&&ch.g!=='form'){const d=rxToday(),hk=ch.g+'|'+ch.q,H=RX.hist[d]=RX.hist[d]||{};const e=H[hk]=H[hk]||[0,0];e[0]+=Math.round(ms);e[1]++;if(RX.tab==='flash'&&RX.flash<=600)RX.fl[hk]=(RX.fl[hk]||0)+1;}rxSave();}
 function rxWeight(g,q,rp){const s=RX.st[g+'|'+q+'|'+rp];if(!s)return 3;const r=Math.max(.3,(s.ms||2500)/900);return r*r*(1+s.err/Math.max(1,s.n)*3)*(Date.now()-s.t>864e5?1.5:1);}
@@ -15009,6 +15019,7 @@ function rxPick(g){
   else if(RX.ord==='hasard')rp=Math.floor(Math.random()*12);
   else{const w=[];let tot=0;for(let p=0;p<12;p++){const x=rxWeight(g,q,p);w.push(x);tot+=x;}let r=Math.random()*tot;rp=0;for(;rp<11;rp++){r-=w[rp];if(r<=0)break;}}
   const ch={g:g,q:q,rp:rp};if(g==='poly'){const L=RX_GRIPS.poly.ust[q];ch.ust=L[Math.floor(Math.random()*L.length)];}
+  if(typeof rxHmOf==='function'){const hm=rxHmOf(g);if(hm)ch.hm=hm;}
   return ch;
 }
 /* enchaînements pour l'étage « voisin » : ii–V, V–I, ii–V–I, iii–VI, backdoor, ø–7 mineur */
@@ -15041,6 +15052,7 @@ function rxGridSeq(g){
 }
 function rxName(ch){return RX_NM[ch.rp]+RX_QS[ch.q]+(ch.ust?' · '+ch.ust[0]+' ('+RX_NM[(ch.rp+ch.ust[1])%12]+(ch.ust[2]==='min'?'m':'')+'/'+RX_NM[ch.rp]+')':'');}
 function rxGripHint(ch){const G=RX_GRIPS[ch.g];
+  if(ch.hm&&typeof rxHintHand==='function')return rxHintHand(ch);
   if(ch.g==='shell'||ch.g==='A'||ch.g==='B')return G.set[ch.q].map(function(x){return rxDeg(x,ch.q);}).join('-');
   if(ch.g==='h2')return 'MG 1 · MD '+RX_GRIPS.A.set[ch.q].map(function(x){return rxDeg(x,ch.q);}).join('-')+' ou '+RX_GRIPS.B.set[ch.q].map(function(x){return rxDeg(x,ch.q);}).join('-');
   if(ch.g==='h2s'){const G=RX_GRIPS.h2s;return 'MG 1-'+rxDeg(G.sev[ch.q],ch.q)+' · MD '+G.md[ch.q].map(function(x){return rxDeg(x,ch.q);}).join('-');}
@@ -15115,7 +15127,7 @@ function rxHeld(ns){
     else{RX._t=performance.now();rxRender();if(RX.src==='ear')setTimeout(rxEar,250);}
     return;}
   /* main posée mais fausse : jugée après 450 ms d'immobilité */
-  const need=(ch.g==='shell'?RX_GRIPS.shell.set[ch.q].length:(ch.g==='q4'?3:(ch.g==='h2'||ch.g==='h2s'?5:4)));
+  const need=ch.hm?(ch.hm==='MG'?(ch.g==='h2s'?2:1):3):(ch.g==='shell'?RX_GRIPS.shell.set[ch.q].length:(ch.g==='q4'?3:(ch.g==='h2'||ch.g==='h2s'?5:4)));
   clearTimeout(RX._hold);
   if(ns.length>=need)RX._hold=setTimeout(function(){
     if(!RX.seq||RX.seq!==S)return;const cur=Array.from(held);if(cur.length<need||rxCheck(cur,ch).ok)return;if(S.played&&rxSame(rxPcs(cur),rxPcs(S.played)))return;
@@ -15124,7 +15136,8 @@ function rxHeld(ns){
   rxLive(ns);
 }
 function rxLive(ns){const el=document.getElementById('rxCircBox');if(!el||!RX.seq)return;const S=RX.seq,ch=S.c[S.i];if(!ch)return;
-  el.innerHTML=rxVis(ch,S,ns);}
+  el.innerHTML=rxVis(ch,S,ns);
+  if(RX.view==='kb'&&typeof rxKbPart==='function'){const a=document.getElementById('rxStfBox'),b=document.getElementById('rxMcBox');if(a)a.innerHTML=rxKbPart(ch,S,ns,'stf');if(b)b.innerHTML=rxKbPart(ch,S,ns,'circ');}}
 function rxVis(ch,S,live){return RX.view==='kb'&&typeof rxKbView==='function'?rxKbView(ch,S,live):rxCirc(ch,rxCircOpt(ch,S,live));}
 function rxFormCheck(){const S=RX.seq,f=S.form;if(f.q==null||f.rp==null)return;const ch=S.c[0];const ok=f.q===ch.q&&f.rp===ch.rp;const ms=performance.now()-RX._t;
   const k={g:'form',q:ch.q,rp:ch.rp};if(ok)rxRecord(k,ms,true);else rxRecord(k,0,false);
@@ -15158,9 +15171,10 @@ function rxRender(){
   if(!S||!S.c||!S.c[0]){h+='<div class="empty">'+(RX.tab==='grid'?(typeof STD!=='undefined'&&STD?'Aucun enchaînement trouvé (élargis les qualités ou la source).':'Le corpus se charge… ouvre une fois 🎷 Standards ou attends quelques secondes.'):'Choisis au moins une qualité compatible avec ce grip.')+'</div><button class="btn" data-rx="go">▶ Lancer</button>';el.innerHTML=h;return;}
   const ch=S.c[Math.min(S.i,S.c.length-1)];
   h+='<div class="rx-main"><div class="rx-left"><div class="sd-fv">'+[['circ','⭕ cercle'],['kb','🎹 clavier + portée']].map(function(x){return '<button class="opill'+((RX.view||'circ')===x[0]?' on':'')+'" data-rx="view" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
+  const KBV=RX.view==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main"><div class="rx-left">','<div class="rx-kbmain"><div class="rx-kbhead">');
   if(RX.tab==='form'){h+='<div class="rx-ans">'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
     +'<div class="hint" style="text-align:center">Quelle forme ? puis la fondamentale : touche le cercle ou joue la note.</div>';}
-  h+='</div><div class="rx-right">';
+  h+=KBV?'</div><div class="rx-kbrow"><div id="rxStfBox" class="rx-kbstf">'+rxKbPart(ch,S,null,'stf')+'</div><div id="rxMcBox" class="rx-kbcirc">'+rxKbPart(ch,S,null,'circ')+'</div><div class="rx-right">':'</div><div class="rx-right">';
   if(S.c.length>1){h+=(S.title?'<div class="rx-ttl">🎷 '+S.title+'</div>':'')+'<div class="rx-chain">'+S.c.map(function(c,i){return '<span class="'+(i<S.i?'done':(i===S.i?'now':''))+'">'+(RX.names||i<S.i?(c.nm||rxName(c).split(' · ')[0]):'?')+'</span>';}).join('<b>→</b>')+'</div>';}
   h+=rxSidePanel(S,ch);
   if(RX.tab==='flash')h+='<div class="hint">⚡ affichage : <b>'+RX.flash+' ms</b> — il raccourcit quand tu réussis, s’allonge quand tu rates.</div>';
@@ -15175,7 +15189,7 @@ function rxRender(){
   h+='<div class="rx-mini">'+(k?'cette case : '+(k.ms?(k.ms/1000).toFixed(2)+' s':'—')+' · '+k.ok+'/'+k.n+' réussis':'case jamais jouée')+'</div>';
   h+='<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ suivant</button>'+(RX.src==='ear'||RX.tab==='grip'?'<button class="opill" data-rx="ear">🔊 écouter le voicing</button>':'')+'<button class="opill" data-rx="show">👁 montrer un voicing</button></div>';
   if(RX._show){const C=rxCands(ch);const v=C[Math.floor(C.length/2)];if(v)h+='<div class="rx-deg">exemple : '+v.map(function(m){return (typeof nnK==='function'?nnK(m%12,ch.rp):RX_NM[m%12])+(Math.floor(m/12)-1);}).join(' ')+' ('+v.map(function(m){return rxDeg(m-ch.rp,ch.q);}).join('-')+')</div>';}
-  h+='</div></div>';
+  h+='</div></div>'+(KBV?'</div>':'');
   el.innerHTML=h;
 }
 function rxHeatHTML(){
@@ -15374,7 +15388,7 @@ function rxDayHTML(){
   return h+rxLevelsHTML();
 }
 /* ── réglages propres aux nouveaux étages ── */
-function rxExtraSet(){let h='';
+function rxExtraSet(){let h=rxHandRow();
   if(RX.tab==='tour'){h+='<div class="rx-set"><span class="og-lb">Qualité du tour</span>'+RX_Q.filter(function(x){return rxCompat(RX.grip,x[0]);}).map(function(x){return '<button class="opill'+(RX.tourQ===x[0]?' on':'')+'" data-rx="tourq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('');
     if(RX.grip==='poly'){const L=RX_GRIPS.poly.ust[RX.tourQ]||[];h+='<span class="og-lb" style="margin-left:8px">Triade</span>'+L.map(function(u,i){return '<button class="opill'+((RX.tourU||0)%L.length===i?' on':'')+'" data-rx="touru" data-v="'+i+'">'+u[0]+'</button>';}).join('');}
     h+='</div>';}
@@ -15387,6 +15401,7 @@ function rxExtraSet(){let h='';
   return h;}
 function rxClick2(a,v,b){
   if(a==='dans'&&RX.seq&&RX.seq.dq&&!RX.seq.dq.res){const q=RX.seq.dq;const ok=v===q.ans;q.pick=v;rxDegDone(ok,ok?q.lb+' = '+q.ans:q.lb+' = '+q.ans+' (pas '+v+')');if(q.res)q.res.pick=v;return true;}
+  if(a==='hand'){RX.hand=v;rxSave();rxClockStop();rxNew();return true;}
   if(a==='daygo'){rxDayGo();return true;}
   if(a==='dayoff'){if(RX.day){RX.day.on=false;const o=RX.day.orig;if(o){RX.grip=o.grip;RX.ord=o.ord;RX.qs=o.qs.slice();RX.tourQ=o.tourQ;}}rxClockStop();RX.tab='day';RX.seq=null;rxSave();rxRender();return true;}
   if(a==='tempo'){RX.tempo=RX.tempo?0:1;rxSave();rxClockStop();rxNew();return true;}
@@ -15400,6 +15415,7 @@ setInterval(function(){if(RX._clk&&PAGE!=='rfx')rxClockStop();},1000);
 
 /* ── 🎹 vue clavier + portée : couleurs de degré, main gauche / main droite, notes fausses en rouge ── */
 function rxHands(ns,ch){const s=ns.slice().sort(function(a,b){return a-b;});
+  if(ch.hm)return s.map(function(m){return {m:m,hand:ch.hm};});
   const rel0=function(m){return ((m-ch.rp)%12+12)%12;};
   if(ch.g==='shell')return s.map(function(m){return {m:m,hand:'MG'};});
   if(ch.g==='h2s')return s.map(function(m,i){return {m:m,hand:i<2?'MG':'MD'};});
@@ -15417,34 +15433,72 @@ function rxAllowed(ch){const G=RX_GRIPS[ch.g]||{};
   if(ch.g==='poly'){const u=ch.ust;return RX_TONES[ch.q].concat((u[2]==='maj'?[0,4,7]:[0,3,7]).map(function(x){return (x+u[1])%12;}));}
   return RX_TONES[ch.q];}
 function rxHint(ch,S){const C=rxCands(ch);if(!C.length)return null;if(S&&S.played)return C.reduce(function(b,v){return rxCost(S.played,v)<rxCost(S.played,b)?v:b;},C[0]);return C[Math.floor(C.length/2)];}
-function rxKbView(ch,S,live){
+function rxKbCtx(ch,S,live){
   const rp=ch.rp,ivs=RX_TONES[ch.q],al=rxAllowed(ch),rel=function(m){return ((m-rp)%12+12)%12;};
   const flashHide=RX.tab==='flash'&&!RX._flashOn&&!(RX.last&&RX.last.ok&&S&&S.i>=S.c.length);
   const earHide=RX.src==='ear'&&RX.tab!=='form';
   const nm=ch.nm||rxName(ch).split(' · ')[0];
-  const showTarget=RX.tab==='form'?!flashHide:((RX.names||RX._show)&&!flashHide&&!earHide);
+  const FM=RX.tab==='form';
+  const showTarget=FM?!flashHide:((RX.names||RX._show)&&!flashHide&&!earHide);
   const target=ch.g==='form'?(function(){if(!S.formV){const g=['shell','drop2','A','B'][Math.floor(Math.random()*4)];const C=rxCands({g:g,q:ch.q,rp:ch.rp});S.formV=C[Math.floor(Math.random()*C.length)]||rxCands({g:'drop2',q:ch.q,rp:ch.rp})[0];}return S.formV;})():rxHint(ch,S);
   const done=RX.last&&RX.last.ok&&RX.last.ch===ch;
   const mine=(live&&live.length)?live:(done?RX.last.ns:null);
-  const W=Math.min(330,(window.innerWidth||400)-40);
-  let h='<div class="rx-kbv">';
-  /* le stimulus : le nom (sauf lecture de forme, oreille ou flash éteint) */
-  if(RX.tab!=='form')h+='<div class="rx-kbnm">'+(flashHide||earHide?(earHide?'🎧':'⚡ ?'):nm)+(S&&S.c[S.i+1]&&!earHide?' <small>→ '+(S.c[S.i+1].nm||rxName(S.c[S.i+1]).split(' · ')[0])+'</small>':'')+'</div>';
-  else h+='<div class="rx-kbnm">? <small>quelle qualité, quelle fondamentale ?</small></div><div class="rx-roots">'+RX_NM.map(function(n,pc){return '<button class="opill" data-rxroot="'+pc+'">'+n+'</button>';}).join('')+'</div>';
-  const FM=RX.tab==='form';
-  if(showTarget&&target){h+='<div class="sd-kbox'+(FM?'':' ghost')+'"><span>'+(FM?'lis ce voicing (couleurs masquées : à toi de trouver)':'le voicing proposé · '+rxGripHint(ch))+'</span>'+h2KbHTML(rxHands(target,ch),{rp:FM?null:rp,ivs:ivs,w:W-12})+'</div>';}
   const badM={};if(mine)mine.forEach(function(m){if(al.indexOf(rel(m))<0)badM[m]=true;});
-  const pi=done?S.i-2:S.i-1,prevCh=S&&pi>=0?S.c[pi]:null,prevNs=prevCh?(done?S.prevPlayed:S.played):null;
-  if(RX.tab!=='form'&&prevNs&&mine){h+='<div class="sd-kbox"><span>🔗 conduite des voix · '+(prevCh.nm||rxName(prevCh).split(' · ')[0])+' → '+nm+'</span>'+h2SeqHTML([{es:rxHands(prevNs,prevCh),rp:prevCh.rp,ivs:RX_TONES[prevCh.q],lb:'avant'},{es:rxHands(mine,ch),rp:rp,ivs:ivs,lb:'ta main',cur:true,bad:badM}],{w:W-12,dimOthers:true})+'</div>';}
-  else if(RX.tab!=='form'){h+='<div class="sd-kbox"><span>ta main'+(mine?'':' — pose les doigts')+'</span>'+(mine?h2KbHTML(rxHands(mine,ch),{rp:rp,ivs:ivs,w:W-12,bad:badM}):'<div class="hint" style="margin:4px 0">…</div>')+'</div>';}
-  const notes=mine||(showTarget?target:null);
-  if(notes&&typeof _stfDraw==='function'&&STFM!=='off'){
-    const cols=[{rootPc:rp,ivs:ivs,lb:mine?(done?'✓ ':'')+'ta main':'proposé',notes:rxHands(notes,ch).map(function(e){return {m:e.m,hand:e.hand,col:FM?'#E8ECF5':stfColOf(e.m,rp,ivs,e.hand),bad:!!mine&&al.indexOf(rel(e.m))<0};})}];
-    if(FM){cols[0].rootPc=null;cols[0].ivs=null;cols[0].lb='?';}
-    h+='<div class="rx-stf">'+_stfDraw(cols,{grand:true,sp:10,key:FM?0:rp,deg:!FM,scale:1.2,mode:FM?'read':undefined})+'</div>';}
-  if(mine)h+='<div class="rx-deg" style="text-align:center">'+mine.slice().sort(function(a,b){return a-b;}).map(function(m){const d=rxDeg(m-rp,ch.q);return al.indexOf(rel(m))<0?'<b style="color:#EF4444">'+d+'</b>':d;}).join(' · ')+'</div>';
+  return {rp:rp,ivs:ivs,al:al,rel:rel,flashHide:flashHide,earHide:earHide,nm:nm,FM:FM,showTarget:showTarget,target:target,done:done,mine:mine,badM:badM};}
+/* vue clavier : 'top' = repère + claviers (pleine largeur) · 'stf' = portée · 'circ' = la forme jouée sur le cercle */
+function rxKbPart(ch,S,live,part){
+  const X=rxKbCtx(ch,S,live),rp=X.rp,ivs=X.ivs;
+  if(part==='stf'){const notes=X.mine||(X.showTarget?X.target:null);if(!notes||typeof _stfDraw!=='function'||STFM==='off')return '<div class="hint" style="text-align:center;margin:30px 0">la portée apparaît quand tu poses la main</div>';
+    const cols=[{rootPc:rp,ivs:ivs,lb:X.mine?(X.done?'✓ ':'')+'ta main':'proposé',notes:rxHands(notes,ch).map(function(e){return {m:e.m,hand:e.hand,col:X.FM?'#E8ECF5':stfColOf(e.m,rp,ivs,e.hand),bad:!!X.mine&&X.al.indexOf(X.rel(e.m))<0};})}];
+    if(X.FM){cols[0].rootPc=null;cols[0].ivs=null;cols[0].lb='?';}
+    return '<div class="rx-stf">'+_stfDraw(cols,{grand:true,sp:11,key:X.FM?0:rp,deg:!X.FM,scale:1.3,mode:X.FM?'read':undefined})+'</div>'
+      +(X.mine?'<div class="rx-deg" style="text-align:center">'+X.mine.slice().sort(function(a,b){return a-b;}).map(function(m){const d=rxDeg(m-rp,ch.q);return X.al.indexOf(X.rel(m))<0?'<b style="color:#EF4444">'+d+'</b>':d;}).join(' · ')+'</div>':'');}
+  if(part==='circ'){if(X.FM)return '<div class="hint" style="text-align:center;margin:30px 0">⭕ le cercle s’affiche après ta réponse</div>';
+    const o=rxCircOpt(ch,S,live);o.size=230;o.center=null;o.sub=null;if(X.mine)o.live=X.mine;return rxCirc(ch,o);}
+  /* top */
+  const W=Math.min(1080,(document.getElementById('rxRoot')||{}).clientWidth||((window.innerWidth||400)-60))-16,KM=46;
+  let h='<div class="rx-kbv wide">';
+  if(!X.FM)h+='<div class="rx-kbnm">'+(X.flashHide||X.earHide?(X.earHide?'🎧':'⚡ ?'):X.nm)+(S&&S.c[S.i+1]&&!X.earHide?' <small>→ '+(S.c[S.i+1].nm||rxName(S.c[S.i+1]).split(' · ')[0])+'</small>':'')+(ch.hm?' <small class="rx-hm">'+(ch.hm==='MG'?'🫲 main gauche seule':'🫱 main droite seule')+'</small>':'')+'</div>';
+  else h+='<div class="rx-kbnm">? <small>quelle qualité, quelle fondamentale ?</small></div><div class="rx-roots wide">'+RX_NM.map(function(n,pc){return '<button class="opill" data-rxroot="'+pc+'">'+n+'</button>';}).join('')+'</div>';
+  if(X.showTarget&&X.target)h+='<div class="sd-kbox'+(X.FM?'':' ghost')+'"><span>'+(X.FM?'lis ce voicing (couleurs masquées : à toi de trouver)':'le voicing proposé · '+rxGripHint(ch))+'</span>'+h2KbHTML(rxHands(X.target,ch),{rp:X.FM?null:rp,ivs:ivs,w:W,kmax:KM})+'</div>';
+  const pi=X.done?S.i-2:S.i-1,prevCh=S&&pi>=0?S.c[pi]:null,prevNs=prevCh?(X.done?S.prevPlayed:S.played):null;
+  if(!X.FM&&prevNs&&X.mine)h+='<div class="sd-kbox"><span>🔗 conduite des voix · '+(prevCh.nm||rxName(prevCh).split(' · ')[0])+' → '+X.nm+'</span>'+h2SeqHTML([{es:rxHands(prevNs,prevCh),rp:prevCh.rp,ivs:RX_TONES[prevCh.q],lb:'avant'},{es:rxHands(X.mine,ch),rp:rp,ivs:ivs,lb:'ta main',cur:true,bad:X.badM}],{w:W,kmax:KM,dimOthers:true})+'</div>';
+  else if(!X.FM)h+='<div class="sd-kbox"><span>ta main'+(X.mine?'':' — pose les doigts')+'</span>'+(X.mine?h2KbHTML(rxHands(X.mine,ch),{rp:rp,ivs:ivs,w:W,kmax:KM,bad:X.badM}):'<div class="hint" style="margin:4px 0">…</div>')+'</div>';
   return h+'</div>';
 }
+function rxKbView(ch,S,live){return rxKbPart(ch,S,live,'top');}
+
+/* ── 🫲🫱 travailler chaque main isolément (grips à deux mains) ── */
+const RX_2H=['h2','h2s','poly'];
+function rxHmOf(g){return RX_2H.indexOf(g)>=0&&RX.hand&&RX.hand!=='both'?RX.hand:null;}
+function rxCheckHand(ns,ch){const s=ns.slice().sort(function(a,b){return a-b;}),rp=ch.rp,q=ch.q,rel=function(m){return ((m-rp)%12+12)%12;};
+  const c={g:ch.g,q:q,rp:rp,ust:ch.ust};
+  if(ch.hm==='MG'){
+    if(rel(s[0])!==0)return {ok:false,why:'la fondamentale en bas'};
+    if(ch.g==='h2s'){const G=RX_GRIPS.h2s;if(s.length!==2)return {ok:false,why:'deux notes : 1 et '+rxDeg(G.sev[q],q)+' (ou 1 et 3)'};const g2=rel(s[1]);
+      return {ok:(g2===G.sev[q]||g2===G.thi[q])&&s[1]-s[0]<=16,why:'1-'+rxDeg(G.sev[q],q)+' ou 1-3, dans une dixième'};}
+    if(ch.g==='poly'){const gt=RX_TONES[q];return {ok:s.length<=3&&s.every(function(m){const r=rel(m);return r===0||gt.indexOf(r)>=0;})&&s[s.length-1]-s[0]<=16,why:'la fondamentale (± 3ce ou 7e), dans une dixième'};}
+    return {ok:s.every(function(m){return rel(m)===0;})&&s.length<=2,why:'la fondamentale seule (± son octave)'};}
+  /* MD seule */
+  if(ch.g==='h2'){const a=rxCheck(s,{g:'A',q:q,rp:rp}).ok,b=rxCheck(s,{g:'B',q:q,rp:rp}).ok;return {ok:a||b,why:'rootless A (3-5-7-9) ou B (7-9-3-5)'};}
+  if(ch.g==='h2s'){const G=RX_GRIPS.h2s;if(s.length<3)return {ok:false};const mr=s.map(rel);
+    if(!mr.every(function(x){return G.al[q].indexOf(x)>=0;}))return {ok:false,why:'une note sort de l’accord'};
+    if(mr.indexOf(G.thi[q])<0&&mr.indexOf(G.sev[q])<0)return {ok:false,why:'il faut la 3ce (ou la 7e)'};
+    if(!mr.some(function(x){return G.ten[q].indexOf(x)>=0;}))return {ok:false,why:'ajoute une tension (9, 11 ou 13)'};
+    return {ok:s[s.length-1]-s[0]<=12,why:'resserre (une octave max)'};}
+  if(ch.g==='poly'){const u=ch.ust,tr=(u[2]==='maj'?[0,4,7]:[0,3,7]).map(function(x){return (x+u[1])%12;});
+    return {ok:s.length===3&&rxSame(rxPcs(s).map(rel),tr)&&s[2]-s[0]<=12,why:'la triade '+u[0]+' entière, serrée'};}
+  return {ok:false};}
+function rxCandsHand(ch){const rp=ch.rp,q=ch.q,out=[];
+  if(ch.hm==='MG'){for(let b=36;b<=50;b++)if(((b-rp)%12+12)%12===0){if(ch.g==='h2s')out.push([b,b+RX_GRIPS.h2s.sev[q]]);else out.push([b]);}return out;}
+  const c={g:ch.g,q:q,rp:rp,ust:ch.ust};
+  if(ch.g==='h2'){return rxCands({g:'A',q:q,rp:rp}).concat(rxCands({g:'B',q:q,rp:rp}));}
+  const full=rxCands(c);return full.map(function(v){return ch.g==='poly'?v.slice(-3):v.slice(2);}).filter(function(v){return v.length;});}
+function rxHintHand(ch){const c=Object.assign({},ch);delete c.hm;const full=rxGripHint(c);const p=full.split(' · ');
+  if(ch.g==='poly'){const u=ch.ust,tr=(u[2]==='maj'?[0,4,7]:[0,3,7]).map(function(x){return x+u[1];});return ch.hm==='MG'?'la fondamentale (± 3ce/7e)':'triade '+u[0]+' = '+tr.map(function(x){return rxDeg(x,ch.q);}).join(' ');}
+  return ch.hm==='MG'?(p[0]||full):(p[1]||full);}
+function rxHandRow(){if(RX_2H.indexOf(RX.grip)<0||RX.tab==='form'||RX.tab==='heat'||RX.tab==='day')return '';
+  return '<div class="rx-set"><span class="og-lb">Main</span>'+[['both','🖐🖐 les deux'],['MG','🫲 main gauche seule'],['MD','🫱 main droite seule']].map(function(x){return '<button class="opill'+((RX.hand||'both')===x[0]?' on':'')+'" data-rx="hand" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'<span class="hint" style="margin:0 0 0 6px">les temps de chaque main sont comptés à part</span></div>';}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
