@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.2 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.3 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -638,6 +638,8 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .h2-ah{position:absolute;top:30px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid}
 .h2-mv{position:absolute;top:12px;font-size:10px;font-weight:800;font-style:normal;background:#12162B;padding:0 3px;border-radius:3px}
 .h2-tot{position:absolute;left:0;top:14px;font-size:10.5px;font-weight:800;color:#7A85A8}
+.dr-h2{display:flex;justify-content:center;margin:6px auto}.h2-wrap{background:var(--bg3);border-radius:12px;padding:8px 10px}
+.at-kb .h2-seq,.at-kb .h2-kb{margin-bottom:4px}
 /* v11.9 — ⚡ Réflexe */
 .rx-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}.rx-tabs button{padding:8px 13px;border-radius:10px;background:var(--bg3);border:1px solid var(--gris2);color:var(--gris);font-weight:800;cursor:pointer;font-family:inherit}
 .rx-tabs button.on{background:#F5C842;color:#12162B;border-color:#F5C842}
@@ -668,7 +670,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.2 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.3 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -1739,9 +1741,9 @@ function stfFromEntries(entries,rootPc,o){
    Cercle : les 12 notes en rond ; un accord = une forme (triangle = triade, quadrilatère = 4 sons, pentagone et plus = 9e/11e/13e).
    Polygone MG en violet, MD en or (selon le voicing joué), sommets aux couleurs des degrés, accord précédent en fantôme,
    notes communes avec halo, flèches pour les notes qui glissent. Réglages : localStorage garden_stfaid_v1. */
-let STFA=(function(){const d={vl:1,deg:1,nx:1,circ:1,live:1,cm:'auto'};try{const v=JSON.parse(localStorage.getItem('garden_stfaid_v1')||'null');if(v)Object.keys(d).forEach(function(k){if(v[k]!=null)d[k]=k==='cm'?v[k]:(v[k]?1:0);});}catch(e){}return d;})();
+let STFA=(function(){const d={vl:1,deg:1,nx:1,circ:1,live:1,h2:1,cm:'auto'};try{const v=JSON.parse(localStorage.getItem('garden_stfaid_v1')||'null');if(v)Object.keys(d).forEach(function(k){if(v[k]!=null)d[k]=k==='cm'?v[k]:(v[k]?1:0);});}catch(e){}return d;})();
 function stfaSet(k,nx){if(k==='cm'){STFA.cm=nx||{auto:'chr',chr:'q5',q5:'q4',q4:'auto'}[STFA.cm||'auto'];}else STFA[k]=STFA[k]?0:1;try{localStorage.setItem('garden_stfaid_v1',JSON.stringify(STFA));}catch(e){}stfSet(STFM);}
-function stfaSel(){return '<span class="stf-sel"><span class="og-lb">🧭 Aides</span>'+[['vl','➰ flèches'],['deg','🔢 degrés'],['nx','⏭ suivant'],['circ','⭕ cercle'],['live','🔆 clignote']].map(function(x){return '<button class="opill'+(STFA[x[0]]?' on':'')+'" data-stfa="'+x[0]+'">'+x[1]+'</button>';}).join('')+'<button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm||'auto'])+'</button></span>';}
+function stfaSel(){return '<span class="stf-sel"><span class="og-lb">🧭 Aides</span>'+[['vl','➰ flèches'],['deg','🔢 degrés'],['nx','⏭ suivant'],['circ','⭕ cercle'],['h2','🖐🖐 deux mains'],['live','🔆 clignote']].map(function(x){return '<button class="opill'+(STFA[x[0]]?' on':'')+'" data-stfa="'+x[0]+'">'+x[1]+'</button>';}).join('')+'<button class="opill on" data-stfa="cm" title="ordre du cercle">'+({auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm||'auto'])+'</button></span>';}
 document.addEventListener('click',function(e){const b=e.target&&e.target.closest?e.target.closest('[data-stfa]'):null;if(b){stfaSet(b.dataset.stfa);document.querySelectorAll('[data-stfa]').forEach(function(x){if(x.dataset.stfa==='cm'){x.textContent={auto:'🔄 cercle : auto',chr:'⭕ chromatique',q5:'🔄 quintes',q4:'🔃 quartes'}[STFA.cm||'auto'];return;}x.classList.toggle('on',!!STFA[x.dataset.stfa]);});}});
 const VL_COL={0:'#F5C842',1:'#3ECF8E',2:'#4F9EFF',x:'#FF9F43'};
 /* appariement des voix entre deux accords : par main, la note la plus proche (sans réutiliser) */
@@ -2043,7 +2045,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
   const RD=AT.read&&!AT.reveal;if(RD){cols.forEach(function(c){c.lb=c.box?null:(c.op?null:'?');if(c.box)c.box='suivant';});}
   const stf=_stfDraw(RD?cols.filter(function(c){return !c.op||c.box;}):cols,{grand:true,sp:12,key:key,vl:!RD&&!!STFA.vl&&cols.length>1,deg:!RD&&!!STFA.deg,mode:RD?'read':undefined,scale:big?1.6:1.15});
   const vName=(AT_VOI.filter(function(v){return v[0]===AT.voi;})[0]||[,''])[1].replace(/^[^A-Za-zÀ-ÿ0-9]+\s*/,'');const circ=circSVG(cur,r,AT.prev,{size:300,w:big?340:300,lb:AT.curName,key:key,pick:1,seq:!!AT.seq,prevRoot:AT.prev?AT.prevRoot:null,sub:atSubOf(vName,cur,r)});
-  const kb=miniKb(cur.map(function(e){return E(e.m,r,e.hand);}),r,Math.min(900,(box.clientWidth||900)-30));
+  const kbW=Math.min(900,(box.clientWidth||900)-30);const kb=(typeof H2PREF!=='undefined'&&H2PREF.at&&typeof atH2==='function')?atH2(cur,r,iv,kbW):miniKb(cur.map(function(e){return E(e.m,r,e.hand);}),r,kbW);
   const pill=function(attr,t,on,c){return '<button class="opill'+(on?' on':'')+'" '+attr+(c&&on?' style="border-color:'+c+';color:'+c+'"':'')+'>'+t+'</button>';};
   const row=function(lb,h){return '<div class="at-row"><div class="at-lb">'+lb+'</div>'+h+'</div>';};
   const F=AT_FAM[AT.fam];
@@ -2055,7 +2057,7 @@ function atRender(sound){const box=document.getElementById('atelBox');if(!box)re
     +(AT_BOYD[AT.voi]?row('📘 POSITION DE BOYD',['auto','P1','P2'].map(function(k){return pill('data-at="bp:'+k+'"',k==='auto'?'règle auto (alterne sur 4te/5te)':k.replace('P','P.'),AT.bpos===k,'#A78BFA');}).join('')+(AT.boydO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.boydO.pos.replace('P','P.')+(AT.boydO.rule&&AT.boydO.rule.lb?' — '+AT.boydO.rule.lb:'')+(AT.boydO.sw?' · switch (registre)':'')+'</span>':'')):'')
     +(AT.voi==='hae'?row('🎓 CATÉGORIE DE HAERLE · la MG seule (le bassiste joue la fondamentale)',['auto','A','B'].map(function(k){return pill('data-at="hc:'+k+'"',k==='auto'?'règle auto (change sur 4te/5te)':(k==='A'?'A : 3-7-9 / 3-6-9':'B : 7-3-5 / 7-3-6'),AT.hcat===k,'#A78BFA');}).join('')+(AT.haeO?'<span class="at-inv" style="min-width:0;margin-left:8px">'+AT.haeO.v.k+' · cat. '+AT.haeO.v.cat+' — '+AT.haeO.rule+'</span>':'')):'')
     ;const ctlB=row('RENVERSEMENT · CONDUITE',pill('data-at="i:-1"','⬇ renv.',0)+'<span class="at-inv">'+(AT.vl?'auto':(AT.inv%Math.max(1,atHands(iv).md.length)===0?'PF':'R'+(((AT.inv%atHands(iv).md.length)+atHands(iv).md.length)%atHands(iv).md.length)))+'</span>'+pill('data-at="i:1"','⬆ renv.',0)
-      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0)+pill('data-at="rd"','📖 lecture seule (je lis, je joue)',!!AT.read,'#F5C842'));
+      +pill('data-at="vl"','🎯 conduite des voix auto',!!AT.vl,'#3ECF8E')+pill('data-at="h2v"','🖐🖐 clavier deux mains',typeof H2PREF!=='undefined'&&!!H2PREF.at,'#A78BFA')+pill('data-at="snd"','🔊 son à chaque geste',!!AT.snd,'#3ECF8E')+pill('data-at="midi"','🎹 mon clavier pilote',!!AT.midi,'#4F9EFF')+pill('data-at="reset"','✨ nouveau départ',0)+pill('data-at="rd"','📖 lecture seule (je lis, je joue)',!!AT.read,'#F5C842'));
   /* v9.99 — réglages en onglets (un seul ouvert) + barre de raccourcis toujours visible */
   const seqAll=atSeqHTML(),hm=seqAll.indexOf('<!--HAE-->'),hz=seqAll.indexOf('<!--/HAE-->');
   const seqMain=hm>=0?seqAll.slice(0,hm)+seqAll.slice(hz+11):seqAll,seqHae=hm>=0?seqAll.slice(hm+10,hz):'';
@@ -2091,6 +2093,7 @@ document.addEventListener('click',function(e){const t=e.target&&e.target.closest
   else if(k==='vl'){AT.vl=AT.vl?0:1;atSave();atRender(false);}
   else if(k==='hc'){AT.hcat=v;atSave();if(AT.seq){AT.seq.hae=null;atSeqGo(AT.seq.i);}else atChange(function(){});}
   else if(k==='bp'){AT.bpos=v;atSave();if(AT.seq){AT.seq.boyd=null;atSeqGo(AT.seq.i);}else atChange(function(){});}
+  else if(k==='h2v'){H2PREF.at=H2PREF.at?0:1;h2PrefSave();atRender(false);}
   else if(k==='snd'){AT.snd=AT.snd?0:1;atSave();atRender(false);}
   else if(k==='midi'){AT.midi=AT.midi?0:1;atSave();atRender(false);}
   else if(k==='play')playNotes(AT.cur.map(function(x){return x.m;}),1.6);
@@ -11667,7 +11670,7 @@ function drShow(){
       kbLight('drillKb',[E(bass,s.rootPc,'MG'),E(fifth,s.rootPc,'MG')]
         .concat(md.map(function(m){return E(m,s.rootPc,'MD');})),s.rootPc);
       /* 🧭 v9.80 — comping : portée (avant / maintenant / suivant) + cercle */
-      const _en=duoEntries(s);if(!drAids(_en,s.rootPc))drStfShow(_en,s.rootPc,false);drCirc(_en,s.rootPc);
+      const _en=duoEntries(s);if(!drAids(_en,s.rootPc))drStfShow(_en,s.rootPc,false);drCirc(_en,s.rootPc);if(typeof drH2==='function')drH2(_en,s.rootPc);
     }else{kb.style.display='none';const se=document.getElementById('drStf');if(se)se.innerHTML='';drCirc(null);}
     document.getElementById('btnEar').style.display='none';
     mgClear();
@@ -11726,7 +11729,7 @@ function drShow(){
     kbLight('drillKb',ghost.map(function(m,i){return E(m,_kr,s.ghostHands&&!isSCL?s.ghostHands[i]:(isSCL&&s.lhSeq&&s.lhSeq[DR.sclPtr]&&s.lhSeq[DR.sclPtr].indexOf(m)>=0?'MG':undefined));}),_kr);
     /* 🎼 v9.71 : la même cible sur la portée */
     if(isSCL&&s.seqNotes)drStfSeq(s);
-    else{const _en=ghost.map(function(m,i){return E(m,s.rootPc,s.ghostHands?s.ghostHands[i]:undefined);});if(!drAids(_en,s.rootPc))drStfShow(_en,s.rootPc,false);drCirc(_en,s.rootPc);}
+    else{const _en=ghost.map(function(m,i){return E(m,s.rootPc,s.ghostHands?s.ghostHands[i]:undefined);});if(!drAids(_en,s.rootPc))drStfShow(_en,s.rootPc,false);drCirc(_en,s.rootPc);if(typeof drH2==='function')drH2(_en,s.rootPc);}
     if(isSCL&&s.seqNotes)drCirc(null);
   }else{kb.style.display='none';const se=document.getElementById('drStf');if(se)se.innerHTML='';drCirc(null);}
   drHalo();
@@ -14842,6 +14845,32 @@ function h2Split(ns,rp){const s=ns.slice().sort(function(a,b){return a-b;});if(s
   let gi=-1,gm=0;for(let i=0;i<s.length-1;i++){const g=s[i+1]-s[i];if(g>gm&&s[i]<64){gm=g;gi=i;}}
   if(gm<5)return s.map(function(m){return {m:m,hand:s[0]<55&&m===s[0]&&s.length>3?'MG':(m<55?'MG':'MD')};});
   return s.map(function(m,i){return {m:m,hand:i<=gi?'MG':'MD'};});}
+
+/* ── préférences (Atelier) ── */
+let H2PREF=(function(){try{return JSON.parse(localStorage.getItem('garden_h2_v1')||'null')||{at:1};}catch(e){return {at:1};}})();
+function h2PrefSave(){try{localStorage.setItem('garden_h2_v1',JSON.stringify(H2PREF));}catch(e){}}
+function h2Ivs(es,rp){const u=[];es.forEach(function(e){const x=((e.m-rp)%12+12)%12;if(u.indexOf(x)<0)u.push(x);});return u;}
+function h2Ent(es){return (es||[]).map(function(e){return {m:e.m,hand:e.hand||(e.m<55?'MG':'MD')};});}
+/* 🏋️ Drill : avant → maintenant → suivant, en deux mains, sous la portée */
+function drH2(entries,rootPc){
+  let el=document.getElementById('drH2');const ci=document.getElementById('drCirc')||document.getElementById('drStf');
+  if(!el&&ci){el=document.createElement('div');el.id='drH2';el.className='dr-h2';ci.parentNode.insertBefore(el,ci.nextSibling);}
+  if(!el)return;const s=DR.steps&&DR.steps[DR.idx];
+  if(!STFA.h2||STFM==='off'||!entries||!entries.length||(s&&s.ear)){el.innerHTML='';return;}
+  const pv=DR.idx>0?DR.steps[DR.idx-1]:null,nx=DR.idx<DR.steps.length-1?DR.steps[DR.idx+1]:null;
+  const P=STFA.vl&&pv?drChordOf(pv):null,N=STFA.nx&&nx&&!(s&&s.ear)?drChordOf(nx):null;
+  const big=document.body.classList.contains('ux-focus'),W=Math.min(big?640:420,(window.innerWidth||400)-40);
+  const cur=h2Ent(entries);
+  const L=[P?{es:h2Ent(P),rp:pv.rootPc,ivs:h2Ivs(P,pv.rootPc),lb:'avant'}:null,{es:cur,rp:rootPc,ivs:h2Ivs(cur,rootPc),lb:'▶ maintenant',cur:true},N?{es:h2Ent(N),rp:nx.rootPc,ivs:h2Ivs(N,nx.rootPc),lb:'suivant'}:null];
+  el.innerHTML='<div class="h2-wrap">'+h2SeqHTML(L,{w:W,dimOthers:true})+'</div>';
+}
+/* 🎛 Atelier : le clavier de l'atelier en deux mains (avec l'accord d'avant et les flèches) */
+function atH2(cur,r,iv,w){
+  const ivs=(iv||[]).map(function(x){return ((x%12)+12)%12;});
+  if(AT.prev&&AT.prev.length){const pr=AT.prevRoot!=null?AT.prevRoot:r;
+    return h2SeqHTML([{es:h2Ent(AT.prev),rp:pr,ivs:h2Ivs(AT.prev,pr),lb:(AT.prevName||'')+' · avant'},{es:h2Ent(cur),rp:r,ivs:ivs,lb:'▶ '+(AT.curName||''),cur:true}],{w:w,dimOthers:true});}
+  return h2KbHTML(h2Ent(cur),{rp:r,ivs:ivs,w:w,lb:'▶ '+(AT.curName||'')});
+}
 
 /* ═══════════ ⚡ v11.9 — RÉFLEXE : lire un accord sur le cercle et poser la main sans épeler ═══════════
    Idée : sur le cercle, chaque qualité dessine TOUJOURS le même polygone (transposer = tourner la forme).
