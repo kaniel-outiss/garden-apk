@@ -673,6 +673,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 @media (max-width:820px){.rx-kbrow{grid-template-columns:1fr}}
 .rx-roots.wide{grid-template-columns:repeat(12,1fr);max-width:900px}.rx-hm{color:#A78BFA!important}
 @media (max-width:600px){.rx-roots.wide{grid-template-columns:repeat(6,1fr)}}
+.rx-ans.wide{justify-content:flex-start;align-items:center;gap:8px}
 </style>
 </head>
 <body>
@@ -15172,7 +15173,7 @@ function rxRender(){
   const ch=S.c[Math.min(S.i,S.c.length-1)];
   h+='<div class="rx-main"><div class="rx-left"><div class="sd-fv">'+[['circ','⭕ cercle'],['kb','🎹 clavier + portée']].map(function(x){return '<button class="opill'+((RX.view||'circ')===x[0]?' on':'')+'" data-rx="view" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
   const KBV=RX.view==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main"><div class="rx-left">','<div class="rx-kbmain"><div class="rx-kbhead">');
-  if(RX.tab==='form'){h+='<div class="rx-ans">'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
+  if(RX.tab==='form'&&!KBV){h+='<div class="rx-ans">'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
     +'<div class="hint" style="text-align:center">Quelle forme ? puis la fondamentale : touche le cercle ou joue la note.</div>';}
   h+=KBV?'</div><div class="rx-kbrow"><div id="rxStfBox" class="rx-kbstf">'+rxKbPart(ch,S,null,'stf')+'</div><div id="rxMcBox" class="rx-kbcirc">'+rxKbPart(ch,S,null,'circ')+'</div><div class="rx-right">':'</div><div class="rx-right">';
   if(S.c.length>1){h+=(S.title?'<div class="rx-ttl">🎷 '+S.title+'</div>':'')+'<div class="rx-chain">'+S.c.map(function(c,i){return '<span class="'+(i<S.i?'done':(i===S.i?'now':''))+'">'+(RX.names||i<S.i?(c.nm||rxName(c).split(' · ')[0]):'?')+'</span>';}).join('<b>→</b>')+'</div>';}
@@ -15459,7 +15460,7 @@ function rxKbPart(ch,S,live,part){
   const W=Math.min(1080,(document.getElementById('rxRoot')||{}).clientWidth||((window.innerWidth||400)-60))-16,KM=46;
   let h='<div class="rx-kbv wide">';
   if(!X.FM)h+='<div class="rx-kbnm">'+(X.flashHide||X.earHide?(X.earHide?'🎧':'⚡ ?'):X.nm)+(S&&S.c[S.i+1]&&!X.earHide?' <small>→ '+(S.c[S.i+1].nm||rxName(S.c[S.i+1]).split(' · ')[0])+'</small>':'')+(ch.hm?' <small class="rx-hm">'+(ch.hm==='MG'?'🫲 main gauche seule':'🫱 main droite seule')+'</small>':'')+'</div>';
-  else h+='<div class="rx-kbnm">? <small>quelle qualité, quelle fondamentale ?</small></div><div class="rx-roots wide">'+RX_NM.map(function(n,pc){return '<button class="opill" data-rxroot="'+pc+'">'+n+'</button>';}).join('')+'</div>';
+  else h+='<div class="rx-kbnm">? <small>quelle qualité, quelle fondamentale ?</small></div><div class="rx-ans wide"><span class="og-lb">1 · qualité</span>'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S&&S.form&&S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div class="og-lb" style="margin:2px 0">2 · fondamentale (ou joue la note)</div><div class="rx-roots wide">'+RX_NM.map(function(n,pc){return '<button class="opill" data-rxroot="'+pc+'">'+n+'</button>';}).join('')+'</div>';
   if(X.showTarget&&X.target)h+='<div class="sd-kbox'+(X.FM?'':' ghost')+'"><span>'+(X.FM?'lis ce voicing (couleurs masquées : à toi de trouver)':'le voicing proposé · '+rxGripHint(ch))+'</span>'+h2KbHTML(rxHands(X.target,ch),{rp:X.FM?null:rp,ivs:ivs,w:W,kmax:KM})+'</div>';
   const pi=X.done?S.i-2:S.i-1,prevCh=S&&pi>=0?S.c[pi]:null,prevNs=prevCh?(X.done?S.prevPlayed:S.played):null;
   if(!X.FM&&prevNs&&X.mine)h+='<div class="sd-kbox"><span>🔗 conduite des voix · '+(prevCh.nm||rxName(prevCh).split(' · ')[0])+' → '+X.nm+'</span>'+h2SeqHTML([{es:rxHands(prevNs,prevCh),rp:prevCh.rp,ivs:RX_TONES[prevCh.q],lb:'avant'},{es:rxHands(X.mine,ch),rp:rp,ivs:ivs,lb:'ta main',cur:true,bad:X.badM}],{w:W,kmax:KM,dimOthers:true})+'</div>';
