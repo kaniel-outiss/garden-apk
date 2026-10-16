@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.10.2 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.10.3 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -697,7 +697,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.10.2 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.10.3 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -13568,6 +13568,10 @@ function stdParse(raw,ix){
   if(EX&&EX.auto&&typeof sdAnalyze==='function'){ /* une analyse par zone tonale : chaque changement d'armure relance les degrés */
     let z0=0,K0={pc:S.tonic,minor:S.minor};const run=function(a,b,K){const part=S.ch.slice(a,b),an=sdAnalyze(part,K.pc,K.minor);part.forEach(function(c,k){if(!c.fn&&an[k]){c.fn=an[k].fn;c.sc=an[k].sc;}});};
     S.ch.forEach(function(c,k){if(c.key&&k>z0){run(z0,k,K0);z0=k;}if(c.key)K0=stdKeyOf(c.key.replace(/♭/g,'b').replace(/♯/g,'#'));});run(z0,S.ch.length,K0);}
+  /* triade majeure sur une basse un ton au-dessus (E♭/F, G△/A) : dominante sus de la basse, même si le recueil l'analysait autrement */
+  if(typeof sdAnalyze==='function'){let K={pc:S.tonic,minor:S.minor};S.ch.forEach(function(c,k){if(c.key)K=stdKeyOf(c.key.replace(/♭/g,'b').replace(/♯/g,'#'));
+    if(c.bass==null||c.rp==null||/sus/.test(c.fn||''))return;if(((c.bass-c.rp)%12+12)%12!==2||(STD_FAM[c.q]||'M')!=='M')return;
+    const a=sdAnalyze([c,S.ch[k+1]].filter(Boolean),K.pc,K.minor)[0];if(a&&/sus/.test(a.fn)){c.fn=a.fn;c.sc=a.sc;}});}
   return S;
 }
 /* la version « harmonie alternative » (Rob DuBoff, fake book Hal Leonard) : même morceau, autre ligne d'accords */
@@ -14593,7 +14597,7 @@ function sdAnalyze(chs,tonic,minor){
     if(c.bass!=null){const up=((c.bass-c.rp)%12+12)%12,f0=STD_FAM[c.q]||'M';
       if((up===2&&f0==='M')||(up===5&&f0==='m')){const br=((c.bass-tonic)%12+12)%12,nx=chs[k+1];
         const res=nx&&nx.rp!=null&&((nx.rp-c.bass)%12+12)%12===5&&br!==7?'/'+rom(nx.rp,STD_FAM[nx.q]||'M'):'';
-        return {fn:(res?'V':rom(c.bass,'D'))+'9sus4'+res,sc:'Mixo. (sus4)'};}}
+        return {fn:(res||br===7?'V':rom(c.bass,'D'))+(/maj7|△/.test(c.q)?'13sus4':'9sus4')+res,sc:'Mixo. (sus4)'};}}
     const f=STD_FAM[c.q]||'M',n=chs[k+1],nn_=chs[k+2],rel=((c.rp-tonic)%12+12)%12;
     let fn,sc;
     const tgtName=function(t){return rom(t.rp,STD_FAM[t.q]||'M');};
