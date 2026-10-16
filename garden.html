@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.8.1 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.8.2 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -696,7 +696,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.8.1 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.8.2 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15176,7 +15176,8 @@ function rxLive(ns){const el=document.getElementById('rxCircBox');if(!el||!RX.se
 /* plus de bouton cercle/clavier : clavier en haut, portée + cercle dessous. La 👁 Forme alterne : forme sur le cercle, ou voicing au clavier. */
 function rxView(){const S=RX.seq;return RX.tab==='form'&&S&&S.read==='circ'?'circ':'kb';}
 function rxVis(ch,S,live){return rxView()==='kb'&&typeof rxKbView==='function'?rxKbView(ch,S,live):rxCirc(ch,rxCircOpt(ch,S,live));}
-function rxFormCheck(){const S=RX.seq,f=S.form;if(f.q==null||f.rp==null)return;const ch=S.c[0];const ok=f.q===ch.q&&f.rp===ch.rp;const ms=performance.now()-RX._t;
+function rxFormCheck(){const S=RX.seq,f=S.form;if(f.q==null||f.rp==null)return;const ch=S.c[0];let ok=f.q===ch.q&&f.rp===ch.rp;
+  S.reads=null;if(S.read==='kb'&&S.formV&&typeof rxFormReads==='function'){S.reads=rxFormReads(S.formV,RX.qs).filter(function(x){return !(x.q===ch.q&&x.rp===ch.rp);});if(!ok&&S.reads.some(function(x){return x.q===f.q&&x.rp===f.rp;}))ok=true;}const ms=performance.now()-RX._t;
   const k={g:'form',q:ch.q,rp:ch.rp};if(ok)rxRecord(k,ms,true);else rxRecord(k,0,false);
   RX.last={ok:ok,ms:ms,ch:ch,form:true,ans:f.q+'|'+f.rp};rxRender();rxAfter(ok,S,function(){if(rxDayTick(ok))return;rxNew();});}
 function rxCircOpt(ch,S,live){
@@ -15221,7 +15222,7 @@ function rxRender(){
   const L=RX.last;const _f0=h.length;
   if(S.dq)h+=rxDegHTML(S,ch);
   else if(RX._err)h+='<div class="rx-fb bad">✕ '+(RX._err.why||'ce n’est pas ce grip')+'<div class="rx-deg">tu joues : '+RX._err.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-ch.rp,ch.q);}).join(' · ')+'</div><div class="rx-deg">attendu : '+rxGripHint(ch)+'</div></div>';
-  else if(L&&L.form)h+='<div class="rx-fb '+(L.ok?'ok':'bad')+'">'+(L.ok?'✓ '+rxName(L.ch)+' en <b>'+(L.ms/1000).toFixed(2)+' s</b>':'✕ c’était <b>'+rxName(L.ch)+'</b> — tu as dit '+(function(a){return (RX_NM[+a[1]]||'?')+(RX_QS[a[0]]||'?');})(L.ans.split('|')))+'</div>';
+  else if(L&&L.form)h+='<div class="rx-fb '+(L.ok?'ok':'bad')+'">'+(L.ok?'✓ '+(function(a){return RX_NM[+a[1]]+RX_QS[a[0]];})(L.ans.split('|'))+' en <b>'+(L.ms/1000).toFixed(2)+' s</b>':'✕ c’était <b>'+rxName(L.ch)+'</b> — tu as dit '+(function(a){return (RX_NM[+a[1]]||'?')+(RX_QS[a[0]]||'?');})(L.ans.split('|')))+rxAlsoLine(S,L)+'</div>';
   else if(L&&L.ok)h+='<div class="rx-fb ok">✓ '+(L.ch.nm||rxName(L.ch))+' — <b>'+(L.ms/1000).toFixed(2)+' s</b>'+(L.cost!=null?'<div class="rx-deg">mouvement : '+L.cost+' demi-ton'+(L.cost>1?'s':'')+(L.best!=null&&L.best<L.cost?' · le plus court : '+L.best+' — garde les notes communes, bouge d’½ ton':' · ✨ chemin le plus court')+'</div>':'')+'<div class="rx-deg">'+L.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-L.ch.rp,L.ch.q);}).join(' · ')+'</div></div>';
   else h+='<div class="rx-fb">'+(RX._pend?'🖐 lâche tout le clavier…':(RX.tab==='form'?'Lis la forme.':'Pose la main.'))+'</div>';
   if(RX._done&&S.costs&&S.costs.length){const a=S.costs.reduce(function(x,c){return x+c[0];},0),b=S.costs.reduce(function(x,c){return x+c[1];},0);h+='<div class="rx-fb ok">🔗 enchaînement : '+a+' demi-tons (le plus court possible : '+b+')</div>';}
@@ -15270,6 +15271,10 @@ document.addEventListener('click',function(e){
   if(a==='reset'){if(confirm('Effacer tous les temps de réaction du Réflexe ?')){RX.st={};rxSave();rxRender();}return;}
 });
 function rxOpen(){if(RX.tab==='day'){rxRender();return;}if(!RX.seq&&RX.tab!=='heat')rxNew();else rxRender();}
+
+function rxAlsoLine(S,L){if(!S||!S.reads||!S.formV)return '';const ans=L.ans.split('|');
+  const all=(L.ok?[{q:L.ch.q,rp:L.ch.rp}]:[]).concat(S.reads).filter(function(x){return !(x.q===ans[0]&&x.rp===+ans[1]);});if(!all.length)return '';
+  const pc=rxPcs(S.formV);return '<div class="rx-deg">mêmes notes, '+(all.length>1?'autres lectures justes':'autre lecture juste')+' : '+all.map(function(x){return '<b>'+RX_NM[x.rp]+RX_QS[x.q]+'</b>'+(pc.indexOf(x.rp)<0?' (sans fondamentale)':'');}).join(' · ')+'</div>';}
 
 /* ═══════════ ⚡ v12.0 — RÉFLEXE, la suite : tour des 12 · degrés dans la main · au tempo · niveaux · séance du jour ═══════════ */
 function rxToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -15488,8 +15493,7 @@ function rxKbCtx(ch,S,live){
   const nm=ch.nm||rxName(ch).split(' · ')[0];
   const FM=RX.tab==='form';
   const showTarget=FM?!flashHide:((RX.names||RX._show)&&!flashHide&&!earHide);
-  const target=ch.g==='form'?(function(){if(!S.formV){const g=['shell','drop2','A','B'][Math.floor(Math.random()*4)];const C=rxCands({g:g,q:ch.q,rp:ch.rp});S.formV=C[Math.floor(Math.random()*C.length)]||rxCands({g:'drop2',q:ch.q,rp:ch.rp})[0];
-    if(S.formV&&((Math.min.apply(null,S.formV)-ch.rp)%12+12)%12){const lo=Math.min.apply(null,S.formV);let r=lo-7;while(((r-ch.rp)%12+12)%12)r--;S.formV=[r].concat(S.formV);} /* rootless : on ajoute la basse, sinon B-D-E-G est aussi Em7 ou G6 */}return S.formV;})():rxHint(ch,S);
+  const target=ch.g==='form'?(function(){if(!S.formV){const g=['shell','drop2','A','B'][Math.floor(Math.random()*4)];const C=rxCands({g:g,q:ch.q,rp:ch.rp});S.formV=C[Math.floor(Math.random()*C.length)]||rxCands({g:'drop2',q:ch.q,rp:ch.rp})[0];}return S.formV;})():rxHint(ch,S);
   const done=RX.last&&RX.last.ok&&RX.last.ch===ch;
   const mine=(live&&live.length)?live:(done?RX.last.ns:null);
   const badM={};if(mine)mine.forEach(function(m){if(al.indexOf(rel(m))<0)badM[m]=true;});
@@ -15670,6 +15674,14 @@ function rxGateHTML(g){if(!rxLocked(g))return '';
   for(let t=0;t<=3;t++){if(rxTierOk(t+1))continue;for(let i=0;i<RX_GRIP_ORD.length;i++){const g=RX_GRIP_ORD[i];if(RX_TIER[g]!==t)continue;
     for(let j=0;j<RX_QORD.length;j++){const q=RX_QORD[j];if(RX_CORE.indexOf(q)<0||!rxCompat(g,q))continue;const l=rxLvl(g,q);if(l<2)return {g:g,q:q,l:l};}}}
   return old();};})();
+
+/* ── lecture d'un voicing sans fondamentale : plusieurs réponses peuvent être justes (B-D-E-G = C△7 rootless = Em7) ── */
+const RX_FTONES={maj7:{c:[0,4,7,11],t:[2,9]},m7:{c:[0,3,7,10],t:[2,5]},'7':{c:[0,4,7,10],t:[2,9,1,3,8]},m7b5:{c:[0,3,6,10],t:[5,8]},dim7:{c:[0,3,6,9],t:[2,5,8,11]}};
+function rxFormFits(pcs,q,rp){const T=RX_FTONES[q];if(!T)return false;const rel=pcs.map(function(p){return ((p-rp)%12+12)%12;});
+  if(!rel.every(function(r){return T.c.indexOf(r)>=0||T.t.indexOf(r)>=0;}))return false;
+  if(rel.indexOf(T.c[1])<0||rel.indexOf(T.c[3])<0)return false;            /* la 3ce et la 7e doivent y être */
+  return rel.indexOf(0)>=0||pcs.length>=4;}                                   /* sans fondamentale : au moins 4 sons */
+function rxFormReads(v,qs){const pcs=rxPcs(v),out=[];qs.forEach(function(q){for(let rp=0;rp<12;rp++)if(rxFormFits(pcs,q,rp))out.push({q:q,rp:rp});});return out;}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
