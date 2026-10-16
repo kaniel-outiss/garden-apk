@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.10 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.10.1 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -697,7 +697,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.10 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.10.1 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -14967,7 +14967,7 @@ RX_GRIPS.h2s={lb:'2 mains : MG shell · MD couleurs',d:'main gauche : 1-7 (ou 1-
   al:{'7':[4,10,2,1,3,9,8,6,7],maj7:[4,11,2,6,9,7],m7:[3,10,2,5,9,7],m7b5:[3,10,6,2,5,8],dim7:[3,6,9,2,5,8,11,0]},
   ten:{'7':[1,2,3,6,8,9],maj7:[2,6,9],m7:[2,5,9],m7b5:[2,5,8],dim7:[2,5,8,11]},md:{'7':[4,9,2],maj7:[4,9,2],m7:[3,7,2],m7b5:[3,5,8],dim7:[3,5,8]}};
 const RX_GRIP_ORD=['shell','A','B','h2','h2s','drop2','q4','poly'];
-let RX=(function(){const d={tab:'grip',grip:'A',qs:['maj7','m7','7'],ord:'sm2',newMax:10,smNew:{d:'',n:0},cm:'q5',names:1,src:'eye',flash:1200,st:{},seq:null,last:null,rec:{},hist:{},fl:{},days:[],day:null,tourQ:'7',tourU:0,bpm:60,bpc:4,tempo:0,dst:{ok:0,n:0},sm:{},acc:{},after:'auto'};
+let RX=(function(){const d={tab:'grip',grip:'A',qs:['maj7','m7','7'],ord:'sm2',newMax:10,smNew:{d:'',n:{}},cm:'q5',names:1,src:'eye',flash:1200,st:{},seq:null,last:null,rec:{},hist:{},fl:{},days:[],day:null,tourQ:'7',tourU:0,bpm:60,bpc:4,tempo:0,dst:{ok:0,n:0},sm:{},acc:{},after:'auto'};
   try{const o=JSON.parse(localStorage.getItem(RX_KEY)||'null');if(o)Object.keys(d).forEach(function(k){if(o[k]!=null&&['seq','last'].indexOf(k)<0)d[k]=o[k];});}catch(e){}if(d.ord==='faible')d.ord='sm2';return d;})();
 function rxSave(){try{const o={};Object.keys(RX).forEach(function(k){if(k[0]!=='_'&&['seq','last'].indexOf(k)<0)o[k]=RX[k];});localStorage.setItem(RX_KEY,JSON.stringify(o));}catch(e){}}
 function rxQsOk(g){return RX.qs.filter(function(q){const G=RX_GRIPS[g];if(g==='q4')return !!G.quart[q];if(g==='poly')return !!G.ust[q];return true;});}
@@ -15278,7 +15278,7 @@ function rxOpen(){if(RX.tab==='day'){rxRender();return;}if(!RX.seq&&RX.tab!=='he
 
 function rxAlsoLine(S,L){if(!S||!S.reads||!S.formV)return '';const ans=L.ans.split('|');
   const all=(L.ok?[{q:L.ch.q,rp:L.ch.rp}]:[]).concat(S.reads).filter(function(x){return !(x.q===ans[0]&&x.rp===+ans[1]);});if(!all.length)return '';
-  const pc=rxPcs(S.formV);return '<div class="rx-deg">mêmes notes, '+(all.length>1?'autres lectures justes':'autre lecture juste')+' : '+all.map(function(x){return '<b>'+RX_NM[x.rp]+RX_QS[x.q]+'</b>'+(pc.indexOf(x.rp)<0?' (sans fondamentale)':'');}).join(' · ')+'</div>';}
+  const pc=rxPcs(S.formV);return '<div class="rx-deg">mêmes notes, '+(all.length>1?'autres lectures justes':'autre lecture juste')+' : '+all.map(function(x){return '<b>'+(typeof rxSp==='function'?rxSp(L.ch.rp,x.rp-L.ch.rp):RX_NM[x.rp])+RX_QS[x.q]+'</b>'+(pc.indexOf(x.rp)<0?' (sans fondamentale)':'');}).join(' · ')+'</div>';}
 
 /* ═══════════ ⚡ v12.0 — RÉFLEXE, la suite : tour des 12 · degrés dans la main · au tempo · niveaux · séance du jour ═══════════ */
 function rxToday(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -15585,7 +15585,7 @@ function rxGrade(ch,ms,ok){if(!ok)return 1;const s=ms/(ch.g==='form'?1.8:1);retu
 function rxTrack(ch,ms,ok){
   const S=RX._ses=RX._ses||{ok:0,n:0};S.n++;if(ok)S.ok++;
   const d=rxToday(),A=RX.acc[d]=RX.acc[d]||{},hk=ch.g+'|'+ch.q,e=A[hk]=A[hk]||[0,0,0];e[1]++;if(ok){e[0]++;e[2]+=Math.round(ms);}
-  const k=rxSmK(ch);if(!RX.sm[k]){if(RX.smNew.d!==d)RX.smNew={d:d,n:0};RX.smNew.n++;}
+  const k=rxSmK(ch);if(!RX.sm[k]){const N=rxNewBag();N.n[ch.g]=(N.n[ch.g]||0)+1;}
   const c=RX.sm[k]||{ef:2.5,rep:0,iv:0,due:0},g=rxGrade(ch,ms,ok),now=Date.now(),D=864e5;
   if(g<3){c.rep=0;c.iv=0;c.due=now+2*6e4;c.lapse=(c.lapse||0)+1;}            /* raté : revient dans 2 min */
   else{if(c.rep===0){c.iv=0;c.due=now+(g===5?D:10*6e4);if(g===5)c.iv=1;}       /* 1re réussite : 10 min (ou demain si réflexe) */
@@ -15597,7 +15597,7 @@ function rxSmPick(g,qs){
   qs.forEach(function(q){F.forEach(function(rp){const k=g+'|'+q+'|'+rp+(hm?'|'+hm:''),c=RX.sm[k];const o={q:q,rp:rp,c:c,k:k};all.push(o);if(!c)fresh.push(o);else if(c.due<=now)due.push(o);});});
   const last=RX._smLast;let pool=due.filter(function(o){return o.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;});
   let o=pool[0];
-  if(!o&&fresh.length&&rxNewLeft()>0){ /* nouvelles : par tonalité (cycle des quartes), 7 puis m7 puis △7 puis ø7, °7 */
+  if(!o&&fresh.length&&rxNewLeft(g)>0){ /* nouvelles : par tonalité (cycle des quartes), 7 puis m7 puis △7 puis ø7, °7 */
     fresh.sort(function(a,b){return (F.indexOf(a.rp)-F.indexOf(b.rp))*10+(RX_QORD.indexOf(a.q)-RX_QORD.indexOf(b.q));});o=fresh[0];}
   if(!o){const lrn=all.filter(function(x){return x.c&&x.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;});o=lrn[0];} /* plafond atteint : on avance les révisions les plus proches */
   if(!o&&fresh.length){fresh.sort(function(a,b){return (F.indexOf(a.rp)-F.indexOf(b.rp))*10+(RX_QORD.indexOf(a.q)-RX_QORD.indexOf(b.q));});o=fresh[0];} /* rien d'autre à jouer : nouvelle carte en bonus */
@@ -15606,7 +15606,8 @@ function rxSmPick(g,qs){
 function rxSmCount(g,qs){const hm=typeof rxHmOf==='function'?rxHmOf(g):null,now=Date.now();let d=0,n=0,l=0;
   qs.forEach(function(q){for(let rp=0;rp<12;rp++){const c=RX.sm[g+'|'+q+'|'+rp+(hm?'|'+hm:'')];if(!c)n++;else if(c.due<=now)d++;else if(c.iv>=6)l++;}});return {due:d,fresh:n,learned:l};}
 function rxSesLine(){const S=RX._ses;let h='';if(S&&S.n)h+='<span>séance : <b>'+S.ok+'/'+S.n+'</b> · <b style="color:'+rxAccCol(S.ok/S.n)+'">'+Math.round(S.ok/S.n*100)+' %</b></span>';
-  if(RX.ord==='sm2'&&RX.tab!=='tour'&&RX.tab!=='day'){const g=RX.tab==='form'?'form':RX.grip,c=rxSmCount(g,rxQsOk(g==='form'?'shell':g));h+='<span>🧠 à réviser : <b>'+c.due+'</b> · nouvelles aujourd’hui : '+rxNewLeft()+' restantes · acquises : '+c.learned+'</span>'+(c.due===0&&rxNewLeft()===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite — la suite, c’est du bonus</span>':'');}
+  if(RX.tab==='eq'){const nl=rxNewLeft('eq'),now=Date.now();let du=0;Object.keys(RX.sm).forEach(function(k){if(k.indexOf('eq|')===0&&RX.sm[k].due<=now)du++;});h+='<span>🧠 à réviser : <b>'+du+'</b> · nouvelles aujourd’hui : '+nl+' restantes</span>'+(du===0&&nl===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite</span>':'');}
+  else if(RX.ord==='sm2'&&RX.tab!=='tour'&&RX.tab!=='day'){const g=RX.tab==='form'?'form':RX.grip,c=rxSmCount(g,rxQsOk(g==='form'?'shell':g));h+='<span>🧠 à réviser : <b>'+c.due+'</b> · nouvelles aujourd’hui : '+rxNewLeft(g)+' restantes · acquises : '+c.learned+'</span>'+(c.due===0&&rxNewLeft(g)===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite — la suite, c’est du bonus</span>':'');}
   const ch=RX.seq&&RX.seq.c[Math.min(RX.seq.i,RX.seq.c.length-1)];
   if(ch&&RX.last){const c=RX.sm[rxSmK(ch.g==='form'?{g:'form',q:ch.q,rp:ch.rp}:ch)];if(c){const dt=c.due-Date.now();h+='<span>revient '+(dt<36e5?'dans '+Math.max(1,Math.round(dt/6e4))+' min':(dt<864e5?'dans '+Math.round(dt/36e5)+' h':'dans '+Math.round(dt/864e5)+' j'))+'</span>';}}
   return h?'<div class="rx-ses">'+h+'</div>':'';}
@@ -15672,7 +15673,9 @@ function rxAccHTML(){
 (function(){const old=rxHeatHTML;rxHeatHTML=function(){return rxAccHTML()+'<div class="rx-ttl" style="margin-top:14px">⏱ Temps de réaction</div>'+old();};})();
 
 /* ── priorité aux voicings les plus joués : shell → rootless A/B → 2 mains → le reste ── */
-function rxNewLeft(){const d=rxToday();if(!RX.smNew||RX.smNew.d!==d)return RX.newMax||10;return Math.max(0,(RX.newMax||10)-RX.smNew.n);}
+/* plafond de nouvelles cartes : un compteur par exercice (chaque grip, la lecture, les équivalences) — l'un n'épuise pas l'autre */
+function rxNewBag(){const d=rxToday();if(!RX.smNew||RX.smNew.d!==d||typeof RX.smNew.n!=='object')RX.smNew={d:d,n:{}};return RX.smNew;}
+function rxNewLeft(g){return Math.max(0,(RX.newMax||10)-(rxNewBag().n[g||RX.grip]||0));}
 const RX_TIER={shell:0,A:1,B:1,h2:2,h2s:3,drop2:3,q4:3,poly:3},RX_CORE=['7','m7','maj7'];
 function rxTierOk(t){return RX_GRIP_ORD.filter(function(g){return RX_TIER[g]<t;}).every(function(g){return RX_CORE.every(function(q){return rxLvl(g,q)>=2;});});}
 function rxLocked(g){return !rxTierOk(RX_TIER[g]||0);}
@@ -15695,32 +15698,32 @@ function rxFormReads(v,qs){const pcs=rxPcs(v),out=[];qs.forEach(function(q){for(
 /* ══ 🔀 Équivalences : « rootless de X = Y » — les doubles lectures que les pianistes utilisent ══
    classées de la plus courante à la plus rare ; chaque relation se joue dans les deux sens, sur les 12 tons, en SM-2 */
 const RX_EQ=[
- {id:'M7',xl:'△7',v:'3-5-7-9',iv:[4,7,11,2],sh:4,y:'m7',why:'la 3ce, la 5te, la 7e et la 9e de X sont 1-♭3-5-♭7 de sa 3ce'},
- {id:'m7',xl:'m7',v:'♭3-5-♭7-9',iv:[3,7,10,2],sh:3,y:'maj7',why:'sans la fondamentale, un m7 (avec 9) est le △7 de sa ♭3'},
- {id:'d9',xl:'9',v:'3-5-♭7-9',iv:[4,7,10,2],sh:4,y:'m7b5',why:'le 9 sans fondamentale est le ø7 de sa 3ce'},
- {id:'tt',xl:'7',v:'shell 3-♭7',iv:[4,10],sh:6,y:'7',yv:'shell ♭7-3',why:'substitution tritonique : la 3ce et la ♭7 s’échangent, le triton est commun'},
- {id:'6',xl:'6',v:'1-3-5-6',iv:[0,4,7,9],sh:9,y:'m7',why:'mêmes 4 notes : le 6 est le m7 de sa 6te (relatif mineur)'},
- {id:'m6',xl:'m6',v:'1-♭3-5-6',iv:[0,3,7,9],sh:9,y:'m7b5',why:'mêmes 4 notes : le m6 est le ø7 de sa 6te'},
- {id:'hd',xl:'ø7',v:'1-♭3-♭5-♭7',iv:[0,3,6,10],sh:3,y:'m6',why:'mêmes 4 notes : le ø7 est le m6 de sa ♭3'},
- {id:'dim4',set:1,xl:'°7',v:'1-♭3-♭5-°7',iv:[0,3,6,9],sh:0,y:'set',tl:'°7 → ses 4 noms',need:4,sol:function(rp){return [0,3,6,9].map(function(i){return (rp+i)%12;});},
+ {id:'M7',ys:2,xl:'△7',v:'3-5-7-9',iv:[4,7,11,2],sh:4,y:'m7',why:'la 3ce, la 5te, la 7e et la 9e de X sont 1-♭3-5-♭7 de sa 3ce'},
+ {id:'m7',ys:2,xl:'m7',v:'♭3-5-♭7-9',iv:[3,7,10,2],sh:3,y:'maj7',why:'sans la fondamentale, un m7 (avec 9) est le △7 de sa ♭3'},
+ {id:'d9',ys:2,xl:'9',v:'3-5-♭7-9',iv:[4,7,10,2],sh:4,y:'m7b5',why:'le 9 sans fondamentale est le ø7 de sa 3ce'},
+ {id:'tt',ys:4,xl:'7',v:'shell 3-♭7',iv:[4,10],sh:6,y:'7',yv:'shell ♭7-3',why:'substitution tritonique : la 3ce et la ♭7 s’échangent, le triton est commun'},
+ {id:'6',ys:5,xl:'6',v:'1-3-5-6',iv:[0,4,7,9],sh:9,y:'m7',why:'mêmes 4 notes : le 6 est le m7 de sa 6te (relatif mineur)'},
+ {id:'m6',ys:5,xl:'m6',v:'1-♭3-5-6',iv:[0,3,7,9],sh:9,y:'m7b5',why:'mêmes 4 notes : le m6 est le ø7 de sa 6te'},
+ {id:'hd',ys:2,xl:'ø7',v:'1-♭3-♭5-♭7',iv:[0,3,6,10],sh:3,y:'m6',why:'mêmes 4 notes : le ø7 est le m6 de sa ♭3'},
+ {id:'dim4',set:1,xl:'°7',v:'1-♭3-♭5-°7',iv:[0,3,6,9],sh:0,y:'set',tl:'°7 → ses 4 noms',need:4,solN:function(rp){return [[0,0],[3,2],[6,4],[9,6]].map(function(x){return rxSp(rp,x[0],x[1])+'°7';});},sol:function(rp){return [0,3,6,9].map(function(i){return (rp+i)%12;});},
    ask:'quels sont ses 4 noms ?',why:'4 notes à tierce mineure : chacune peut servir de fondamentale. Il n’existe que 3 °7 différents (C°7, D♭°7, D°7)'},
- {id:'b9',xl:'7♭9',v:'3-5-♭7-♭9',iv:[4,7,10,1],sh:4,y:'dim7',why:'le 7♭9 sans fondamentale est un °7 posé sur sa 3ce (et sur chaque tierce mineure au-dessus)'},
- {id:'dim9',set:1,xl:'°7',v:'1-♭3-♭5-°7',iv:[0,3,6,9],sh:0,y:'set',tl:'°7 → ses 4 dominantes 7♭9',need:4,sol:function(rp){return [0,3,6,9].map(function(i){return (rp+i+8)%12;});},
+ {id:'b9',ys:2,xl:'7♭9',v:'3-5-♭7-♭9',iv:[4,7,10,1],sh:4,y:'dim7',why:'le 7♭9 sans fondamentale est un °7 posé sur sa 3ce (et sur chaque tierce mineure au-dessus)'},
+ {id:'dim9',set:1,xl:'°7',v:'1-♭3-♭5-°7',iv:[0,3,6,9],sh:0,y:'set',tl:'°7 → ses 4 dominantes 7♭9',need:4,solN:function(rp){return [[0,0],[3,2],[6,4],[9,6]].map(function(x){return rxSp(rp,x[0]-4,x[1]-2)+'7♭9';});},sol:function(rp){return [0,3,6,9].map(function(i){return (rp+i+8)%12;});},
    ask:'rootless de quels 7♭9 ? (les 4)',why:'chaque note du °7 est la 3ce d’un 7♭9 : les 4 dominantes sont à tierce mineure l’une de l’autre, et partagent le même °7'},
- {id:'alt',xl:'7alt',v:'3-♭7-♯9-♭13',iv:[4,10,3,8],sh:6,y:'13',yv:'sans fondamentale',why:'le 7alt est le 13 du triton (sub V) sans fondamentale'},
- {id:'sus',xl:'9sus4',v:'♭7-9-11',iv:[10,2,5],sh:10,y:'maj',yv:'triade',why:'le 9sus4 = la triade majeure de la ♭7 sur la basse (F/G)'},
- {id:'aug3',set:1,xl:'+',v:'1-3-♯5',iv:[0,4,8],sh:0,y:'set',tl:'+ → ses 3 noms',need:3,sol:function(rp){return [0,4,8].map(function(i){return (rp+i)%12;});},
+ {id:'alt',ys:4,xl:'7alt',v:'3-♭7-♯9-♭13',iv:[4,10,3,8],st:[2,6,1,5],sh:6,y:'13',yv:'sans fondamentale',why:'le 7alt est le 13 du triton (sub V) sans fondamentale'},
+ {id:'sus',ys:6,xl:'9sus4',v:'♭7-9-11',iv:[10,2,5],st:[6,1,3],sh:10,y:'maj',yv:'triade',why:'le 9sus4 = la triade majeure de la ♭7 sur la basse (F/G)'},
+ {id:'aug3',set:1,xl:'+',v:'1-3-♯5',iv:[0,4,8],sh:0,y:'set',tl:'+ → ses 3 noms',need:3,solN:function(rp){return [[0,0],[4,2],[8,4]].map(function(x){return rxSp(rp,x[0],x[1])+'+';});},sol:function(rp){return [0,4,8].map(function(i){return (rp+i)%12;});},
    ask:'quels sont ses 3 noms ?',why:'3 notes à tierce majeure : chacune peut servir de fondamentale. Il n’existe que 4 augmentés différents (C+, D♭+, D+, E♭+)'}];
 const RX_EQY={set:'',m7:'m7',maj7:'△7',m7b5:'ø7',dim7:'°7',m6:'m6','7':'7','13':'13',maj:' (triade)'};
 const RX_EQQ=['m7','maj7','m7b5','dim7','m6','7','13','maj'];
 function rxEqRel(id){for(let i=0;i<RX_EQ.length;i++)if(RX_EQ[i].id===id)return RX_EQ[i];return RX_EQ[0];}
 function rxEqX(R,rp){return RX_NM[rp]+R.xl;}
-function rxEqY(R,rp){return RX_NM[(rp+R.sh)%12]+RX_EQY[R.y];}
+function rxEqY(R,rp){return rxSp(rp,R.sh,R.ys)+RX_EQY[R.y];}
 function rxEqPick(){
   const F=[0,5,10,3,8,1,6,11,4,9,2,7],now=Date.now(),due=[],fresh=[],all=[],last=RX._smLast;
   RX_EQ.forEach(function(R,ri){F.forEach(function(rp,fi){(R.set?['>']:['>','<']).forEach(function(d,di){const q=R.id+d,k='eq|'+q+'|'+rp,c=RX.sm[k];const o={R:R,rp:rp,d:d,k:k,c:c,o:ri*100+fi*2+di};all.push(o);if(!c)fresh.push(o);else if(c.due<=now)due.push(o);});});});
   let o=due.filter(function(x){return x.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;})[0];
-  if(!o&&fresh.length&&rxNewLeft()>0)o=fresh.sort(function(a,b){return a.o-b.o;})[0];
+  if(!o&&fresh.length&&rxNewLeft('eq')>0)o=fresh.sort(function(a,b){return a.o-b.o;})[0];
   if(!o)o=all.filter(function(x){return x.c&&x.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;})[0];
   if(!o)o=fresh.sort(function(a,b){return a.o-b.o;})[0];
   RX._smLast=o.k;return o;}
@@ -15744,11 +15747,11 @@ function rxEqHTML(){
   const S=RX.seq;if(!S||!S.eq)return '<button class="btn" data-rx="go">▶ Lancer</button>';
   const E=S.eq,R=E.R,res=E.res,yr=(E.rp+R.sh)%12;let h='';
   /* bandeau */
-  let fb='';if(res&&R.set){const sol=R.sol(E.rp);fb='<div class="rx-fb '+(res.ok?'ok':'bad')+'">'+(res.ok?'✓ ':'✕ ')+'<b>'+rxEqX(R,E.rp)+'</b> '+R.ask.replace(' ?','')+' : <b>'+sol.map(function(r){return RX_NM[r]+(R.id==='dim9'?'7♭9':R.xl);}).join(' · ')+'</b>'+(res.ok?' — <b>'+(res.ms/1000).toFixed(2)+' s</b>':'<div class="rx-deg">tu as choisi : '+E.sel.map(function(r){return '<span style="color:'+(sol.indexOf(r)>=0?'#3ECF8E':'#EF4444')+'">'+RX_NM[r]+'</span>';}).join(' · ')+'</div>')+'</div>'
-    +'<div class="rx-tip">💡 '+rxEqNotes(R,E.rp).map(function(m){return RX_NM[m%12];}).join(' ')+' · '+R.why+'.</div>';}
+  let fb='';if(res&&R.set){const sol=R.sol(E.rp);fb='<div class="rx-fb '+(res.ok?'ok':'bad')+'">'+(res.ok?'✓ ':'✕ ')+'<b>'+rxEqX(R,E.rp)+'</b> '+R.ask.replace(' ?','')+' : <b>'+R.solN(E.rp).join(' · ')+'</b>'+(res.ok?' — <b>'+(res.ms/1000).toFixed(2)+' s</b>':'<div class="rx-deg">tu as choisi : '+E.sel.map(function(r){return '<span style="color:'+(sol.indexOf(r)>=0?'#3ECF8E':'#EF4444')+'">'+RX_NM[r]+'</span>';}).join(' · ')+'</div>')+'</div>'
+    +'<div class="rx-tip">💡 '+rxEqNoteNames(R,E.rp)+' · '+R.why+'.</div>';}
   else if(res){fb='<div class="rx-fb '+(res.ok?'ok':'bad')+'">'+(res.ok?'✓ ':'✕ ')+'<b>'+rxEqX(R,E.rp)+'</b> '+R.v+' = <b>'+rxEqY(R,E.rp)+'</b>'+(R.yv?' '+R.yv:'')+(res.ok?' — <b>'+(res.ms/1000).toFixed(2)+' s</b>':'')
       +(!res.ok&&E.r!=null&&!E.wrong?'<div class="rx-deg">tu as dit '+RX_NM[E.r]+(E.d==='>'?RX_EQY[E.q]||'':R.xl)+'</div>':'')+(E.wrong?'<div class="rx-deg">tu jouais : '+E.played.slice().sort(function(a,b){return a-b;}).map(function(m){return RX_NM[m%12];}).join(' ')+'</div>':'')+'</div>';
-    const ns=rxEqNotes(R,E.rp);fb+='<div class="rx-tip">💡 '+ns.map(function(m){return RX_NM[m%12];}).join(' ')+' : '+R.v+' de <b>'+RX_NM[E.rp]+'</b> · '+R.why.replace(/\bX\b/,rxEqX(R,E.rp)).replace('F/G',RX_NM[(E.rp+10)%12]+'/'+RX_NM[E.rp])+'.'+(R.y==='dim7'?' Un °7 se nomme sur n’importe laquelle de ses 4 notes.':'')+'</div>';}
+    const ns=rxEqNotes(R,E.rp);fb+='<div class="rx-tip">💡 '+rxEqNoteNames(R,E.rp)+' : '+R.v+' de <b>'+RX_NM[E.rp]+'</b> · '+R.why.replace(/\bX\b/,rxEqX(R,E.rp)).replace('F/G',rxSp(E.rp,10,6)+'/'+RX_NM[E.rp])+'.'+(R.y==='dim7'?' Un °7 se nomme sur n’importe laquelle de ses 4 notes.':'')+'</div>';}
   fb+=rxSesLine()+(RX._wait&&RX._man?'<button class="btn" data-rx="next">▶ suivant</button>':'');
   h+='<div class="rx-fbtop">'+fb+'</div>';
   h+='<div class="rx-kbmain'+(res?(res.ok?' rx-res ok':' rx-res bad'):'')+'" style="padding:10px">';
@@ -15767,6 +15770,10 @@ function rxEqHTML(){
   if(a==='eqr'&&RX.seq&&RX.seq.eq&&!RX.seq.eq.res){if(RX.seq.eq.R.set){rxEqToggle(+v);return true;}RX.seq.eq.r=+v;rxRender();rxEqAnswer();return true;}
   if(a==='eqplay'&&RX.seq&&RX.seq.eq){if(typeof playNotes==='function')playNotes(rxEqNotes(RX.seq.eq.R,RX.seq.eq.rp),1.3);return true;}
   return old(a,v,b);};})();
+
+function rxSp(r,iv,step){iv=((iv%12)+12)%12;if(typeof spellIv!=='function')return RX_NM[(r+iv)%12];return spellIv(r,iv,step==null?null:((step%7)+7)%7,RX_NM[r]);}
+
+function rxEqNoteNames(R,rp){return R.iv.map(function(iv,i){return rxSp(rp,iv,R.st?R.st[i]:null);}).join(' ');}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
