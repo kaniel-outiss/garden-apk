@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.6 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.7 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -678,12 +678,24 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-cfg summary{cursor:pointer;font-weight:800;font-size:13px;color:#C9D1EE;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .rx-cfg summary::-webkit-details-marker{display:none}.rx-cfg summary span{font-weight:600;color:#7A85A8}.rx-cfg summary i{margin-left:auto;font-style:normal;color:#F5C842;font-size:12px}
 .rx-cfg[open] summary{margin-bottom:6px}
+.rx-fbtop{position:sticky;top:0;z-index:5;margin:4px 0 8px}.rx-fbtop>.rx-fb{font-size:18px;font-weight:700;text-align:center;margin:0 0 6px}
+.rx-fbtop>.rx-fb.ok{box-shadow:0 0 18px rgba(62,207,142,.45)}.rx-fbtop>.rx-fb.bad{box-shadow:0 0 18px rgba(239,68,68,.45)}.rx-fbtop .rx-deg{font-size:13px;font-weight:600}
+.rx-ses{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:13px;color:#9AA4C4;margin:2px 0 6px}
+.rx-tip{background:rgba(245,200,66,.08);border:1px solid #F5C842;border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.5;margin:6px 0}
+.rx-fbtop .btn{display:block;margin:6px auto}
+.rx-res{border-radius:16px}.rx-res.ok{animation:rxHaloOk 1.4s ease-out}.rx-res.bad{animation:rxHaloBad .5s ease-out;box-shadow:0 0 0 3px #EF4444,0 0 28px rgba(239,68,68,.35)}
+@keyframes rxHaloOk{0%{box-shadow:0 0 0 0 rgba(62,207,142,.9)}25%{box-shadow:0 0 0 6px #3ECF8E,0 0 40px rgba(62,207,142,.6)}100%{box-shadow:0 0 0 0 rgba(62,207,142,0)}}
+@keyframes rxHaloBad{0%{box-shadow:0 0 0 0 #EF4444;transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}100%{box-shadow:0 0 0 3px #EF4444,0 0 28px rgba(239,68,68,.35);transform:translateX(0)}}
+.rx-accg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin:6px 0}.rx-accg>div{background:var(--bg3);border:1px solid var(--gris2);border-radius:10px;padding:6px 8px;cursor:pointer;display:flex;flex-direction:column}
+.rx-accg>div.on{border-color:#F5C842}.rx-accg small{font-size:11px;color:#9AA4C4}.rx-accg b{font-size:20px}.rx-accg i{font-size:11px;color:#7A85A8;font-style:normal}
+.rx-acct{overflow-x:auto}.rx-acct table{border-collapse:collapse;font-size:12px;margin:4px 0}.rx-acct th,.rx-acct td{padding:4px 6px;text-align:center;border:1px solid #232A4D}.rx-acct td.na{color:#3A426A}.rx-acct td:first-child{font-weight:800;text-align:left}.rx-acct tr.tot td{font-weight:800}
+.rx-curve{margin:8px 0}.rx-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#9AA4C4}.rx-leg i{display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:4px;vertical-align:middle}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.6 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.7 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -14953,9 +14965,9 @@ RX_GRIPS.h2s={lb:'2 mains : MG shell · MD couleurs',d:'main gauche : 1-7 (ou 1-
   al:{'7':[4,10,2,1,3,9,8,6,7],maj7:[4,11,2,6,9,7],m7:[3,10,2,5,9,7],m7b5:[3,10,6,2,5,8],dim7:[3,6,9,2,5,8,11,0]},
   ten:{'7':[1,2,3,6,8,9],maj7:[2,6,9],m7:[2,5,9],m7b5:[2,5,8],dim7:[2,5,8,11]},md:{'7':[4,9,2],maj7:[4,9,2],m7:[3,7,2],m7b5:[3,5,8],dim7:[3,5,8]}};
 const RX_GRIP_ORD=['shell','A','B','h2','h2s','drop2','q4','poly'];
-let RX=(function(){const d={tab:'grip',grip:'A',qs:['maj7','m7','7'],ord:'q4',cm:'q5',names:1,src:'eye',flash:1200,st:{},seq:null,last:null,rec:{},hist:{},fl:{},days:[],day:null,tourQ:'7',tourU:0,bpm:60,bpc:4,tempo:0,dst:{ok:0,n:0}};
+let RX=(function(){const d={tab:'grip',grip:'A',qs:['maj7','m7','7'],ord:'q4',cm:'q5',names:1,src:'eye',flash:1200,st:{},seq:null,last:null,rec:{},hist:{},fl:{},days:[],day:null,tourQ:'7',tourU:0,bpm:60,bpc:4,tempo:0,dst:{ok:0,n:0},sm:{},acc:{},after:'auto'};
   try{const o=JSON.parse(localStorage.getItem(RX_KEY)||'null');if(o)Object.keys(d).forEach(function(k){if(o[k]!=null&&['seq','last'].indexOf(k)<0)d[k]=o[k];});}catch(e){}return d;})();
-function rxSave(){try{const o={};Object.keys(RX).forEach(function(k){if(['seq','last','_t','_hold','_err','_pend','_clk','_done','_show','_flashOn','_ft'].indexOf(k)<0)o[k]=RX[k];});localStorage.setItem(RX_KEY,JSON.stringify(o));}catch(e){}}
+function rxSave(){try{const o={};Object.keys(RX).forEach(function(k){if(k[0]!=='_'&&['seq','last'].indexOf(k)<0)o[k]=RX[k];});localStorage.setItem(RX_KEY,JSON.stringify(o));}catch(e){}}
 function rxQsOk(g){return RX.qs.filter(function(q){const G=RX_GRIPS[g];if(g==='q4')return !!G.quart[q];if(g==='poly')return !!G.ust[q];return true;});}
 
 /* ── validation d'un grip (notes MIDI jouées) ── */
@@ -15028,16 +15040,17 @@ function rxCost(A,B){const a=A.slice().sort(function(x,y){return x-y;}),b=B.slic
 /* ── la mémoire : un temps de réaction (moyenne glissante) par grip × qualité × fondamentale ── */
 function rxK(ch){return ch.g+'|'+ch.q+'|'+ch.rp+(ch.ust?'|'+ch.ust[0]:'')+(ch.hm?'|'+ch.hm:'');}
 function rxStat(ch){return RX.st[rxK(ch)]||null;}
-function rxRecord(ch,ms,ok){const k=rxK(ch),s=RX.st[k]||{n:0,ok:0,ms:0,err:0,t:0};s.n++;if(ok){s.ok++;s.ms=s.ms?Math.round(s.ms*.7+ms*.3):Math.round(ms);}else s.err++;s.t=Date.now();RX.st[k]=s;if(ok&&ch.g!=='form'){const d=rxToday(),hk=ch.g+'|'+ch.q,H=RX.hist[d]=RX.hist[d]||{};const e=H[hk]=H[hk]||[0,0];e[0]+=Math.round(ms);e[1]++;if(RX.tab==='flash'&&RX.flash<=600)RX.fl[hk]=(RX.fl[hk]||0)+1;}rxSave();}
+function rxRecord(ch,ms,ok){const k=rxK(ch),s=RX.st[k]||{n:0,ok:0,ms:0,err:0,t:0};s.n++;if(ok){s.ok++;s.ms=s.ms?Math.round(s.ms*.7+ms*.3):Math.round(ms);}else s.err++;s.t=Date.now();RX.st[k]=s;if(typeof rxTrack==='function')rxTrack(ch,ms,ok);if(ok&&ch.g!=='form'){const d=rxToday(),hk=ch.g+'|'+ch.q,H=RX.hist[d]=RX.hist[d]||{};const e=H[hk]=H[hk]||[0,0];e[0]+=Math.round(ms);e[1]++;if(RX.tab==='flash'&&RX.flash<=600)RX.fl[hk]=(RX.fl[hk]||0)+1;}rxSave();}
 function rxWeight(g,q,rp){const s=RX.st[g+'|'+q+'|'+rp];if(!s)return 3;const r=Math.max(.3,(s.ms||2500)/900);return r*r*(1+s.err/Math.max(1,s.n)*3)*(Date.now()-s.t>864e5?1.5:1);}
 
 /* ── tirage du prochain accord ── */
 let RX_Q4I=0;
 function rxPick(g){
-  const qs=rxQsOk(g);if(!qs.length)return null;const q=qs[Math.floor(Math.random()*qs.length)];let rp;
+  const qs=rxQsOk(g);if(!qs.length)return null;let q=qs[Math.floor(Math.random()*qs.length)];let rp;
   if(RX.ord==='q4'){rp=(RX_Q4I*5)%12;RX_Q4I++;}
   else if(RX.ord==='hasard')rp=Math.floor(Math.random()*12);
   else{const w=[];let tot=0;for(let p=0;p<12;p++){const x=rxWeight(g,q,p);w.push(x);tot+=x;}let r=Math.random()*tot;rp=0;for(;rp<11;rp++){r-=w[rp];if(r<=0)break;}}
+  if(RX.ord==='sm2'&&typeof rxSmPick==='function'){const r=rxSmPick(g,qs);q=r.q;rp=r.rp;}
   const ch={g:g,q:q,rp:rp};if(g==='poly'){const L=RX_GRIPS.poly.ust[q];ch.ust=L[Math.floor(Math.random()*L.length)];}
   if(typeof rxHmOf==='function'){const hm=rxHmOf(g);if(hm)ch.hm=hm;}
   return ch;
@@ -15107,7 +15120,7 @@ function rxCirc(ch,o){
 
 /* ── déroulé d'une question : seq = [accords], i = position ; libération des touches entre deux questions ── */
 function rxNew(){
-  RX._err=null;RX._hold=null;RX.last=null;
+  RX._err=null;RX._hold=null;RX.last=null;RX._wait=null;RX._tip=false;clearTimeout(RX._nx);
   const t=RX.tab;
   if(t==='form'){const ch=rxPick('shell');if(ch){ch.g='form';}RX.seq={c:[ch],i:0,form:{q:null,rp:null}};}
   else if(t==='grip'||t==='flash'||t==='deg'){const ch=rxPick(RX.grip);RX.seq=ch?{c:[ch],i:0}:null;}
@@ -15124,6 +15137,7 @@ function rxNew(){
 function rxEar(){const S=RX.seq;if(!S)return;const ch=S.c[S.i];const C=rxCands(ch);if(!C.length)return;playNotes(C[Math.floor(C.length/2)],1.3);}
 function rxHeld(ns){
   if(PAGE!=='rfx'||!RX.seq)return;
+  if(RX._wait){if(!ns.length)RX._rel=true;else if(RX._rel)RX._wait();return;} /* résultat affiché : relâche puis rejoue pour passer */
   const S=RX.seq;
   if(RX._pend){if(ns.length===0){RX._pend=false;if(RX.tab!=='flash')RX._t=performance.now();}else return;}
   if(S.dq){rxDegHeld(ns);return;}
@@ -15143,7 +15157,7 @@ function rxHeld(ns){
     RX.last={ok:true,ms:ms,ch:ch,cost:cost,best:best,ns:ns.slice()};S.prevPlayed=S.played;S.played=ns.slice();S.i++;RX._err=null;
     if(RX.tab==='flash')RX.flash=Math.max(250,Math.round(RX.flash*.88));
     if(S.times)S.times.push(ms);
-    if(S.i>=S.c.length){RX._done=true;if(RX.tab==='tour')rxTourEnd();rxRender();setTimeout(function(){RX._done=false;if(rxDayTick(true))return;rxNew();},S.c.length>1?(RX.tab==='tour'?3200:1100):650);}
+    if(S.i>=S.c.length){RX._done=true;if(RX.tab==='tour')rxTourEnd();rxRender();rxAfter(true,S,function(){RX._done=false;if(rxDayTick(true))return;rxNew();},S.c.length>1?(RX.tab==='tour'?3200:1600):1300);}
     else{RX._t=performance.now();rxRender();if(RX.src==='ear')setTimeout(rxEar,250);}
     return;}
   /* main posée mais fausse : jugée après 450 ms d'immobilité */
@@ -15161,7 +15175,7 @@ function rxLive(ns){const el=document.getElementById('rxCircBox');if(!el||!RX.se
 function rxVis(ch,S,live){return RX.view==='kb'&&typeof rxKbView==='function'?rxKbView(ch,S,live):rxCirc(ch,rxCircOpt(ch,S,live));}
 function rxFormCheck(){const S=RX.seq,f=S.form;if(f.q==null||f.rp==null)return;const ch=S.c[0];const ok=f.q===ch.q&&f.rp===ch.rp;const ms=performance.now()-RX._t;
   const k={g:'form',q:ch.q,rp:ch.rp};if(ok)rxRecord(k,ms,true);else rxRecord(k,0,false);
-  RX.last={ok:ok,ms:ms,ch:ch,form:true,ans:f.q+'|'+f.rp};rxRender();setTimeout(function(){if(rxDayTick(ok))return;rxNew();},ok?650:1600);}
+  RX.last={ok:ok,ms:ms,ch:ch,form:true,ans:f.q+'|'+f.rp};rxRender();rxAfter(ok,S,function(){if(rxDayTick(ok))return;rxNew();});}
 function rxCircOpt(ch,S,live){
   const o={size:Math.min(320,(window.innerWidth||400)-40),labels:true};
   if(RX.tab==='form'){o.pick=true;o.labels=true;}
@@ -15182,36 +15196,40 @@ function rxRender(){
   h+=(typeof rxCfgOpen==='function'?rxCfgOpen():'<div>')+'<div class="rx-set">';
   if(RX.tab!=='form')h+='<span class="og-lb">Grip</span>'+RX_GRIP_ORD.map(function(g){return '<button class="opill'+(RX.grip===g?' on':'')+'" data-rx="grip" data-v="'+g+'">'+RX_GRIPS[g].lb+' '+rxLvlDots(g)+'</button>';}).join('');
   h+='</div>'+rxExtraSet()+'<div class="rx-set"'+(RX.tab==='tour'?' style="display:none"':'')+'><span class="og-lb">Qualités</span>'+RX_Q.map(function(x){return '<button class="opill'+(RX.qs.indexOf(x[0])>=0?' on':'')+'" data-rx="q" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
-    +'<span class="og-lb" style="margin-left:8px">Ordre</span>'+[['q4','cycle des quartes'],['hasard','hasard'],['faible','mes points faibles']].map(function(x){return '<button class="opill'+(RX.ord===x[0]?' on':'')+'" data-rx="ord" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
+    +'<span class="og-lb" style="margin-left:8px">Ordre</span>'+[['sm2','🧠 SM-2'],['q4','cycle des quartes'],['hasard','hasard'],['faible','mes points faibles']].map(function(x){return '<button class="opill'+(RX.ord===x[0]?' on':'')+'" data-rx="ord" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
     +(RX.tab!=='form'&&RX.tab!=='heat'?'<span class="og-lb" style="margin-left:8px">Repère</span><button class="opill'+(RX.names?' on':'')+'" data-rx="names" title="afficher le nom et le grip (débutant) ou la forme seule (réflexe)">'+(RX.names?'🏷 nom + grip':'◇ forme seule')+'</button>'
-      +'<button class="opill'+(RX.src==='ear'?' on':'')+'" data-rx="src" title="la forme vue (cercle) ou entendue (Garden joue, tu retrouves)">'+(RX.src==='ear'?'🎧 oreille':'👁 cercle')+'</button>':'')+'</div>';
+      +'<button class="opill'+(RX.src==='ear'?' on':'')+'" data-rx="src" title="la forme vue (cercle) ou entendue (Garden joue, tu retrouves)">'+(RX.src==='ear'?'🎧 oreille':'👁 cercle')+'</button>':'')+'<span class="og-lb" style="margin-left:8px">Après la réponse</span>'+[['auto','⏱ auto'],['moi','✋ j’avance moi-même']].map(function(x){return '<button class="opill'+((RX.after||'auto')===x[0]?' on':'')+'" data-rx="after" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';
   if(RX.tab==='heat'){el.innerHTML=h+'</details>'+rxLevelsHTML()+rxHeatHTML();return;}
   if(RX.tab!=='form')h+='<div class="hint">'+RX_GRIPS[RX.grip].lb+' — '+RX_GRIPS[RX.grip].d+'</div>';
   h+='</details>';
   const S=RX.seq;
   if(!S||!S.c||!S.c[0]){h+='<div class="empty">'+(RX.tab==='grid'?(typeof STD!=='undefined'&&STD?'Aucun enchaînement trouvé (élargis les qualités ou la source).':'Le corpus se charge… ouvre une fois 🎷 Standards ou attends quelques secondes.'):'Choisis au moins une qualité compatible avec ce grip.')+'</div><button class="btn" data-rx="go">▶ Lancer</button>';el.innerHTML=h;return;}
   const ch=S.c[Math.min(S.i,S.c.length-1)];
-  h+='<div class="rx-main"><div class="rx-left"><div class="sd-fv">'+[['circ','⭕ cercle'],['kb','🎹 clavier + portée']].map(function(x){return '<button class="opill'+((RX.view||'circ')===x[0]?' on':'')+'" data-rx="view" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
-  const KBV=RX.view==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main"><div class="rx-left">','<div class="rx-kbmain"><div class="rx-kbhead">');
+  const RES=RX._err?' rx-res bad':(RX.last&&!S.dq?(RX.last.ok?' rx-res ok':' rx-res bad'):'');
+  h+='<!--FB--><div class="rx-main'+RES+'"><div class="rx-left"><div class="sd-fv">'+[['circ','⭕ cercle'],['kb','🎹 clavier + portée']].map(function(x){return '<button class="opill'+((RX.view||'circ')===x[0]?' on':'')+'" data-rx="view" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
+  const KBV=RX.view==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main'+RES+'"><div class="rx-left">','<div class="rx-kbmain'+RES+'"><div class="rx-kbhead">');
   if(RX.tab==='form'&&!KBV){h+='<div class="rx-ans">'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
     +'<div class="hint" style="text-align:center">Quelle forme ? puis la fondamentale : touche le cercle ou joue la note.</div>';}
   h+=KBV?'</div><div class="rx-kbrow"><div id="rxStfBox" class="rx-kbstf">'+rxKbPart(ch,S,null,'stf')+'</div><div id="rxMcBox" class="rx-kbcirc">'+rxKbPart(ch,S,null,'circ')+'</div><div class="rx-right">':'</div><div class="rx-right">';
   if(S.c.length>1){h+=(S.title?'<div class="rx-ttl">🎷 '+S.title+'</div>':'')+'<div class="rx-chain">'+S.c.map(function(c,i){return '<span class="'+(i<S.i?'done':(i===S.i?'now':''))+'">'+(RX.names||i<S.i?(c.nm||rxName(c).split(' · ')[0]):'?')+'</span>';}).join('<b>→</b>')+'</div>';}
   h+=rxSidePanel(S,ch);
   if(RX.tab==='flash')h+='<div class="hint">⚡ affichage : <b>'+RX.flash+' ms</b> — il raccourcit quand tu réussis, s’allonge quand tu rates.</div>';
-  const L=RX.last;
+  const L=RX.last;const _f0=h.length;
   if(S.dq)h+=rxDegHTML(S,ch);
   else if(RX._err)h+='<div class="rx-fb bad">✕ '+(RX._err.why||'ce n’est pas ce grip')+'<div class="rx-deg">tu joues : '+RX._err.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-ch.rp,ch.q);}).join(' · ')+'</div><div class="rx-deg">attendu : '+rxGripHint(ch)+'</div></div>';
-  else if(L&&L.form)h+='<div class="rx-fb '+(L.ok?'ok':'bad')+'">'+(L.ok?'✓ '+rxName(L.ch)+' en <b>'+(L.ms/1000).toFixed(2)+' s</b>':'✕ c’était <b>'+rxName(L.ch)+'</b>')+'</div>';
+  else if(L&&L.form)h+='<div class="rx-fb '+(L.ok?'ok':'bad')+'">'+(L.ok?'✓ '+rxName(L.ch)+' en <b>'+(L.ms/1000).toFixed(2)+' s</b>':'✕ c’était <b>'+rxName(L.ch)+'</b> — tu as dit '+(function(a){return (RX_NM[+a[1]]||'?')+(RX_QS[a[0]]||'?');})(L.ans.split('|')))+'</div>';
   else if(L&&L.ok)h+='<div class="rx-fb ok">✓ '+(L.ch.nm||rxName(L.ch))+' — <b>'+(L.ms/1000).toFixed(2)+' s</b>'+(L.cost!=null?'<div class="rx-deg">mouvement : '+L.cost+' demi-ton'+(L.cost>1?'s':'')+(L.best!=null&&L.best<L.cost?' · le plus court : '+L.best+' — garde les notes communes, bouge d’½ ton':' · ✨ chemin le plus court')+'</div>':'')+'<div class="rx-deg">'+L.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-L.ch.rp,L.ch.q);}).join(' · ')+'</div></div>';
   else h+='<div class="rx-fb">'+(RX._pend?'🖐 lâche tout le clavier…':(RX.tab==='form'?'Lis la forme.':'Pose la main.'))+'</div>';
   if(RX._done&&S.costs&&S.costs.length){const a=S.costs.reduce(function(x,c){return x+c[0];},0),b=S.costs.reduce(function(x,c){return x+c[1];},0);h+='<div class="rx-fb ok">🔗 enchaînement : '+a+' demi-tons (le plus court possible : '+b+')</div>';}
+  let FB='';if(!S.dq){FB=h.slice(_f0);h=h.slice(0,_f0);}
+  const miss=RX._err||(L&&!L.ok&&!S.dq);
+  FB='<div class="rx-fbtop">'+FB+(typeof rxSesLine==='function'?rxSesLine():'')+((RX._tip||miss)&&typeof rxTip==='function'?'<div class="rx-tip">💡 '+rxTip(L&&L.form&&!L.ok?L.ch:ch)+'</div>':'')+(RX._wait&&RX.after==='moi'?'<button class="btn" data-rx="next">▶ continuer <small>(ou relâche et rejoue)</small></button>':'')+'</div>';
   const k=rxStat(ch.g==='form'?{g:'form',q:ch.q,rp:ch.rp}:ch);
   h+='<div class="rx-mini">'+(k?'cette case : '+(k.ms?(k.ms/1000).toFixed(2)+' s':'—')+' · '+k.ok+'/'+k.n+' réussis':'case jamais jouée')+'</div>';
-  h+='<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ suivant</button>'+(RX.src==='ear'||RX.tab==='grip'?'<button class="opill" data-rx="ear">🔊 écouter le voicing</button>':'')+'<button class="opill" data-rx="show">👁 montrer un voicing</button></div>';
+  h+='<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ suivant</button>'+(RX.src==='ear'||RX.tab==='grip'?'<button class="opill" data-rx="ear">🔊 écouter le voicing</button>':'')+'<button class="opill" data-rx="show">👁 montrer un voicing</button><button class="opill'+(RX._tip?' on':'')+'" data-rx="tip">💡 astuce</button></div>';
   if(RX._show){const C=rxCands(ch);const v=C[Math.floor(C.length/2)];if(v)h+='<div class="rx-deg">exemple : '+v.map(function(m){return (typeof nnK==='function'?nnK(m%12,ch.rp):RX_NM[m%12])+(Math.floor(m/12)-1);}).join(' ')+' ('+v.map(function(m){return rxDeg(m-ch.rp,ch.q);}).join('-')+')</div>';}
   h+='</div></div>'+(KBV?'</div>':'');
-  el.innerHTML=h;
+  el.innerHTML=h.replace('<!--FB-->',FB);
 }
 function rxHeatHTML(){
   const g=RX.heatG||RX.grip;let h='<div class="rx-set"><span class="og-lb">Carte du grip</span>'+['form'].concat(RX_GRIP_ORD).map(function(x){return '<button class="opill'+(g===x?' on':'')+'" data-rx="heatg" data-v="'+x+'">'+(x==='form'?'👁 lecture':RX_GRIPS[x].lb)+'</button>';}).join('')+'</div>';
@@ -15227,7 +15245,7 @@ document.addEventListener('click',function(e){
   const pr=e.target.closest('[data-rxroot]');if(pr&&RX.tab==='form'&&RX.seq&&RX.seq.form){RX.seq.form.rp=+pr.getAttribute('data-rxroot');rxFormCheck();return;}
   const b=e.target.closest('[data-rx]');if(!b)return;const a=b.getAttribute('data-rx'),v=b.getAttribute('data-v');
   if(rxClick2(a,v,b))return;
-  if(a==='tab'){rxClockStop();if(RX.day&&RX.day.on&&v!=='day')RX.day.on=false;RX.tab=v;rxSave();if(v==='heat')rxRender();else rxNew();return;}
+  if(a==='tab'){rxClockStop();RX._ses=null;if(RX.day&&RX.day.on&&v!=='day')RX.day.on=false;RX.tab=v;rxSave();if(v==='heat')rxRender();else rxNew();return;}
   if(a==='grip'){RX.grip=v;rxSave();rxNew();return;}
   if(a==='q'){const i=RX.qs.indexOf(v);if(i>=0){if(RX.qs.length>1)RX.qs.splice(i,1);}else RX.qs.push(v);rxSave();rxNew();return;}
   if(a==='ord'){RX.ord=v;rxSave();rxNew();return;}
@@ -15235,7 +15253,10 @@ document.addEventListener('click',function(e){
   if(a==='src'){RX.src=RX.src==='ear'?'eye':'ear';rxSave();rxNew();return;}
   if(a==='cm'){RX.cm=RX.cm==='chr'?'q5':(RX.cm==='q5'?'q4':'chr');rxSave();rxRender();return;}
   if(a==='fq'&&RX.seq&&RX.seq.form){RX.seq.form.q=v;rxFormCheck();rxRender();return;}
-  if(a==='skip'||a==='go'){rxClockStop();if(a==='skip'&&rxDayTick(false))return;rxNew();return;}
+  if(a==='next'){if(RX._wait)RX._wait();return;}
+  if(a==='tip'){RX._tip=!RX._tip;rxRender();return;}
+  if(a==='after'){RX.after=v;rxSave();rxRender();return;}
+  if(a==='skip'||a==='go'){rxClockStop();RX._wait=null;clearTimeout(RX._nx);if(a==='skip'&&rxDayTick(false))return;rxNew();return;}
   if(a==='ear'){rxEar();return;}
   if(a==='show'){RX._show=!RX._show;rxRender();return;}
   if(a==='view'){RX.view=v;rxSave();rxRender();return;}
@@ -15301,7 +15322,7 @@ function rxDegAsk(){
   rxRender();
 }
 function rxDegDone(ok,msg){const S=RX.seq;if(!S||!S.dq||S.dq.res)return;S.dq.res={ok:ok,ms:performance.now()-S.dq.t0,msg:msg};RX.dst.n++;if(ok)RX.dst.ok++;rxSave();rxRender();
-  setTimeout(function(){if(RX.seq!==S)return;if(rxDayTick(ok))return;rxNew();},ok?900:2200);}
+  rxAfter(ok,S,function(){if(rxDayTick(ok))return;rxNew();});}
 function rxDegHeld(ns){const S=RX.seq,q=S.dq;if(q.res||q.type!=='trans'||!ns.length)return;
   if(ns.length===q.target.length&&rxSame(rxPcs(ns),rxPcs(q.target)))rxDegDone(true,'transformé en '+q.nm);
   else rxLive(ns);}
@@ -15527,7 +15548,7 @@ function rxCfgOpen(){
   const parts=[];
   if(RX.tab!=='form')parts.push('<b>'+RX_GRIPS[RX.grip].lb+'</b>');
   if(RX.tab==='tour')parts.push(RX_QS[RX.tourQ]||'');else parts.push(qs);
-  parts.push({q4:'cycle des quartes',hasard:'hasard',faible:'points faibles'}[RX.ord]||'');
+  parts.push({sm2:'🧠 SM-2',q4:'cycle des quartes',hasard:'hasard',faible:'points faibles'}[RX.ord]||'');
   if(RX.tab!=='form'&&RX.tab!=='heat')parts.push(RX.names?'🏷 nom + grip':'◇ forme seule');
   if(RX.src==='ear'&&RX.tab!=='form')parts.push('🎧');
   if(RX_2H.indexOf(RX.grip)>=0&&RX.hand&&RX.hand!=='both')parts.push(RX.hand==='MG'?'🫲 MG seule':'🫱 MD seule');
@@ -15535,6 +15556,96 @@ function rxCfgOpen(){
   return '<details class="rx-cfg"'+(RX.cfgOpen?' open':'')+'><summary>⚙ Réglages <span>'+parts.filter(Boolean).join(' · ')+'</span><i>'+(RX.cfgOpen?'replier':'modifier')+'</i></summary>';
 }
 document.addEventListener('toggle',function(e){const t=e.target;if(t&&t.classList&&t.classList.contains('rx-cfg')){if(RX.cfgOpen!==t.open){RX.cfgOpen=t.open;rxSave();const i=t.querySelector('summary i');if(i)i.textContent=t.open?'replier':'modifier';}}},true);
+
+/* ── après la réponse : on laisse le temps de voir (auto) ou on attend (✋) ; relâcher puis rejouer fait passer ── */
+function rxAfter(ok,S,fn,dOk,dBad){clearTimeout(RX._nx);RX._rel=false;
+  RX._wait=function(){RX._wait=null;clearTimeout(RX._nx);if(S&&RX.seq!==S)return;fn();};
+  if(RX.after==='moi'){rxRender();return;}
+  RX._nx=setTimeout(function(){if(RX._wait)RX._wait();},ok?(dOk||1300):(dBad||3500));}
+
+/* ── suivi : séance, précision quotidienne, SM-2 ── */
+function rxSmK(ch){return ch.g+'|'+ch.q+'|'+ch.rp+(ch.hm?'|'+ch.hm:'');}
+function rxGrade(ch,ms,ok){if(!ok)return 1;const s=ms/(ch.g==='form'?1.8:1);return s<800?5:(s<1500?4:3);}
+function rxTrack(ch,ms,ok){
+  const S=RX._ses=RX._ses||{ok:0,n:0};S.n++;if(ok)S.ok++;
+  const d=rxToday(),A=RX.acc[d]=RX.acc[d]||{},hk=ch.g+'|'+ch.q,e=A[hk]=A[hk]||[0,0,0];e[1]++;if(ok){e[0]++;e[2]+=Math.round(ms);}
+  const k=rxSmK(ch),c=RX.sm[k]||{ef:2.5,rep:0,iv:0,due:0},g=rxGrade(ch,ms,ok),now=Date.now(),D=864e5;
+  if(g<3){c.rep=0;c.iv=0;c.due=now+2*6e4;c.lapse=(c.lapse||0)+1;}            /* raté : revient dans 2 min */
+  else{if(c.rep===0){c.iv=0;c.due=now+(g===5?D:10*6e4);if(g===5)c.iv=1;}       /* 1re réussite : 10 min (ou demain si réflexe) */
+    else if(c.iv<1){c.iv=1;c.due=now+D;}else if(c.iv<6){c.iv=6;c.due=now+6*D;}else{c.iv=Math.round(c.iv*c.ef);c.due=now+c.iv*D;}
+    c.rep++;}
+  c.ef=Math.max(1.3,c.ef+0.1-(5-g)*(0.08+(5-g)*0.02));c.t=now;RX.sm[k]=c;}
+function rxSmPick(g,qs){
+  const hm=typeof rxHmOf==='function'?rxHmOf(g):null,now=Date.now(),due=[],fresh=[],all=[];const F=[0,5,10,3,8,1,6,11,4,9,2,7];
+  qs.forEach(function(q){F.forEach(function(rp){const k=g+'|'+q+'|'+rp+(hm?'|'+hm:''),c=RX.sm[k];const o={q:q,rp:rp,c:c,k:k};all.push(o);if(!c)fresh.push(o);else if(c.due<=now)due.push(o);});});
+  const last=RX._smLast;let pool=due.filter(function(o){return o.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;});
+  let o=pool[0];
+  if(!o&&fresh.length){const byQ={};fresh.forEach(function(x){(byQ[x.q]=byQ[x.q]||[]).push(x);});const ks=Object.keys(byQ);o=byQ[ks[Math.floor(Math.random()*ks.length)]][0];}
+  if(!o){pool=all.filter(function(x){return x.k!==last;}).sort(function(a,b){return a.c.due-b.c.due;});o=pool[0]||all[0];}
+  RX._smLast=o.k;return {q:o.q,rp:o.rp};}
+function rxSmCount(g,qs){const hm=typeof rxHmOf==='function'?rxHmOf(g):null,now=Date.now();let d=0,n=0,l=0;
+  qs.forEach(function(q){for(let rp=0;rp<12;rp++){const c=RX.sm[g+'|'+q+'|'+rp+(hm?'|'+hm:'')];if(!c)n++;else if(c.due<=now)d++;else if(c.iv>=6)l++;}});return {due:d,fresh:n,learned:l};}
+function rxSesLine(){const S=RX._ses;let h='';if(S&&S.n)h+='<span>séance : <b>'+S.ok+'/'+S.n+'</b> · <b style="color:'+rxAccCol(S.ok/S.n)+'">'+Math.round(S.ok/S.n*100)+' %</b></span>';
+  if(RX.ord==='sm2'&&RX.tab!=='tour'&&RX.tab!=='day'){const g=RX.tab==='form'?'form':RX.grip,c=rxSmCount(g,rxQsOk(g==='form'?'shell':g));h+='<span>🧠 à réviser : <b>'+c.due+'</b> · nouvelles : '+c.fresh+' · acquises : '+c.learned+'</span>';}
+  const ch=RX.seq&&RX.seq.c[Math.min(RX.seq.i,RX.seq.c.length-1)];
+  if(ch&&RX.last){const c=RX.sm[rxSmK(ch.g==='form'?{g:'form',q:ch.q,rp:ch.rp}:ch)];if(c){const dt=c.due-Date.now();h+='<span>revient '+(dt<36e5?'dans '+Math.max(1,Math.round(dt/6e4))+' min':(dt<864e5?'dans '+Math.round(dt/36e5)+' h':'dans '+Math.round(dt/864e5)+' j'))+'</span>';}}
+  return h?'<div class="rx-ses">'+h+'</div>':'';}
+function rxAccCol(p){return p>=.9?'#3ECF8E':(p>=.75?'#F5C842':(p>=.5?'#FF9F43':'#EF4444'));}
+
+/* ── 💡 astuces ── */
+const RX_CHID=[[[0,4,7,11],'△7'],[[0,3,7,10],'m7'],[[0,4,7,10],'7'],[[0,3,6,10],'ø7'],[[0,3,6,9],'°7'],[[0,4,7,9],'6'],[[0,3,7,9],'m6'],[[0,3,7,11],'m△7'],[[0,5,7,10],'7sus4'],[[0,4,8,11],'△7♯5'],[[0,4,8],'+'],[[0,4,7],''],[[0,3,7],'m'],[[0,3,6],'°'],[[0,5,7],'sus4'],[[0,2,7],'sus2'],[[0,5,10],' (quartes)']];
+function rxChordId(pcs,avoid){for(let i=0;i<RX_CHID.length;i++){const T=RX_CHID[i][0];if(T.length!==pcs.length)continue;
+  for(let r=0;r<12;r++){if(r===avoid)continue;if(T.every(function(t){return pcs.indexOf((r+t)%12)>=0;}))return RX_NM[r]+RX_CHID[i][1];}}return null;}
+const RX_TIPF={maj7:'△7 : la 7e est collée à la fondamentale (½ ton dessous) ; le reste est une triade majeure.',m7:'m7 : la 7e est à un ton sous la fondamentale ; c’est le 6 de sa ♭3 (Dm7 = F6).',
+  '7':'7 : il contient le triton 3–♭7, deux points diamétralement opposés sur le cercle chromatique.',m7b5:'ø7 : trois sommets d’un carré diminué + la ♭7 ; c’est le m6 de sa ♭3 (Bø7 = Dm6).',dim7:'°7 : un carré parfait. Il n’en existe que 3 ; chaque note peut servir de fondamentale.'};
+const RX_TIPG={shell:'Shell : 1 + 3 ou 1 + 7. La qualité se lit dans la 3ce (majeure ou mineure) et dans la 7e (½ ton ou un ton sous l’octave).',
+  A:'Rootless A : la 3ce en bas (3-5-7-9). Pars toujours de la 3ce de l’accord.',
+  B:'Rootless B : la 7e en bas (7-9-3-5). C’est le paquet A retourné ; de Dm7 (A) à G7 (B), un seul doigt bouge.',
+  h2:'MG : juste la basse. MD : le rootless (A ou B) au-dessus, à une sixte au moins.',
+  h2s:'MG : shell 1-7. MD : la 3ce + une ou deux tensions (9, 13).',
+  drop2:'Drop 2 : joue l’accord serré, puis descends d’une octave la 2e voix en partant du haut.',
+  q4:'Quartes : empile des quartes justes à partir de la 3ce ou de la 9e (voicing « So What »).',
+  poly:'Polyaccord : lis la triade de la MD comme une triade simple ; la MG garde le shell.'};
+function rxTip(ch){if(!ch)return '';const out=[];
+  if(ch.g==='form'){out.push(RX_TIPF[ch.q]||'');}
+  else{out.push(RX_TIPG[ch.g]||'');
+    try{const C=rxCands(ch),v=C[Math.floor(C.length/2)];if(v){let pcs=rxPcs(v).filter(function(p){return p!==ch.rp;});
+      if(pcs.length>=3){const id=rxChordId(pcs,ch.rp);if(id)out.push('Ici : <b>'+RX_NM[ch.rp]+RX_QS[ch.q]+' '+(ch.g==='poly'||ch.g==='h2'||ch.g==='h2s'?'':'(sans la fondamentale) ')+'= '+id+'</b> posé sur '+RX_NM[ch.rp]+'. Pense « '+id+' », la main le trouve plus vite.');}}}catch(e){}
+    if(ch.q==='7'||ch.q==='m7')out.push('Dans un ii–V–I, la 7e descend d’½ ton sur la 3ce suivante, et les notes communes restent sous les doigts.');}
+  out.push('Dis le nom à voix haute en posant la main : le nom et la forme se fixent ensemble.');
+  return out.filter(Boolean).join('<br>');}
+
+/* ── 📈 précision : par voicing, par qualité, par tonalité, courbe dans le temps ── */
+function rxAccHTML(){
+  const g=RX.heatG||RX.grip,F=[0,5,10,3,8,1,6,11,4,9,2,7];let h='<div class="rx-ttl">📈 Précision</div>';
+  /* par voicing */
+  h+='<div class="rx-accg">'+['form'].concat(RX_GRIP_ORD).map(function(x){let ok=0,n=0;Object.keys(RX.st).forEach(function(k){if(k.split('|')[0]===x){ok+=RX.st[k].ok;n+=RX.st[k].n;}});
+    return '<div class="'+(x===g?'on':'')+'" data-rx="heatg" data-v="'+x+'"><small>'+(x==='form'?'👁 lecture':RX_GRIPS[x].lb)+'</small><b style="color:'+(n?rxAccCol(ok/n):'#7A85A8')+'">'+(n?Math.round(ok/n*100)+' %':'—')+'</b><i>'+n+' essais</i></div>';}).join('')+'</div>';
+  /* qualité × tonalité */
+  const qs=RX_Q.filter(function(x){return g==='form'||rxCompat(g,x[0]);});
+  h+='<div class="hint">'+(g==='form'?'👁 lecture':RX_GRIPS[g].lb)+' — réussite au 1er essai, par qualité et par tonalité (cycle des quartes). Touche un voicing ci-dessus pour changer.</div><div class="rx-acct"><table><tr><th></th>'+F.map(function(p){return '<th>'+RX_NM[p]+'</th>';}).join('')+'<th>total</th></tr>';
+  const col={};
+  qs.forEach(function(x){let to=0,tn=0;h+='<tr><td>'+x[1]+'</td>'+F.map(function(p){let ok=0,n=0;Object.keys(RX.st).forEach(function(k){const a=k.split('|');if(a[0]===g&&a[1]===x[0]&&+a[2]===p){ok+=RX.st[k].ok;n+=RX.st[k].n;}});
+      to+=ok;tn+=n;const c=col[p]=col[p]||[0,0];c[0]+=ok;c[1]+=n;
+      return n?'<td style="background:'+rxAccCol(ok/n)+'33;color:'+rxAccCol(ok/n)+'" title="'+ok+'/'+n+'">'+Math.round(ok/n*100)+'</td>':'<td class="na">·</td>';}).join('')
+      +'<td><b style="color:'+(tn?rxAccCol(to/tn):'#7A85A8')+'">'+(tn?Math.round(to/tn*100)+' %':'—')+'</b></td></tr>';});
+  h+='<tr class="tot"><td>total</td>'+F.map(function(p){const c=col[p];return c&&c[1]?'<td style="color:'+rxAccCol(c[0]/c[1])+'">'+Math.round(c[0]/c[1]*100)+'</td>':'<td class="na">·</td>';}).join('')+'<td></td></tr></table></div>';
+  /* courbe */
+  const days=Object.keys(RX.acc||{}).sort().slice(-30),QC={maj7:'#4F9EFF',m7:'#A78BFA','7':'#F5C842',m7b5:'#FF9F43',dim7:'#EF4444'};
+  const ser=[{lb:'toutes',c:'#3ECF8E',w:3,f:function(A){let o=0,n=0;Object.keys(A).forEach(function(k){if(k.split('|')[0]===g){o+=A[k][0];n+=A[k][1];}});return n?[o/n,n]:null;}}]
+    .concat(qs.map(function(x){return {lb:x[1],c:QC[x[0]],w:1.5,f:function(A){const e=A[g+'|'+x[0]];return e&&e[1]?[e[0]/e[1],e[1]]:null;}};}));
+  if(days.length){const W=640,H=200,L=34,R=8,T=10,B=26,xs=function(i){return L+(days.length<2?(W-L-R)/2:i*(W-L-R)/(days.length-1));},ys=function(p){return T+(1-p)*(H-T-B);};
+    let s='';[0,.25,.5,.75,1].forEach(function(p){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+ys(p)+'" y2="'+ys(p)+'" stroke="#2A3156" stroke-width="1"/><text x="'+(L-4)+'" y="'+(ys(p)+4)+'" text-anchor="end" font-size="10" fill="#7A85A8">'+p*100+'</text>';});
+    days.forEach(function(d,i){if(days.length<8||i%Math.ceil(days.length/7)===0||i===days.length-1)s+='<text x="'+xs(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="#7A85A8">'+d.slice(8)+'/'+d.slice(5,7)+'</text>';});
+    ser.forEach(function(S){const pts=[];days.forEach(function(d,i){const v=S.f(RX.acc[d]);if(v)pts.push([xs(i),ys(v[0]),v[1]]);});if(!pts.length)return;
+      s+='<polyline fill="none" stroke="'+S.c+'" stroke-width="'+S.w+'" stroke-linejoin="round" points="'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'"/>';
+      pts.forEach(function(p){s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(S.w+1)+'" fill="'+S.c+'"><title>'+S.lb+' : '+p[2]+' essais</title></circle>';});});
+    h+='<div class="rx-curve"><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:'+W+'px">'+s+'</svg><div class="rx-leg">'+ser.map(function(S){return '<span><i style="background:'+S.c+'"></i>'+S.lb+'</span>';}).join('')+'</div></div>';}
+  else h+='<div class="hint">La courbe jour par jour apparaît dès ta première séance (les essais faits avant cette version ne sont pas datés).</div>';
+  /* SM-2 */
+  if(g!=='form'||true){const c=rxSmCount(g,qs.map(function(x){return x[0];}));h+='<div class="rx-fb">🧠 SM-2 — '+(g==='form'?'lecture':RX_GRIPS[g].lb)+' : <b>'+c.due+'</b> à réviser maintenant · <b>'+c.learned+'</b> acquises (intervalle ≥ 6 j) · '+c.fresh+' jamais vues. Choisis l’ordre « 🧠 SM-2 » dans ⚙ Réglages pour réviser au bon moment.</div>';}
+  return h;}
+(function(){const old=rxHeatHTML;rxHeatHTML=function(){return rxAccHTML()+'<div class="rx-ttl" style="margin-top:14px">⏱ Temps de réaction</div>'+old();};})();
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
