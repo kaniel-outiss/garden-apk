@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.11 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.12 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -692,12 +692,14 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-curve{margin:8px 0}.rx-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#9AA4C4}.rx-leg i{display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:4px;vertical-align:middle}
 .rx-gate{width:100%;background:rgba(245,200,66,.08);border:1px dashed #F5C842;border-radius:10px;padding:8px 10px;font-size:13px;margin:6px 0;line-height:1.5}
 .rx-eqq{display:flex;align-items:baseline;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0}.rx-eqq b{font-size:34px;color:#F5C842}.rx-eqq small{font-size:14px;color:#9AA4C4}.rx-eqq span{font-size:28px;color:#7A85A8}
+.rx-ladder{display:flex;align-items:center;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0}.rx-ladder span{display:flex;flex-direction:column;align-items:center;padding:4px 8px;border-radius:10px;background:var(--bg3);border:1px solid var(--gris2)}
+.rx-ladder span.on{border-color:#F5C842;background:rgba(245,200,66,.12)}.rx-ladder b{font-size:12px}.rx-ladder small{font-size:11px;color:#9AA4C4}.rx-ladder i{color:#7A85A8;font-style:normal}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.11 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.12 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15142,6 +15144,7 @@ function rxNew(){
   else if(t==='eq'){RX.seq=rxEqNew();}
   else if(t==='sec'){RX.seq=rxSecNew();}
   else if(t==='ten'){RX.seq=rxTenNew();}
+  else if(t==='mod'){RX.seq=rxModNew();}
   else if(t==='grid'){const G=rxGridSeq(RX.grip);RX.seq=G?{c:G.seq,i:0,costs:[],title:G.title}:null;}
   RX._t=performance.now();RX._pend=(typeof held!=='undefined'&&held.size>0); /* attend que les mains soient libres */
   if(RX.seq&&RX.src==='ear'&&RX.seq.c[0]&&RX.tab!=='form')setTimeout(function(){rxEar();},150);
@@ -15158,6 +15161,7 @@ function rxHeld(ns){
   if(S.eq){rxEqHeld(ns);return;}
   if(S.sec){rxSecHeld(ns);return;}
   if(S.ten){rxTenHeld(ns);return;}
+  if(S.mod){rxModHeld(ns);return;}
   if(S.dq){rxDegHeld(ns);return;}
   if(RX.tab==='form'){ /* une seule note jouée = la fondamentale */
     if(ns.length===1&&S.form.rp==null){S.form.rp=((ns[0]%12)+12)%12;rxFormCheck();}return;}
@@ -15209,7 +15213,7 @@ function rxCircOpt(ch,S,live){
   return o;}
 
 /* ── rendu ── */
-const RX_TABS=[['day','📅 Séance du jour'],['form','👁 Forme'],['grip','🖐 Grip'],['tour','🔁 Tour des 12'],['deg','✋ Degrés'],['eq','🔀 Équivalences'],['sec','🎯 Dominantes sec.'],['ten','🎨 Tensions'],['pair','🔗 Voisin'],['flash','⚡ Flash'],['grid','🎷 Grilles'],['heat','🎯 Niveaux & carte']];
+const RX_TABS=[['day','📅 Séance du jour'],['form','👁 Forme'],['grip','🖐 Grip'],['tour','🔁 Tour des 12'],['deg','✋ Degrés'],['eq','🔀 Équivalences'],['sec','🎯 Dominantes sec.'],['ten','🎨 Tensions'],['mod','🌈 Modes'],['pair','🔗 Voisin'],['flash','⚡ Flash'],['grid','🎷 Grilles'],['heat','🎯 Niveaux & carte']];
 function rxRender(){
   const el=document.getElementById('rxRoot');if(!el)return;
   let h=rxDayBar()+'<div class="rx-tabs">'+RX_TABS.map(function(t){return '<button class="'+(RX.tab===t[0]?'on':'')+'" data-rx="tab" data-v="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
@@ -15217,6 +15221,7 @@ function rxRender(){
   if(RX.tab==='eq'&&typeof rxEqHTML==='function'){el.innerHTML=h+rxEqHTML();return;}
   if(RX.tab==='sec'&&typeof rxSecHTML==='function'){el.innerHTML=h+rxSecHTML();return;}
   if(RX.tab==='ten'&&typeof rxTenHTML==='function'){el.innerHTML=h+rxTenHTML();return;}
+  if(RX.tab==='mod'&&typeof rxModHTML==='function'){el.innerHTML=h+rxModHTML();return;}
   h+=(typeof rxCfgOpen==='function'?rxCfgOpen():'<div>')+'<div class="rx-set">';
   if(RX.tab!=='form')h+='<span class="og-lb">Grip</span>'+RX_GRIP_ORD.map(function(g){return '<button class="opill'+(RX.grip===g?' on':'')+'" data-rx="grip" data-v="'+g+'">'+(typeof rxLocked==='function'&&rxLocked(g)?'🔒 ':'')+RX_GRIPS[g].lb+' '+rxLvlDots(g)+'</button>';}).join('');
   if(RX.tab!=='form'&&typeof rxGateHTML==='function')h+=rxGateHTML(RX.grip);
@@ -15427,6 +15432,7 @@ function rxDayPlan(){const F=rxFocus(),qs=RX_QORD.filter(function(q){return rxCo
     {tab:'eq',n:6,lb:'🔀 6 équivalences (rootless de X = Y)'},
     {tab:'sec',n:5,lb:'🎯 5 dominantes secondaires'},
     {tab:'ten',n:5,lb:'🎨 5 tensions (9, 11, 13)'},
+    {tab:'mod',n:5,lb:'🌈 5 modes et gammes'},
     {tab:'pair',n:5,lb:'🔗 Voisin : 5 enchaînements',set:{grip:F.g}},
     {tab:'flash',n:10,lb:'⚡ Flash : 10 formes',set:{grip:F.g,qs:qs}},
     {tab:'grid',n:3,lb:'🎷 3 passages de vraies grilles',set:{grip:F.g}}];}
@@ -15624,7 +15630,7 @@ function rxSmPick(g,qs){
 function rxSmCount(g,qs){const hm=typeof rxHmOf==='function'?rxHmOf(g):null,now=Date.now();let d=0,n=0,l=0;
   qs.forEach(function(q){for(let rp=0;rp<12;rp++){const c=RX.sm[g+'|'+q+'|'+rp+(hm?'|'+hm:'')];if(!c)n++;else if(c.due<=now)d++;else if(c.iv>=6)l++;}});return {due:d,fresh:n,learned:l};}
 function rxSesLine(){const S=RX._ses;let h='';if(S&&S.n)h+='<span>séance : <b>'+S.ok+'/'+S.n+'</b> · <b style="color:'+rxAccCol(S.ok/S.n)+'">'+Math.round(S.ok/S.n*100)+' %</b></span>';
-  if(RX.tab==='eq'){const nl=rxNewLeft('eq'),now=Date.now();let du=0;Object.keys(RX.sm).forEach(function(k){if(k.indexOf('eq|')===0&&RX.sm[k].due<=now)du++;});h+='<span>🧠 à réviser : <b>'+du+'</b> · nouvelles aujourd’hui : '+nl+' restantes</span>'+(du===0&&nl===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite</span>':'');}
+  if(['eq','sec','ten','mod'].indexOf(RX.tab)>=0){const G=RX.tab,nl=rxNewLeft(G),now=Date.now();let du=0;Object.keys(RX.sm).forEach(function(k){if(k.indexOf(G+'|')===0&&RX.sm[k].due<=now)du++;});h+='<span>🧠 à réviser : <b>'+du+'</b> · nouvelles aujourd’hui : '+nl+' restantes</span>'+(du===0&&nl===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite</span>':'');}
   else if(RX.ord==='sm2'&&RX.tab!=='tour'&&RX.tab!=='day'){const g=RX.tab==='form'?'form':RX.grip,c=rxSmCount(g,rxQsOk(g==='form'?'shell':g));h+='<span>🧠 à réviser : <b>'+c.due+'</b> · nouvelles aujourd’hui : '+rxNewLeft(g)+' restantes · acquises : '+c.learned+'</span>'+(c.due===0&&rxNewLeft(g)===0?'<span style="color:#3ECF8E">✅ séance SM-2 du jour faite — la suite, c’est du bonus</span>':'');}
   const ch=RX.seq&&RX.seq.c[Math.min(RX.seq.i,RX.seq.c.length-1)];
   if(ch&&RX.last){const c=RX.sm[rxSmK(ch.g==='form'?{g:'form',q:ch.q,rp:ch.rp}:ch)];if(c){const dt=c.due-Date.now();h+='<span>revient '+(dt<36e5?'dans '+Math.max(1,Math.round(dt/6e4))+' min':(dt<864e5?'dans '+Math.round(dt/36e5)+' h':'dans '+Math.round(dt/864e5)+' j'))+'</span>';}}
@@ -15658,9 +15664,9 @@ function rxTip(ch){if(!ch)return '';const out=[];
 function rxAccHTML(){
   const g=RX.heatG||RX.grip,F=[0,5,10,3,8,1,6,11,4,9,2,7];let h='<div class="rx-ttl">📈 Précision</div>';
   /* par voicing */
-  h+='<div class="rx-accg">'+['form'].concat(RX_GRIP_ORD,['eq','sec','ten']).map(function(x){let ok=0,n=0;Object.keys(RX.st).forEach(function(k){if(k.split('|')[0]===x){ok+=RX.st[k].ok;n+=RX.st[k].n;}});
-    return '<div class="'+(x===g?'on':'')+'" data-rx="heatg" data-v="'+x+'"><small>'+(x==='form'?'👁 lecture':({eq:'🔀 équivalences',sec:'🎯 dominantes sec.',ten:'🎨 tensions'}[x]||RX_GRIPS[x].lb))+'</small><b style="color:'+(n?rxAccCol(ok/n):'#7A85A8')+'">'+(n?Math.round(ok/n*100)+' %':'—')+'</b><i>'+n+' essais</i></div>';}).join('')+'</div>';
-  if(g==='sec'||g==='ten')return h+rxQuizAccTable(g);
+  h+='<div class="rx-accg">'+['form'].concat(RX_GRIP_ORD,['eq','sec','ten','mod']).map(function(x){let ok=0,n=0;Object.keys(RX.st).forEach(function(k){if(k.split('|')[0]===x){ok+=RX.st[k].ok;n+=RX.st[k].n;}});
+    return '<div class="'+(x===g?'on':'')+'" data-rx="heatg" data-v="'+x+'"><small>'+(x==='form'?'👁 lecture':({eq:'🔀 équivalences',sec:'🎯 dominantes sec.',ten:'🎨 tensions',mod:'🌈 modes'}[x]||RX_GRIPS[x].lb))+'</small><b style="color:'+(n?rxAccCol(ok/n):'#7A85A8')+'">'+(n?Math.round(ok/n*100)+' %':'—')+'</b><i>'+n+' essais</i></div>';}).join('')+'</div>';
+  if(g==='sec'||g==='ten'||g==='mod')return h+rxQuizAccTable(g);
   if(g==='eq'){const F=[0,5,10,3,8,1,6,11,4,9,2,7];h+='<div class="hint">🔀 équivalences — réussite au 1er essai par relation et par tonalité (les deux sens confondus).</div><div class="rx-acct"><table><tr><th></th>'+F.map(function(p){return '<th>'+RX_NM[p]+'</th>';}).join('')+'<th>total</th></tr>';
     RX_EQ.forEach(function(R){let to=0,tn=0;h+='<tr><td>'+(R.tl||(R.xl+' → '+RX_EQY[R.y].trim()))+'</td>'+F.map(function(p){let ok=0,n=0;['>','<'].forEach(function(d){const st=RX.st['eq|'+R.id+d+'|'+p];if(st){ok+=st.ok;n+=st.n;}});to+=ok;tn+=n;
       return n?'<td style="background:'+rxAccCol(ok/n)+'33;color:'+rxAccCol(ok/n)+'" title="'+ok+'/'+n+'">'+Math.round(ok/n*100)+'</td>':'<td class="na">·</td>';}).join('')+'<td><b style="color:'+(tn?rxAccCol(to/tn):'#7A85A8')+'">'+(tn?Math.round(to/tn*100)+' %':'—')+'</b></td></tr>';});
@@ -15812,9 +15818,9 @@ function rxQuizFrame(res,fb,body,foot){
   return h+'<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ suivant</button>'+(foot||'')+'</div>';}
 function rxQuizKb(notes,rp,ivs,lb){if(!ivs)rp=null;if(typeof h2KbHTML!=='function')return '';const W=Math.min(1080,(document.getElementById('rxRoot')||{}).clientWidth||((window.innerWidth||400)-60))-36;
   const s=notes.slice().sort(function(a,b){return a-b;});return '<div class="sd-kbox"><span>'+lb+'</span>'+h2KbHTML(s.map(function(m,i){return {m:m,hand:i===0&&s.length>3&&s[1]-s[0]>=7?'MG':'MD'};}),{rp:rp,ivs:ivs,w:W,kmax:30})+'</div>';}
-function rxQuizAccTable(g){const F=[0,5,10,3,8,1,6,11,4,9,2,7],L=g==='sec'?RX_SECT.map(function(t){return [t[0],'V7/'+t[0]];}):RX_TEN.map(function(t){return [t.id,t.nm];});
-  let h='<div class="hint">'+(g==='sec'?'🎯 dominantes secondaires — par degré visé et par tonalité':'🎨 tensions — par couleur et par fondamentale')+' (réussite au 1er essai, les deux sens confondus).</div><div class="rx-acct"><table><tr><th></th>'+F.map(function(p){return '<th>'+RX_NM[p]+'</th>';}).join('')+'<th>total</th></tr>';
-  L.forEach(function(r){let to=0,tn=0;h+='<tr><td>'+r[1]+'</td>'+F.map(function(p){let ok=0,n=0;['>','<'].forEach(function(d){const st=RX.st[g+'|'+r[0]+d+'|'+p];if(st){ok+=st.ok;n+=st.n;}});to+=ok;tn+=n;
+function rxQuizAccTable(g){const F=[0,5,10,3,8,1,6,11,4,9,2,7],L=g==='sec'?RX_SECT.map(function(t){return [t[0],'V7/'+t[0]];}):(g==='mod'?RX_MOD.map(function(t){return [t.id,t.nm];}):RX_TEN.map(function(t){return [t.id,t.nm];}));
+  let h='<div class="hint">'+({sec:'🎯 dominantes secondaires — par degré visé et par tonalité',ten:'🎨 tensions — par couleur et par fondamentale',mod:'🌈 modes — par mode et par fondamentale (la colonne C compte aussi la reconnaissance de la formule et de l’accord)'}[g])+' (réussite au 1er essai, les deux sens confondus).</div><div class="rx-acct"><table><tr><th></th>'+F.map(function(p){return '<th>'+RX_NM[p]+'</th>';}).join('')+'<th>total</th></tr>';
+  L.forEach(function(r){let to=0,tn=0;h+='<tr><td>'+r[1]+'</td>'+F.map(function(p){let ok=0,n=0;['>','<','c'].forEach(function(d){const st=RX.st[g+'|'+r[0]+d+'|'+p];if(st){ok+=st.ok;n+=st.n;}});to+=ok;tn+=n;
     return n?'<td style="background:'+rxAccCol(ok/n)+'33;color:'+rxAccCol(ok/n)+'">'+Math.round(ok/n*100)+'</td>':'<td class="na">·</td>';}).join('')+'<td><b style="color:'+(tn?rxAccCol(to/tn):'#7A85A8')+'">'+(tn?Math.round(to/tn*100)+' %':'—')+'</b></td></tr>';});
   return h+'</table></div>';}
 
@@ -15897,6 +15903,67 @@ function rxTenHTML(){const S=RX.seq;if(!S||!S.ten)return '<button class="btn" da
   if(a==='secgrid'){RX.tab='grid';RX._gridF='sec';rxSave();rxNew();if(typeof toast==='function')toast('🎷 grilles','passages avec une dominante secondaire');return true;}
   if(a==='tenp'&&S&&S.ten&&!S.ten.res){S.ten.pick=v;rxQuizDone('ten',v===S.ten.T.id);return true;}
   if(a==='tenplay'&&S&&S.ten){if(typeof playNotes==='function')playNotes(rxTenVoicing(S.ten.T,S.ten.rp),1.4);return true;}
+  return old(a,v,b);};})();
+
+/* ══ 🌈 Modes, mineurs et pentatoniques — « une seule gamme, quelques altérations » ══
+   chaque mode = la gamme majeure de même fondamentale + des altérations ; rangés du clair au sombre, un bémol de plus à chaque marche */
+const RX_MAJ=[0,2,4,5,7,9,11];
+const RX_MOD=[
+ {id:'ion',fam:'maj',nm:'ionien',iv:[0,2,4,5,7,9,11],ch:'△7',why:'la gamme majeure. Sur △7, sa 4 est la note à éviter (½ ton au-dessus de la 3ce)'},
+ {id:'dor',fam:'maj',nm:'dorien',iv:[0,2,3,5,7,9,10],ch:'m7 · ii',why:'♭3 ♭7 ; sa 6te majeure fait la couleur. Aucune note à éviter sur m7'},
+ {id:'mix',fam:'maj',nm:'mixolydien',iv:[0,2,4,5,7,9,10],ch:'7',why:'un seul bémol, la ♭7 : la gamme de la dominante. La 4 est à éviter, sauf en sus'},
+ {id:'aeo',fam:'maj',nm:'éolien',iv:[0,2,3,5,7,8,10],ch:'m7 · vi',why:'le dorien + ♭6 : le mineur naturel, plus sombre'},
+ {id:'lyd',fam:'maj',nm:'lydien',iv:[0,2,4,6,7,9,11],ch:'△7♯11',why:'♯4 : la note à éviter de l’ionien devient la couleur. Le plus clair des modes'},
+ {id:'phr',fam:'maj',nm:'phrygien',iv:[0,1,3,5,7,8,10],ch:'m7 · iii',why:'l’éolien + ♭2 : couleur espagnole ; le ♭2 frotte sur un m7'},
+ {id:'loc',fam:'maj',nm:'locrien',iv:[0,1,3,5,6,8,10],ch:'ø7',why:'le phrygien + ♭5 : le plus sombre. Sa ♭5 en fait le mode du ø7'},
+ {id:'pM',fam:'pen',nm:'penta majeure',iv:[0,2,4,7,9],st:[0,1,2,4,5],deg:'1 2 3 5 6',ch:'△ · 6 · 7',why:'la gamme majeure SANS ses deux notes à demi-ton (4 et 7) : aucune note à éviter, elle passe sur I, IV et V'},
+ {id:'pm',fam:'pen',nm:'penta mineure',iv:[0,3,5,7,10],st:[0,2,3,4,6],deg:'1 ♭3 4 5 ♭7',ch:'m7',why:'mêmes notes que la penta majeure de sa ♭3 (Am = C). Sur Dm7 : penta mineures de D, A et E (fondamentale, 5te, 9e)'},
+ {id:'blu',fam:'pen',nm:'blues',iv:[0,3,5,6,7,10],st:[0,2,3,4,4,6],deg:'1 ♭3 4 ♭5 5 ♭7',ch:'7 · m7 (blues)',why:'la penta mineure + la ♭5 (la « blue note »), à glisser entre 4 et 5'},
+ {id:'hm',fam:'min',nm:'mineur harmonique',iv:[0,2,3,5,7,8,11],ch:'m△7',why:'l’éolien avec la 7 MAJEURE : la sensible, pour avoir un vrai V7 en mineur. Seconde augmentée ♭6–7 caractéristique'},
+ {id:'mm',fam:'min',nm:'mineur mélodique',iv:[0,2,3,5,7,9,11],ch:'m△7 · m6',why:'le majeur avec ♭3 seulement (le « mineur jazz », identique en montant et en descendant). Il donne trois modes clés : lydien ♭7, locrien ♮2, altéré'},
+ {id:'pd',fam:'min',nm:'phrygien dominant',iv:[0,1,4,5,7,8,10],ch:'7♭9♭13',why:'5e mode du mineur harmonique : le V7 d’une tonalité mineure (G7♭9♭13 → Cm)'},
+ {id:'ld',fam:'min',nm:'lydien ♭7',iv:[0,2,4,6,7,9,10],ch:'7♯11',why:'4e mode du mineur mélodique : ♯4 + ♭7. La gamme du sub V et du 7♯11'},
+ {id:'alt',fam:'min',nm:'altéré',iv:[0,1,3,4,6,8,10],ch:'7alt',why:'7e mode du mineur mélodique : ♭9 ♯9 3 ♯11 ♭13 ♭7. Astuce : G altéré = A♭ mineur mélodique (½ ton au-dessus)'},
+ {id:'l2',fam:'min',nm:'locrien ♮2',iv:[0,2,3,5,6,8,10],ch:'ø7 (9)',why:'6e mode du mineur mélodique : le locrien avec la 9 juste — plus doux sur ø7'}];
+const RX_MODFAM={maj:'modes du majeur',pen:'pentatoniques et blues',min:'mineurs harmonique et mélodique'};
+function rxModIt(id){for(let i=0;i<RX_MOD.length;i++)if(RX_MOD[i].id===id)return RX_MOD[i];return RX_MOD[0];}
+function rxModDeg(M){if(M.deg)return M.deg;const out=[];M.iv.forEach(function(iv,k){const d=iv-RX_MAJ[k];if(d)out.push((d<0?'♭':'♯')+(k+1));});return out.length?out.join(' '):'aucune altération';}
+function rxModNotes(M,rp){return M.iv.map(function(iv,k){return rxSp(rp,iv,M.st?M.st[k]:k);});}
+function rxModNew(){const F=[0,5,10,3,8,1,6,11,4,9,2,7],L=[];
+  RX_MOD.forEach(function(M,mi){L.push({id:M.id,rp:0,d:'<',o:mi*100,M:M});L.push({id:M.id,rp:0,d:'c',o:mi*100+1,M:M});F.forEach(function(rp,k){L.push({id:M.id,rp:rp,d:'>',o:mi*100+2+k,M:M});});});
+  const o=rxCardPick('mod',L);return {mod:{M:o.M,rp:o.rp,d:o.d,sel:[],pick:null},c:[{g:'mod',q:o.id+o.d,rp:o.rp}],i:0};}
+function rxModToggle(r){const Q=RX.seq.mod;if(Q.res)return;const i=Q.sel.indexOf(r);if(i>=0)Q.sel.splice(i,1);else Q.sel.push(r);
+  const want=Q.M.iv.map(function(x){return (x+Q.rp)%12;});
+  if(Q.sel.length>=want.length)rxQuizDone('mod',rxSame(Q.sel,want));else rxRender();}
+function rxModHeld(ns){const S=RX.seq,Q=S&&S.mod;if(!Q||Q.res||Q.d!=='>'||ns.length!==1)return;const pc=((ns[0]%12)+12)%12;if(Q.sel.indexOf(pc)<0)rxModToggle(pc);}
+function rxModLadder(M){const L=[['lyd','☀ lydien','♯4'],['ion','ionien',''],['mix','mixo','♭7'],['dor','dorien','♭3 ♭7'],['aeo','éolien','+♭6'],['phr','phrygien','+♭2'],['loc','locrien 🌑','+♭5']];
+  return '<div class="rx-ladder">'+L.map(function(x){return '<span class="'+(M&&M.id===x[0]?'on':'')+'"><b>'+x[1]+'</b><small>'+(x[2]||'—')+'</small></span>';}).join('<i>›</i>')+'</div>';}
+function rxModHTML(){const S=RX.seq;if(!S||!S.mod)return '<button class="btn" data-rx="go">▶ Lancer</button>';
+  const Q=S.mod,M=Q.M,rp=Q.rp,res=Q.res,RN=RX_NM[rp],notes=rxModNotes(M,rp);
+  let fb='';if(res){const want=M.iv.map(function(x){return (x+rp)%12;});
+    fb='<div class="rx-fb '+(res.ok?'ok':'bad')+'">'+(res.ok?'✓ ':'✕ ')+'<b>'+(Q.d==='>'?RN+' ':'')+M.nm+'</b> = '+(M.fam==='pen'?M.deg:'majeur '+(rxModDeg(M)==='aucune altération'?'tel quel':'+ '+rxModDeg(M)))+' · sur <b>'+M.ch+'</b>'+(res.ok?' — <b>'+(res.ms/1000).toFixed(2)+' s</b>':'')
+      +(Q.d==='>'?'<div class="rx-deg">'+notes.join(' ')+'</div>':'')
+      +(!res.ok&&Q.d==='>'?'<div class="rx-deg">tu as choisi : '+Q.sel.map(function(r){return '<span style="color:'+(want.indexOf(r)>=0?'#3ECF8E':'#EF4444')+'">'+RX_NM[r]+'</span>';}).join(' ')+'</div>':'')
+      +(!res.ok&&Q.pick?'<div class="rx-deg">tu as dit '+Q.pick+'</div>':'')+'</div>'
+      +'<div class="rx-tip">💡 '+M.why.charAt(0).toUpperCase()+M.why.slice(1)+'.'+(M.fam==='maj'?' Du clair au sombre, chaque mode ajoute un seul bémol : ♭7, ♭3, ♭6, ♭2, ♭5.':'')+'</div>';}
+  let body;
+  if(Q.d==='>')body='<div class="rx-eqq"><b>'+RN+' '+M.nm+'</b></div><div class="hint" style="text-align:center">Touche ses '+M.iv.length+' notes (ou joue-les une par une) — <b>'+Q.sel.length+' / '+M.iv.length+'</b></div>'
+    +'<div class="rx-roots wide">'+RX_NM.map(function(n,i){return '<button class="opill'+(Q.sel.indexOf(i)>=0?' on':'')+'" data-rx="modr" data-v="'+i+'">'+n+'</button>';}).join('')+'</div>';
+  else if(Q.d==='<'){const opts=RX_MOD.filter(function(x){return x.fam===M.fam;});
+    body='<div class="rx-eqq"><b>'+(M.fam==='pen'?M.deg:'majeur '+(rxModDeg(M)==='aucune altération'?'sans altération':'+ '+rxModDeg(M)))+'</b> <span>=</span> <b>?</b></div><div class="hint" style="text-align:center">Quel '+(M.fam==='pen'?'gamme':'mode')+' ? ('+RX_MODFAM[M.fam]+')</div>'
+      +'<div class="rx-ans wide">'+opts.map(function(x){return '<button class="opill'+(Q.pick===x.nm?' on':'')+'" data-rx="modp" data-v="'+x.id+'">'+x.nm+'</button>';}).join('')+'</div>';}
+  else{const ch=RX_MOD.map(function(x){return x.ch;}).filter(function(x,i,a){return a.indexOf(x)===i;});
+    body='<div class="rx-eqq"><b>'+M.nm+'</b> <span>→</span> <b>?</b></div><div class="hint" style="text-align:center">Sur quel accord le joues-tu ?</div>'
+      +'<div class="rx-ans wide">'+ch.map(function(x){return '<button class="opill'+(Q.pick===x?' on':'')+'" data-rx="modc" data-v="'+x+'">'+x+'</button>';}).join('')+'</div>';}
+  if(res){const ns=M.iv.map(function(iv){return 60+((rp+iv)%12)+(((rp+iv)%12)<rp%12?12:0);}).sort(function(a,b){return a-b;});body+=rxQuizKb(ns,rp,M.iv,RN+' '+M.nm+' : '+notes.join(' '));}
+  return rxQuizFrame(res,fb,body,'<button class="opill" data-rx="modplay">🔊 écouter la gamme</button>')
+    +(M.fam==='maj'?rxModLadder(res||Q.d!=='<'?M:null):'')
+    +'<div class="hint">'+RX_MOD.length+' gammes : les 7 modes du majeur, 3 pentatoniques, le mineur harmonique et le mélodique avec leurs modes clés (phrygien dominant, lydien ♭7, altéré, locrien ♮2). Trois questions : les notes, le nom d’après la formule, l’accord.</div>';}
+(function(){const old=rxClick2;rxClick2=function(a,v,b){const S=RX.seq;
+  if(a==='modr'&&S&&S.mod&&!S.mod.res){rxModToggle(+v);return true;}
+  if(a==='modp'&&S&&S.mod&&!S.mod.res){S.mod.pick=rxModIt(v).nm;rxQuizDone('mod',v===S.mod.M.id);return true;}
+  if(a==='modc'&&S&&S.mod&&!S.mod.res){S.mod.pick=v;rxQuizDone('mod',v===S.mod.M.ch);return true;}
+  if(a==='modplay'&&S&&S.mod&&typeof playNotes==='function'){const Q=S.mod,iv=Q.M.iv.concat([12]);iv.forEach(function(x,i){setTimeout(function(){playNotes([60+Q.rp%12+x-(Q.rp%12>6?12:0)],0.4);},i*260);});return true;}
   return old(a,v,b);};})();
 
 if(PAGE==='std')stdRender();
