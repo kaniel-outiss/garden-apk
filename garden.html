@@ -13934,6 +13934,7 @@ function sp8W(S){return 8*(4.4+6)+8*6.6*(.55+.3*1)*4*(S.bpb||4)+40;}
 function sdFocusRender(play){
   const el=document.getElementById('sdFocus');const S=sdCur();if(!el||!S)return;
   const V=sdVoices(S);let i=SD.focus;
+  if(i==null||!V[i]){i=V.findIndex(function(x){return !!x;});if(i<0)i=null;}
   if(i==null||!V[i]){el.innerHTML='<div class="empty" style="font-size:13px">Touche un accord (grille ou portée) : il apparaît ici dans le cercle, avec son voisin.</div>';return;}
   const pv=i>0?i-1:null,nx=i<S.ch.length-1?i+1:null,c=S.ch[i],v=V[i];
   const E=sdEntries(v),EP=pv!=null&&V[pv]?sdEntries(V[pv]):null,EN=nx!=null&&V[nx]?sdEntries(V[nx]):null;
@@ -13947,9 +13948,9 @@ function sdFocusRender(play){
     const s7=pa[1],t3=pb[0],dd=((t3-s7)%12+12)%12;
     mv='<div class="sd-mv"><b>Basse</b> : '+(MV[d]||d+' ½t')+'<br><b>Notes communes</b> : '+(common.length?common.map(function(p){return sdRootNm(p,S);}).join(' · '):'aucune')
       +'<br><b>Guide tone</b> : la '+(ga[1]===9?'6te':'7e')+' ('+sdRootNm(s7,S)+') '+(dd===0?'reste et devient la 3ce':(dd===11?'descend d’½ ton sur la 3ce':(dd===1?'monte d’½ ton sur la 3ce':'va vers la 3ce'))+' ('+sdRootNm(t3,S)+')')+'</div>';}
-  const FV=SD.fview||'circ',showC=FV!=='kb',showK=FV!=='circ';
+  const FV=SD.fview==='kb'?'kb':'circ',showC=FV==='circ',showK=FV==='kb';
   const kbBox=function(es,rp,lb,i2,w,op){return '<div class="sd-kbox'+(op?' ghost':'')+'"><span'+(i2!=null?' class="sd-nav" data-sdc="'+i2+'"':'')+'>'+lb+'</span>'+miniKb(es.map(function(e){return E_(e,rp);}),rp,w)+'</div>';};
-  const views='<div class="sd-fv">'+[['circ','⭕ cercles'],['kb','🎹 claviers'],['both','⭕ + 🎹']].map(function(x){return '<button class="opill'+(FV===x[0]?' on':'')+'" data-sd="fview" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';
+  const views='<div class="sd-fv">'+[['circ','⭕ cercles'],['kb','🎹 claviers']].map(function(x){return '<button class="opill'+(FV===x[0]?' on':'')+'" data-sd="fview" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';
   el.innerHTML='<div class="sd-fname"><b>'+sdNm(c,S)+'</b> <span style="color:'+SD_FC[sdFnCls(c.fn)]+'">'+sdAcc(c.fn)+'</span><small>'+sdAcc(c.sc)+' · mes. '+(c.bar+1)+'</small></div>'+views
     +(showK?'<div class="sd-kbs">'+(EP?kbBox(EP,V[pv].rp,'◀ avant · '+sdNm(S.ch[pv],S),pv,250,true):'')+kbBox(E,v.rp,'maintenant · '+sdNm(c,S),null,290,false)+(EN?kbBox(EN,V[nx].rp,'après ▶ · '+sdNm(S.ch[nx],S),nx,250,true):'')+'</div>':'')
     +(!showC?'':'<div class="sd-cbox"><span>maintenant · l’accord d’avant en fantôme · <b>touche le cercle</b> : chromatique ⇄ quintes ⇄ quartes</span>'+circ(E,v.rp,EP,EP?V[pv].rp:null,sdNm(c,S),230)+'</div>'
