@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.7 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.7.1 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -668,9 +668,9 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 /* v12.5 — vue clavier pleine largeur */
 .rx-kbmain{display:flex;flex-direction:column;gap:10px;margin-top:8px}.rx-kbhead{display:flex;flex-direction:column;gap:6px}
 .rx-kbv.wide{width:100%}.rx-kbv.wide .sd-kbox{overflow-x:auto}
-.rx-kbrow{display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(220px,.8fr) minmax(260px,1.1fr);gap:14px;align-items:start}
+.rx-kbrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}.rx-kbrow>.rx-right{grid-column:1/-1}
 .rx-kbstf,.rx-kbcirc{background:var(--bg3);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center}
-@media (max-width:820px){.rx-kbrow{grid-template-columns:1fr}}
+.rx-kbstf,.rx-kbcirc{min-width:0;overflow:hidden;justify-content:center}.rx-kbstf svg,.rx-kbcirc svg{max-width:100%;height:auto}
 .rx-roots.wide{grid-template-columns:repeat(12,1fr);max-width:900px}.rx-hm{color:#A78BFA!important}
 @media (max-width:600px){.rx-roots.wide{grid-template-columns:repeat(6,1fr)}}
 .rx-ans.wide{justify-content:flex-start;align-items:center;gap:8px}
@@ -678,7 +678,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-cfg summary{cursor:pointer;font-weight:800;font-size:13px;color:#C9D1EE;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .rx-cfg summary::-webkit-details-marker{display:none}.rx-cfg summary span{font-weight:600;color:#7A85A8}.rx-cfg summary i{margin-left:auto;font-style:normal;color:#F5C842;font-size:12px}
 .rx-cfg[open] summary{margin-bottom:6px}
-.rx-fbtop{position:sticky;top:0;z-index:5;margin:4px 0 8px}.rx-fbtop>.rx-fb{font-size:18px;font-weight:700;text-align:center;margin:0 0 6px}
+.rx-fbtop{margin:4px 0 8px}.rx-fbtop>.rx-fb{font-size:18px;font-weight:700;text-align:center;margin:0 0 6px}
 .rx-fbtop>.rx-fb.ok{box-shadow:0 0 18px rgba(62,207,142,.45)}.rx-fbtop>.rx-fb.bad{box-shadow:0 0 18px rgba(239,68,68,.45)}.rx-fbtop .rx-deg{font-size:13px;font-weight:600}
 .rx-ses{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:13px;color:#9AA4C4;margin:2px 0 6px}
 .rx-tip{background:rgba(245,200,66,.08);border:1px solid #F5C842;border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.5;margin:6px 0}
@@ -695,7 +695,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.7 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.7.1 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15122,7 +15122,7 @@ function rxCirc(ch,o){
 function rxNew(){
   RX._err=null;RX._hold=null;RX.last=null;RX._wait=null;RX._tip=false;clearTimeout(RX._nx);
   const t=RX.tab;
-  if(t==='form'){const ch=rxPick('shell');if(ch){ch.g='form';}RX.seq={c:[ch],i:0,form:{q:null,rp:null}};}
+  if(t==='form'){const ch=rxPick('shell');if(ch){ch.g='form';}RX.seq={c:[ch],i:0,form:{q:null,rp:null},read:Math.random()<.5?'circ':'kb'};}
   else if(t==='grip'||t==='flash'||t==='deg'){const ch=rxPick(RX.grip);RX.seq=ch?{c:[ch],i:0}:null;}
   else if(t==='tour'){RX.seq=rxTourSeq();}
   else if(t==='pair'){RX.seq={c:rxPairSeq(RX.grip),i:0,costs:[]};}
@@ -15171,8 +15171,10 @@ function rxHeld(ns){
 }
 function rxLive(ns){const el=document.getElementById('rxCircBox');if(!el||!RX.seq)return;const S=RX.seq,ch=S.c[S.i];if(!ch)return;
   el.innerHTML=rxVis(ch,S,ns);
-  if(RX.view==='kb'&&typeof rxKbPart==='function'){const a=document.getElementById('rxStfBox'),b=document.getElementById('rxMcBox');if(a)a.innerHTML=rxKbPart(ch,S,ns,'stf');if(b)b.innerHTML=rxKbPart(ch,S,ns,'circ');}}
-function rxVis(ch,S,live){return RX.view==='kb'&&typeof rxKbView==='function'?rxKbView(ch,S,live):rxCirc(ch,rxCircOpt(ch,S,live));}
+  if(rxView()==='kb'&&typeof rxKbPart==='function'){const a=document.getElementById('rxStfBox'),b=document.getElementById('rxMcBox');if(a)a.innerHTML=rxKbPart(ch,S,ns,'stf');if(b)b.innerHTML=rxKbPart(ch,S,ns,'circ');}}
+/* plus de bouton cercle/clavier : clavier en haut, portée + cercle dessous. La 👁 Forme alterne : forme sur le cercle, ou voicing au clavier. */
+function rxView(){const S=RX.seq;return RX.tab==='form'&&S&&S.read==='circ'?'circ':'kb';}
+function rxVis(ch,S,live){return rxView()==='kb'&&typeof rxKbView==='function'?rxKbView(ch,S,live):rxCirc(ch,rxCircOpt(ch,S,live));}
 function rxFormCheck(){const S=RX.seq,f=S.form;if(f.q==null||f.rp==null)return;const ch=S.c[0];const ok=f.q===ch.q&&f.rp===ch.rp;const ms=performance.now()-RX._t;
   const k={g:'form',q:ch.q,rp:ch.rp};if(ok)rxRecord(k,ms,true);else rxRecord(k,0,false);
   RX.last={ok:ok,ms:ms,ch:ch,form:true,ans:f.q+'|'+f.rp};rxRender();rxAfter(ok,S,function(){if(rxDayTick(ok))return;rxNew();});}
@@ -15206,8 +15208,8 @@ function rxRender(){
   if(!S||!S.c||!S.c[0]){h+='<div class="empty">'+(RX.tab==='grid'?(typeof STD!=='undefined'&&STD?'Aucun enchaînement trouvé (élargis les qualités ou la source).':'Le corpus se charge… ouvre une fois 🎷 Standards ou attends quelques secondes.'):'Choisis au moins une qualité compatible avec ce grip.')+'</div><button class="btn" data-rx="go">▶ Lancer</button>';el.innerHTML=h;return;}
   const ch=S.c[Math.min(S.i,S.c.length-1)];
   const RES=RX._err?' rx-res bad':(RX.last&&!S.dq?(RX.last.ok?' rx-res ok':' rx-res bad'):'');
-  h+='<!--FB--><div class="rx-main'+RES+'"><div class="rx-left"><div class="sd-fv">'+[['circ','⭕ cercle'],['kb','🎹 clavier + portée']].map(function(x){return '<button class="opill'+((RX.view||'circ')===x[0]?' on':'')+'" data-rx="view" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
-  const KBV=RX.view==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main'+RES+'"><div class="rx-left">','<div class="rx-kbmain'+RES+'"><div class="rx-kbhead">');
+  h+='<!--FB--><div class="rx-main'+RES+'"><div class="rx-left"><div id="rxCircBox">'+rxVis(ch,S)+'</div>';
+  const KBV=rxView()==='kb'&&typeof rxKbPart==='function';if(KBV)h=h.replace('<div class="rx-main'+RES+'"><div class="rx-left">','<div class="rx-kbmain'+RES+'"><div class="rx-kbhead">');
   if(RX.tab==='form'&&!KBV){h+='<div class="rx-ans">'+RX_Q.filter(function(x){return RX.qs.indexOf(x[0])>=0;}).map(function(x){return '<button class="opill'+(S.form.q===x[0]?' on':'')+'" data-rx="fq" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>'
     +'<div class="hint" style="text-align:center">Quelle forme ? puis la fondamentale : touche le cercle ou joue la note.</div>';}
   h+=KBV?'</div><div class="rx-kbrow"><div id="rxStfBox" class="rx-kbstf">'+rxKbPart(ch,S,null,'stf')+'</div><div id="rxMcBox" class="rx-kbcirc">'+rxKbPart(ch,S,null,'circ')+'</div><div class="rx-right">':'</div><div class="rx-right">';
