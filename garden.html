@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.8 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.8.1 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -696,7 +696,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.8 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.8.1 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15488,7 +15488,8 @@ function rxKbCtx(ch,S,live){
   const nm=ch.nm||rxName(ch).split(' · ')[0];
   const FM=RX.tab==='form';
   const showTarget=FM?!flashHide:((RX.names||RX._show)&&!flashHide&&!earHide);
-  const target=ch.g==='form'?(function(){if(!S.formV){const g=['shell','drop2','A','B'][Math.floor(Math.random()*4)];const C=rxCands({g:g,q:ch.q,rp:ch.rp});S.formV=C[Math.floor(Math.random()*C.length)]||rxCands({g:'drop2',q:ch.q,rp:ch.rp})[0];}return S.formV;})():rxHint(ch,S);
+  const target=ch.g==='form'?(function(){if(!S.formV){const g=['shell','drop2','A','B'][Math.floor(Math.random()*4)];const C=rxCands({g:g,q:ch.q,rp:ch.rp});S.formV=C[Math.floor(Math.random()*C.length)]||rxCands({g:'drop2',q:ch.q,rp:ch.rp})[0];
+    if(S.formV&&((Math.min.apply(null,S.formV)-ch.rp)%12+12)%12){const lo=Math.min.apply(null,S.formV);let r=lo-7;while(((r-ch.rp)%12+12)%12)r--;S.formV=[r].concat(S.formV);} /* rootless : on ajoute la basse, sinon B-D-E-G est aussi Em7 ou G6 */}return S.formV;})():rxHint(ch,S);
   const done=RX.last&&RX.last.ok&&RX.last.ch===ch;
   const mine=(live&&live.length)?live:(done?RX.last.ns:null);
   const badM={};if(mine)mine.forEach(function(m){if(al.indexOf(rel(m))<0)badM[m]=true;});
