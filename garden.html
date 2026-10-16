@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.7.1 · Deux mains — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.7.2 · Deux mains — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -695,7 +695,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.7.1 · deux mains</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.7.2 · deux mains</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15120,7 +15120,7 @@ function rxCirc(ch,o){
 
 /* ── déroulé d'une question : seq = [accords], i = position ; libération des touches entre deux questions ── */
 function rxNew(){
-  RX._err=null;RX._hold=null;RX.last=null;RX._wait=null;RX._tip=false;clearTimeout(RX._nx);
+  RX._err=null;RX._hold=null;RX.last=null;RX._wait=null;RX._tip=false;RX._missed=false;RX._man=false;RX._errWas=null;clearTimeout(RX._nx);
   const t=RX.tab;
   if(t==='form'){const ch=rxPick('shell');if(ch){ch.g='form';}RX.seq={c:[ch],i:0,form:{q:null,rp:null},read:Math.random()<.5?'circ':'kb'};}
   else if(t==='grip'||t==='flash'||t==='deg'){const ch=rxPick(RX.grip);RX.seq=ch?{c:[ch],i:0}:null;}
@@ -15137,7 +15137,7 @@ function rxNew(){
 function rxEar(){const S=RX.seq;if(!S)return;const ch=S.c[S.i];const C=rxCands(ch);if(!C.length)return;playNotes(C[Math.floor(C.length/2)],1.3);}
 function rxHeld(ns){
   if(PAGE!=='rfx'||!RX.seq)return;
-  if(RX._wait){if(!ns.length)RX._rel=true;else if(RX._rel)RX._wait();return;} /* résultat affiché : relâche puis rejoue pour passer */
+  if(RX._wait){if(RX._man)return;if(!ns.length)RX._rel=true;else if(RX._rel)RX._wait();return;} /* résultat affiché : relâche puis rejoue pour passer */
   const S=RX.seq;
   if(RX._pend){if(ns.length===0){RX._pend=false;if(RX.tab!=='flash')RX._t=performance.now();}else return;}
   if(S.dq){rxDegHeld(ns);return;}
@@ -15145,7 +15145,7 @@ function rxHeld(ns){
     if(ns.length===1&&S.form.rp==null){S.form.rp=((ns[0]%12)+12)%12;rxFormCheck();}return;}
   const ch=S.c[S.i];if(!ch)return;
   if(S.played&&ns.length&&rxSame(rxPcs(ns),rxPcs(S.played))&&ns.length===S.played.length){clearTimeout(RX._hold);rxLive(ns);return;}
-  if(!ns.length){if(RX._err){RX._err=null;rxRender();}return;}
+  if(!ns.length)return; /* l'erreur reste affichée jusqu'à la bonne main ou « suivant » */
   const r=rxCheck(ns,ch);
   if(r.ok){
     clearTimeout(RX._hold);const now=(typeof NOTE_T!=='undefined'&&NOTE_T)?NOTE_T:performance.now();const ms=Math.max(0,now-RX._t);
@@ -15154,7 +15154,7 @@ function rxHeld(ns){
     const prev=S.i>0?S.played:null;let cost=null,best=null;
     if(prev){cost=rxCost(prev,ns);const C=rxCands(ch);best=C.reduce(function(m,v){return Math.min(m,rxCost(prev,v));},99);if(best>cost)best=cost;S.costs.push([cost,best]);}
     if(!RX._err)rxRecord(ch,ms,true);
-    RX.last={ok:true,ms:ms,ch:ch,cost:cost,best:best,ns:ns.slice()};S.prevPlayed=S.played;S.played=ns.slice();S.i++;RX._err=null;
+    RX.last={ok:true,ms:ms,ch:ch,cost:cost,best:best,ns:ns.slice()};S.prevPlayed=S.played;S.played=ns.slice();S.i++;if(RX._err)RX._errWas={e:RX._err,ch:ch};RX._err=null;
     if(RX.tab==='flash')RX.flash=Math.max(250,Math.round(RX.flash*.88));
     if(S.times)S.times.push(ms);
     if(S.i>=S.c.length){RX._done=true;if(RX.tab==='tour')rxTourEnd();rxRender();rxAfter(true,S,function(){RX._done=false;if(rxDayTick(true))return;rxNew();},S.c.length>1?(RX.tab==='tour'?3200:1600):1300);}
@@ -15165,7 +15165,7 @@ function rxHeld(ns){
   clearTimeout(RX._hold);
   if(ns.length>=need)RX._hold=setTimeout(function(){
     if(!RX.seq||RX.seq!==S)return;const cur=Array.from(held);if(cur.length<need||rxCheck(cur,ch).ok)return;if(S.played&&rxSame(rxPcs(cur),rxPcs(S.played)))return;
-    if(!RX._err&&!RX._clk){rxRecord(ch,0,false);if(RX.tab==='flash')RX.flash=Math.min(2500,Math.round(RX.flash*1.15));}
+    RX._missed=true;if(!RX._err&&!RX._clk){rxRecord(ch,0,false);if(RX.tab==='flash')RX.flash=Math.min(2500,Math.round(RX.flash*1.15));}
     RX._err={ns:cur,why:rxCheck(cur,ch).why||''};rxRender();},450);
   rxLive(ns);
 }
@@ -15223,9 +15223,10 @@ function rxRender(){
   else if(L&&L.ok)h+='<div class="rx-fb ok">✓ '+(L.ch.nm||rxName(L.ch))+' — <b>'+(L.ms/1000).toFixed(2)+' s</b>'+(L.cost!=null?'<div class="rx-deg">mouvement : '+L.cost+' demi-ton'+(L.cost>1?'s':'')+(L.best!=null&&L.best<L.cost?' · le plus court : '+L.best+' — garde les notes communes, bouge d’½ ton':' · ✨ chemin le plus court')+'</div>':'')+'<div class="rx-deg">'+L.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-L.ch.rp,L.ch.q);}).join(' · ')+'</div></div>';
   else h+='<div class="rx-fb">'+(RX._pend?'🖐 lâche tout le clavier…':(RX.tab==='form'?'Lis la forme.':'Pose la main.'))+'</div>';
   if(RX._done&&S.costs&&S.costs.length){const a=S.costs.reduce(function(x,c){return x+c[0];},0),b=S.costs.reduce(function(x,c){return x+c[1];},0);h+='<div class="rx-fb ok">🔗 enchaînement : '+a+' demi-tons (le plus court possible : '+b+')</div>';}
+  if(RX._errWas&&!RX._err&&L&&L.ok){const E=RX._errWas;h+='<div class="rx-fb bad">1er essai raté : '+(E.e.why||'ce n’est pas ce grip')+'<div class="rx-deg">tu jouais : '+E.e.ns.slice().sort(function(a,b){return a-b;}).map(function(m){return rxDeg(m-E.ch.rp,E.ch.q);}).join(' · ')+'</div><div class="rx-deg">attendu : '+rxGripHint(E.ch)+'</div></div>';}
   let FB='';if(!S.dq){FB=h.slice(_f0);h=h.slice(0,_f0);}
   const miss=RX._err||(L&&!L.ok&&!S.dq);
-  FB='<div class="rx-fbtop">'+FB+(typeof rxSesLine==='function'?rxSesLine():'')+((RX._tip||miss)&&typeof rxTip==='function'?'<div class="rx-tip">💡 '+rxTip(L&&L.form&&!L.ok?L.ch:ch)+'</div>':'')+(RX._wait&&RX.after==='moi'?'<button class="btn" data-rx="next">▶ continuer <small>(ou relâche et rejoue)</small></button>':'')+'</div>';
+  FB='<div class="rx-fbtop">'+FB+(typeof rxSesLine==='function'?rxSesLine():'')+((RX._tip||miss)&&typeof rxTip==='function'?'<div class="rx-tip">💡 '+rxTip(L&&L.form&&!L.ok?L.ch:ch)+'</div>':'')+(RX._wait&&RX._man?'<button class="btn" data-rx="next">▶ suivant</button>':'')+'</div>';
   const k=rxStat(ch.g==='form'?{g:'form',q:ch.q,rp:ch.rp}:ch);
   h+='<div class="rx-mini">'+(k?'cette case : '+(k.ms?(k.ms/1000).toFixed(2)+' s':'—')+' · '+k.ok+'/'+k.n+' réussis':'case jamais jouée')+'</div>';
   h+='<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ suivant</button>'+(RX.src==='ear'||RX.tab==='grip'?'<button class="opill" data-rx="ear">🔊 écouter le voicing</button>':'')+'<button class="opill" data-rx="show">👁 montrer un voicing</button><button class="opill'+(RX._tip?' on':'')+'" data-rx="tip">💡 astuce</button></div>';
@@ -15560,9 +15561,9 @@ function rxCfgOpen(){
 document.addEventListener('toggle',function(e){const t=e.target;if(t&&t.classList&&t.classList.contains('rx-cfg')){if(RX.cfgOpen!==t.open){RX.cfgOpen=t.open;rxSave();const i=t.querySelector('summary i');if(i)i.textContent=t.open?'replier':'modifier';}}},true);
 
 /* ── après la réponse : on laisse le temps de voir (auto) ou on attend (✋) ; relâcher puis rejouer fait passer ── */
-function rxAfter(ok,S,fn,dOk,dBad){clearTimeout(RX._nx);RX._rel=false;
+function rxAfter(ok,S,fn,dOk,dBad){clearTimeout(RX._nx);RX._rel=false;RX._man=RX.after==='moi'||!ok||!!RX._missed; /* raté : on attend « suivant » */
   RX._wait=function(){RX._wait=null;clearTimeout(RX._nx);if(S&&RX.seq!==S)return;fn();};
-  if(RX.after==='moi'){rxRender();return;}
+  if(RX._man){rxRender();return;}
   RX._nx=setTimeout(function(){if(RX._wait)RX._wait();},ok?(dOk||1300):(dBad||3500));}
 
 /* ── suivi : séance, précision quotidienne, SM-2 ── */
