@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.23 · Grip system — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.24 · Dobbins — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -706,7 +706,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.23 · grip system</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.24 · Dobbins</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16484,8 +16484,8 @@ function rxSitDone(S){const A=S.ns,C=A.clk,T=A.t;const r=rxNsCalc(A)||{dev:0};le
 
 /* ═══════════ 🎶 Couples gospel — l'harmonie à trois voix du chœur (d'après Kurt Cowling, Gospel Piano, ch. 2 à 5)
    main droite = une triade (3 notes, n'importe quel renversement) ; basse = notes sous le fa 2 ; parfois la note du dessus (mélodie) est imposée ═══════════ */
-const RX_TRI={M:[0,4,7],m:[0,3,7],o:[0,3,6],L:[0,4,6,11],M7:[0,4,7,11],m7:[0,3,7,10],h7:[0,3,6,10],d7:[0,3,6,9],dM:[0,3,6,11]};
-const RX_GQN={L:' lydien',M7:'△7',m7:'m7',h7:'ø7',d7:'°7',dM:'°(△7)'};
+const RX_TRI={M:[0,4,7],m:[0,3,7],o:[0,3,6],L:[0,4,6,11],M7:[0,4,7,11],m7:[0,3,7,10],h7:[0,3,6,10],d7:[0,3,6,9],dM:[0,3,6,11],D7:[0,4,7,10]};
+const RX_GQN={D7:'7',L:' lydien',M7:'△7',m7:'m7',h7:'ø7',d7:'°7',dM:'°(△7)'};
 const RX_CPL_SPLIT=53;
 function _C(r,q,lb,b,top){return {r:r,q:q,lb:lb,b:b==null?null:b,top:top==null?null:top};}
 const RX_CPL=[
@@ -16513,21 +16513,21 @@ const RX_CPL=[
 const RX_CPL_SL=[[0,'M',9,'m7',9,'I/6'],[2,'m',11,'ø7',11,'ii/7'],[2,'m',7,'9sus4',7,'ii/5'],[0,'M',4,'',null,'I/3'],[0,'M',7,'',null,'I/5'],[2,'m',5,'',null,'ii/4'],[0,'M',5,'△9 (sans 3)',5,'I/4'],[0,'M',2,'11 (=II9sus4)',2,'I/2'],[2,'o',7,'7♭9',7,'ii°/5'],[2,'o',10,'7',10,'ii°/♭7'],[2,'m',10,'△7',10,'ii/♭7'],[0,'M',10,'7/♭7',null,'I/♭7'],[2,'o',5,'m6',5,'ii°/4']];
 const RX_CPL_GR={2:'Ch. 2 — sections statiques',3:'Ch. 3 — couples + basses',4:'Ch. 4 — déplacer le couple',5:'Ch. 5 — mineur'};
 function rxCplList(){return RX.tab==='grs'?RX_GRS:RX_CPL;}function rxCplCur(){return RX.tab==='grs'?RX.grsId:RX.cplId;}
-function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
+function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées'],['g4','📙 Bill Dobbins — les 5 septièmes']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
 function rxCplDef(){if(RX.grsId==null)RX.grsId='gL';if(typeof rxCycDef==='function')rxCycDef();if(RX.cplId==null)RX.cplId='gam6';if(RX.cplB==null)RX.cplB=0;if(RX.cplSt==null)RX.cplSt={};}
 function rxCplNm(key,off,TN){off=((off%12)+12)%12;try{return off?spellIv(key,off,null,TN):TN;}catch(e){return RX_NM[(key+off)%12];}}
 function rxCplNew(){rxCplDef();RX._done=false;const LST=rxCplList(),L=LST.filter(function(x){return x.id===rxCplCur();})[0]||LST[0],key=rxCycKey(),TN=(L.mn?RX_CYC_MIN:RX_CYC_MAJ)[key];
   let steps;if(L.quiz===1){const P=RX_CPL_SL.slice().sort(function(){return Math.random()-.5;}).slice(0,6);steps=P.map(function(x){const s=_C(x[0],x[1],x[5],x[2]);s.cn=x[4]!=null?rxCplNm(key,x[4],TN)+x[3]:null;return s;});}
-  else if(L.quiz==='grip'){const P=RX_GRS_Q.filter(function(x){return !L.f||L.f.indexOf(x[1])>=0;}).sort(function(){return Math.random()-.5;}).slice(0,6);
+  else if(L.quiz==='grip'){const P=(L.items||RX_GRS_Q).filter(function(x){return !L.f||L.f.indexOf(x[1])>=0;}).sort(function(){return Math.random()-.5;}).slice(0,6);
     steps=P.map(function(x){const rr=Math.floor(Math.random()*12),s=_C(rr-key+x[0],x[1],'',rr-key),c0=RX_CYC_MAJ[rr],sp=function(o){o=((o%12)+12)%12;try{return o?spellIv(rr,o,null,c0):c0;}catch(e){return RX_NM[(rr+o)%12];}};
-      s.cn=c0+x[2];s.bnF=c0;s.tnF=sp(x[0])+RX_GQN[x[1]];s.sc=sp(x[3])+' '+x[4];return s;});}
+      s.cn=c0+x[2];s.bnF=c0;s.tnF=sp(x[0])+RX_GQN[x[1]];s.sc=x[3]==null?null:sp(x[3])+' '+x[4];return s;});}
   else steps=L.steps();
   steps.forEach(function(s){s.r=((s.r%12)+12)%12;if(s.b!=null)s.b=((s.b%12)+12)%12;s.pcs=RX_TRI[s.q].map(function(x){return (key+s.r+x)%12;});s.tn=((s.lb.charAt(0)==='♯'||s.sh)&&typeof NS!=='undefined'?NS[(key+s.r)%12]:rxCplNm(key,s.r,TN))+(RX_GQN[s.q]!=null?RX_GQN[s.q]:(s.q==='m'?'m':(s.q==='o'?'°':'')));if(s.b!=null)s.bn=rxCplNm(key,s.b,TN);if(s.top!=null)s.topn=rxCplNm(key,s.top,TN);
     if(s.tnF)s.tn=s.tnF;if(s.bnF)s.bn=s.bnF;s.sym=s.tn+(s.b!=null&&s.b!==s.r?'/'+s.bn:'');});
   return {cpl:{L:L,S:steps,k:0,bad:null,ko:0,t:[],t0:null,last:null,need:!!(L.bass||RX.cplB)},c:[{g:'cpl',q:L.id,rp:key}],i:0,key:key,title:L.nm+' — '+TN+(L.mn?'m':'')};}
 /* voicing modèle : la triade la plus proche de la précédente (ou avec la mélodie en haut) */
 function rxCplVoice(s,prev){const C=[];for(let lo=55;lo<=72;lo++){if(s.pcs.indexOf(lo%12)<0)continue;const v=[lo];for(let m=lo+1;v.length<s.pcs.length&&m<lo+12;m++)if(s.pcs.indexOf(m%12)>=0)v.push(m);if(v.length===s.pcs.length)C.push(v);}
-  let c=C;if(s.top!=null)c=C.filter(function(v){return v[v.length-1]%12===(RX.seq.key+s.top)%12;});if(!c.length)c=C;
+  let c=C;if(s.inv!=null){const ci=C.filter(function(v){return v[0]%12===s.pcs[s.inv];});if(ci.length)c=ci;}if(s.top!=null)c=C.filter(function(v){return v[v.length-1]%12===(RX.seq.key+s.top)%12;});if(!c.length)c=C;
   if(!prev)return c.reduce(function(b,v){return Math.abs(v[1]-66)<Math.abs(b[1]-66)?v:b;},c[0]);
   return c.reduce(function(b,v){const d=function(x){return Math.abs(x[0]-prev[0])+Math.abs(x[1]-prev[1])+Math.abs(x[2]-prev[2]);};return d(v)<d(b)?v:b;},c[0]);}
 function rxCplHeld(ns){const S=RX.seq,A=S.cpl;if(!A||A.k>=A.S.length)return;const s=A.S[A.k];
@@ -16537,6 +16537,7 @@ function rxCplHeld(ns){const S=RX.seq,A=S.cpl;if(!A||A.k>=A.S.length)return;cons
   const pc=rh.map(function(m){return m%12;}),set=pc.filter(function(x,i){return pc.indexOf(x)===i;});
   let ok=set.length===s.pcs.length&&set.every(function(x){return s.pcs.indexOf(x)>=0;});let why='';
   if(!ok)why=(A.L.grip?'ce n’est pas la grip ':'ce n’est pas la triade ')+s.tn;
+  if(ok&&s.inv!=null&&rh[0]%12!==s.pcs[s.inv]){ok=false;why='bon accord, mais pas le bon renversement : la note du bas doit être '+(['la fondamentale','la 3ce','la 5te','la 7e'][s.inv]);}
   if(ok&&s.top!=null&&rh[rh.length-1]%12!==(S.key+s.top)%12){ok=false;why='bonne triade, mais la mélodie (en haut) doit être '+s.topn;}
   const bReq=A.need&&s.b!=null;
   if(ok&&bReq){if(!lh.length){rxCplLive(rh,lh);A.wait=1;rxRender();return;}if(lh[0]%12!==(S.key+s.b)%12){ok=false;why='la basse doit être '+s.bn;}}
@@ -16596,6 +16597,23 @@ const RX_GRS=[
  {id:'g2m',g:'g2',mn:1,grip:1,bass:1,src:_HALL,nm:'Mineur iiø – V7alt – i – VI7alt : rien que des grips lydiennes',why:'iiø11 = lydienne de la ♭5 · V7alt = lydienne de la 3 · i m6/9 = lydienne de la ♭3 · VI7alt = lydienne de la 3. Quatre fois la même forme de main, déplacée : toute la puissance du système.',
   steps:function(){const a=[_C(8,'L','iiø11',2),_C(11,'L','V7alt',7),_C(3,'L','i m6/9',0),_C(1,'L','VI7alt',9)];a[3].sh=1;return _G2(a);}},
  {id:'gD',g:'g3',grip:1,quiz:'grip',f:['d7','dM'],bass:1,src:_HALL,nm:'Grips diminuées et diminuée-majeure',why:'Grip °7 sur la ♭3 d’un diminué, ou sur la 3 / 5 / ♭7 / ♭9 d’une dominante = 7♭9. Grip °(△7) (la note du haut monte d’un ton) : sur la ♭7 = 13♭9, sur la 3 = 7♯9, sur la 5 = 7(♭9 ♯11). Gamme : diminuée ½ ton / ton. Les quatre positions sont à une tierce mineure l’une de l’autre.'}];
+
+/* ═══ 📙 Bill Dobbins, « A Creative Approach to Jazz Piano Harmony » — les 5 septièmes de base, puis les mêmes 4 notes sur d'autres basses
+   [décalage de l'accord de 7e depuis la basse, qualité, accord obtenu] ═══ */
+const _DOB='d’après Bill Dobbins, A Creative Approach to Jazz Piano Harmony, ch. I';
+const RX_DOB_Q=[[3,'M7','m9'],[7,'M7','△9(♯11)'],[10,'M7','13sus'],[1,'M7','sus(♭9 ♯5)'],[6,'M7','7sus(♭5 ♭9)'],[4,'M7','△7(♯5 ♯9)'],
+ [6,'D7','7(♭5 ♭9)'],[10,'D7','9sus(♯5)'],[4,'D7','△9(♯5)'],[11,'D7','°7(add △7)'],
+ [4,'m7','△9'],[7,'m7','9sus'],[3,'m7','ø7(♭9)'],[10,'m7','7sus(♯5 ♭9)'],[11,'m7','△7(9 ♯11 13)'],
+ [4,'h7','9'],[7,'h7','7sus(♭9)'],[9,'h7','m6'],[10,'h7','7(♯5 ♭9)'],
+ [4,'d7','7(♭9)'],[0,'d7','°7']];
+function _dobInv(q,nm){return function(){RX.dobInv=((RX.dobInv==null?-1:RX.dobInv)+1)%4;rxSave();const inv=RX.dobInv,L=['fondamentale','1er renv.','2e renv.','3e renv.'][inv];
+  const out=[];for(let k=0;k<12;k++){const s=_C((k*5)%12,q,nm+' · '+L);s.inv=inv;out.push(s);}return out;};}
+RX_GRS.push(
+ {id:'dbM',g:'g4',grip:1,src:_DOB,nm:'Les △7 dans le cycle des quartes, renversement par renversement',why:'La méthode de base de Dobbins : un type d’accord, les 12 tons dans le cycle des quartes (do, fa, si♭…), et le MÊME renversement tout du long ; la fois suivante, le renversement suivant. Sens la forme sous la main : mi♭, la♭ et ré♭ △7 en position fondamentale sont l’exact contraire de ré, la et mi. Objectif : ♩ = 100 sans faute.',steps:_dobInv('M7','△7')},
+ {id:'dbD',g:'g4',grip:1,src:_DOB,nm:'Les 7 de dominante, renversement par renversement',why:'Même travail sur les 7 de dominante. Récite à voix basse le nom de la station suivante du cycle pendant que tu tiens l’accord.',steps:_dobInv('D7','7')},
+ {id:'dbm',g:'g4',grip:1,src:_DOB,nm:'Les m7, renversement par renversement',why:'Même travail sur les m7 : en 1er renversement, la fondamentale tombe sous le pouce de la main gauche ou le petit doigt de la main droite.',steps:_dobInv('m7','m7')},
+ {id:'dbh',g:'g4',grip:1,src:_DOB,nm:'Les ø7, renversement par renversement',why:'Même travail sur les demi-diminués. Pour l’écriture, Dobbins conseille de passer aux dièses après si♭ ou même fa.',steps:_dobInv('h7','ø7')},
+ {id:'dbUS',g:'g4',grip:1,quiz:'grip',items:RX_DOB_Q,bass:1,src:_DOB,nm:'Une 7e de base sur une autre basse : 33 accords nouveaux',why:'Le cœur du livre : do△7 (do-mi-sol-si) sur la = Am9, sur fa = F△9♯11, sur ré = D13sus, sur la♭ = A♭△7♯5♯9… Les 5 septièmes de base, posées sur d’autres basses, donnent 33 accords « nouveaux » sans apprendre un seul voicing de plus. Chante ou entends la basse même quand tu ne la joues pas.'});
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
