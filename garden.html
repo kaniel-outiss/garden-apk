@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.19 · Runs en situation — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.20 · Runs Cowling — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -706,7 +706,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.19 · runs en situation</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.20 · runs Cowling</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16299,6 +16299,17 @@ const RX_RUNS=[
  {id:'chr',ctx:'M',nm:'Approche chromatique de la 3',sur:'n’importe quel accord — entrer sur la 3 par en dessous',iv:[0,1,2,3,4,7,12],why:'1-♭2-2-♭3-3 puis 5-8 : on « rampe » vers la 3. Simple, toujours juste parce que ça finit sur une note de l’accord.'},
  {id:'turn',ctx:'M',nm:'Gruppetto 3-2-1-♭7-1',sur:'I — petite broderie sur la tonique',iv:[4,2,0,-2,0,4,7],why:'On tourne autour de la tonique (au-dessus, en dessous) puis on remonte l’accord : la fioriture qui remplit un temps vide.'},
  {id:'hx',ctx:'M',nm:'Hexatonique gospel (pentatonique + 4)',sur:'IV → I — passage plagal',iv:[12,9,7,5,4,2,0],why:'8-6-5-4-3-2-1 : la pentatonique avec la 4 en plus, qui annonce le IV.'},
+ {id:'csig',src:'cow',ctx:'M',nm:'La signature : ½ ton + quinte (3-4-8)',sur:'presque toutes les basses diatoniques — fin de phrase',iv:[4,5,12],why:'La figure-signature du gospel : on prend un des deux demi-tons de la gamme (3→4) et on saute d’une quinte juste. Courte, elle « signe » la phrase sans gêner la voix.'},
+ {id:'csig7',src:'cow',ctx:'M',nm:'La signature sur l’autre ½ ton (7-1-5)',sur:'I, V, iii — fin de phrase',iv:[-1,0,7],why:'Même figure sur le second demi-ton de la gamme (7→1), puis la quinte au-dessus. Les deux formes se répondent.'},
+ {id:'csx',src:'cow',ctx:'M',nm:'Signature élargie : 3-4-5-8',sur:'I, ii, IV/I, vi… (marche sur presque toute basse)',iv:[4,5,7,12],why:'On ajoute une note au milieu : ½ ton, 1 ton, puis quarte juste. Cowling montre qu’elle sonne sur presque chaque basse de la gamme (I, ii11, I/3, IV△9, vi7, V/V…).'},
+ {id:'csx7',src:'cow',ctx:'M',nm:'Signature élargie haute : 7-8-9-12',sur:'V, I/V, iii — fin de phrase',iv:[11,12,14,19],why:'La version élargie sur le second demi-ton : 7-1-2 puis la quarte jusqu’à la 5. Même geste, une sixte plus haut.'},
+ {id:'cinv',src:'cow',ctx:'M',nm:'Signature renversée (descente)',sur:'I — réponse à la voix',iv:[17,16,14,7],why:'« À l’envers » : on part de la note haute du demi-ton (4) et on descend 4-3-2 puis on tombe sur la 5 en dessous.'},
+ {id:'carp',src:'cow',ctx:'M',nm:'Arpège de l’accord sur deux octaves',sur:'I ou I△7 — ballade, quand la voix tient une note',iv:[0,4,7,12,16,19,24,19,16,12],why:'Le fill le plus sûr : arpéger l’accord en cours ne gêne jamais la mélodie. Cowling le fait en doubles-croches, avec la pédale.'},
+ {id:'cgam',src:'cow',ctx:'M',nm:'Gamme majeure qui « télégraphie » l’accord suivant',sur:'V7 → I — le run annonce l’arrivée aux chanteurs',iv:[-5,-3,-1,0,2,4,5,7,9,11,12],why:'Sur le V7, on monte la gamme de l’accord d’ARRIVÉE (fa majeur avec si♭ pour aller sur F) : les chanteurs entendent où on va avant d’y être.'},
+ {id:'cmb',src:'cow',ctx:'M',nm:'Lick gamme blues majeure : 1-2-♭3-3-5-6-5-3',sur:'I ou I7 — gospel enlevé, shuffle',iv:[0,2,3,4,7,9,7,4],why:'La gamme blues MAJEURE (1 2 ♭3 3 5 6) : le ♭3 qui glisse sur le 3 sonne gospel, pas blues triste. Très utilisée en gospel, plus que la gamme blues mineure.'},
+ {id:'cmbt',src:'cow',ctx:'bl',sub:3,nm:'Gamme blues majeure en triolets (montée)',sur:'I7 — à chaque reprise, en triolets',iv:[0,2,3,4,7,9,12,14,15,16,19,21,24],why:'Six notes par octave = parfait pour des triolets. Doigté 2-3-1 / 2-3-1 : toute la gamme tombe sous les trois premiers doigts.'},
+ {id:'cmbd',src:'cow',ctx:'bl',sub:3,nm:'Gamme blues majeure en triolets (descente)',sur:'I7 → fin de phrase',iv:[24,21,19,16,15,14,12,9,7,4,3,2,0],why:'La même gamme en descendant : 6-5-3-♭3-2-1 sur deux octaves. Garde le doigté par groupes de trois.'},
+ {id:'cmn',src:'cow',ctx:'m',nm:'Gamme blues mineure qui monte',sur:'i, ou V7 en mineur — sections mineures',iv:[0,3,5,6,7,10,12],why:'1-♭3-4-♭5-5-♭7-8 : la gamme blues mineure. En mineur elle n’altère qu’une note (la ♭5) ; sur des 7 de dominante en majeur, elle donne la couleur blues.'},
  {id:'b6',ctx:'m',nm:'Mineur : 5-♭6-5-4-♭3-2-1',sur:'V → i en mineur',iv:[7,8,7,5,3,2,0],why:'La ♭6 qui appuie sur la 5 : la couleur du mineur harmonique, très « cantique ».'}];
 const RX_LHP={
  oct:{nm:'Octaves',d:'fondamentale en bas, puis l’octave — la base de la main gauche gospel',b:[[0,'R'],[2,'R8']]},
@@ -16313,7 +16324,7 @@ function rxNsName(key,iv){const TN=RX_CYC_MAJ[key];try{return iv%12?spellIv(key,
 function rxRunNew(){rxNsDef();RX._done=false;let R=RX.runId==='auto'?rxRunAuto():RX_RUNS.filter(function(r){return r.id===RX.runId;})[0];R=R||RX_RUNS[0];
   const key=rxCycKey();let base=60+key;const lo=Math.min.apply(null,R.iv),hi=Math.max.apply(null,R.iv);while(base+hi>91)base-=12;while(base+lo<55)base+=12;
   const N=R.iv.map(function(v){return {m:base+v,iv:v,lb:rxNsName(key,v),dg:RX_DG[((v%12)+12)%12],beat:null};});
-  return {ns:{sit:RX.runSit?{ctx:R.ctx||'M',reps:[]}:null,N:N,k:0,t:[],bad:null,ko:0,run:R.id,mode:'run',sub:4,lo:RX_NS_LO,hi:96,kb:[48,96]},c:[{g:'run',q:R.id,rp:key}],i:0,key:key,title:R.nm+' — '+RX_CYC_MAJ[key]};}
+  return {ns:{sit:RX.runSit?{ctx:R.ctx||'M',reps:[]}:null,N:N,k:0,t:[],bad:null,ko:0,run:R.id,mode:'run',sub:R.sub||4,lo:RX_NS_LO,hi:96,kb:[48,96]},c:[{g:'run',q:R.id,rp:key}],i:0,key:key,title:R.nm+' — '+RX_CYC_MAJ[key]};}
 function rxRunAuto(){let best=null,bs=-1;RX_RUNS.forEach(function(r){const s=RX.runSt['run|'+r.id];const sc=!s?1e9:1000/(s.nps||1)*(1+(s.dev||50)/40)/Math.sqrt(s.n);if(sc>bs){bs=sc;best=r;}});return best;}
 /* — la main gauche sur une grille : 1 mesure par accord — */
 function rxLhNew(){rxNsDef();RX._done=false;const P=RX_CYC.filter(function(p){return p.id===RX.lhCyc;})[0]||RX_CYC[0],key=rxCycKey(),pat=RX_LHP[RX.lhP]||RX_LHP.oct;
@@ -16361,7 +16372,7 @@ function rxClkStartNs(){const S=RX.seq,A=S&&S.ns;if(!A||!RX.nsT)return;rxClkStop
 function rxNsCount(){const el=document.getElementById('rxNsCnt'),A=RX.seq&&RX.seq.ns;if(!el||!A||!A.clk)return;const n=A.clk.n;el.textContent=n<=0?'décompte '+(4+n):'mesure '+(Math.floor((n-1)/4)+1)+' · temps '+(((n-1)%4)+1);}
 /* — rendu — */
 function rxNsBar(){rxNsDef();let h='<div class="rx-set">';
-  if(RX.tab==='run')h+='<span class="og-lb">Run</span><select class="rx-sel" data-rxsel="run"><option value="auto"'+(RX.runId==='auto'?' selected':'')+'>🎲 auto — le moins maîtrisé</option>'+RX_RUNS.map(function(r){const s=RX.runSt['run|'+r.id];return '<option value="'+r.id+'"'+(RX.runId===r.id?' selected':'')+'>'+r.nm+(s&&s.nps?' · '+s.nps.toFixed(1)+' n/s':'')+'</option>';}).join('')+'</select>';
+  if(RX.tab==='run')h+='<span class="og-lb">Run</span><select class="rx-sel" data-rxsel="run"><option value="auto"'+(RX.runId==='auto'?' selected':'')+'>🎲 auto — le moins maîtrisé</option>'+[['','〰 Runs de base'],['cow','📘 Kurt Cowling — Gospel Piano, ch. 6']].map(function(G){return '<optgroup label="'+G[1]+'">'+RX_RUNS.filter(function(r){return (r.src||'')===G[0];}).map(function(r){const s=RX.runSt['run|'+r.id];return '<option value="'+r.id+'"'+(RX.runId===r.id?' selected':'')+'>'+r.nm+(r.sub===3?' (triolets)':'')+(s&&s.nps?' · '+s.nps.toFixed(1)+' n/s':'')+'</option>';}).join('')+'</optgroup>';}).join('')+'</select>';
   else{h+='<span class="og-lb">Grille</span><select class="rx-sel" data-rxsel="lhc">'+[['jz','🎷 Cycles, jazz & gospel'],['mp','🌙 Mineur pop & ballades']].map(function(G){return '<optgroup label="'+G[1]+'">'+RX_CYC.filter(function(p){return (p.g||'jz')===G[0];}).map(function(p){return '<option value="'+p.id+'"'+(RX.lhCyc===p.id?' selected':'')+'>'+p.nm+'</option>';}).join('')+'</optgroup>';}).join('')+'</select></div><div class="rx-set"><span class="og-lb">Basse</span>'
     +Object.keys(RX_LHP).map(function(k){return '<button class="opill'+(RX.lhP===k?' on':'')+'" data-rx="lhp" data-v="'+k+'">'+RX_LHP[k].nm+'</button>';}).join('')
     +(RX_LHP[RX.lhP].b.some(function(b){return b[1]==='A';})?'<span class="og-lb" style="margin-left:8px">Approche</span>'+[['b','½ ton en dessous'],['h','½ ton au-dessus']].map(function(x){return '<button class="opill'+(RX.lhApp===x[0]?' on':'')+'" data-rx="lha" data-v="'+x[0]+'">'+x[1]+'</button>';}).join(''):'');}
@@ -16395,7 +16406,7 @@ function rxNsHTML(){const S=RX.seq;let h=rxNsBar();if(!S||!S.ns)return h+'<butto
   return h;}
 /* — écoute du modèle — */
 function rxNsPlay(){const S=RX.seq,A=S&&S.ns;if(!A||typeof playNotes!=='function')return;
-  if(A.mode==='run'){const sp=60000/(RX.nsT?RX.nsBpm:80)/4;const k=S.key;playNotes([48+k,60+k,64+k,67+k].map(function(x){return x;}),1.6);A.N.forEach(function(n,i){setTimeout(function(){playNotes([n.m],.35);},i*sp);});return;}
+  if(A.mode==='run'){const sp=60000/(RX.nsT?RX.nsBpm:80)/(A.sub||4);const k=S.key;playNotes([48+k,60+k,64+k,67+k].map(function(x){return x;}),1.6);A.N.forEach(function(n,i){setTimeout(function(){playNotes([n.m],.35);},i*sp);});return;}
   const beat=60000/(RX.nsT?RX.nsBpm:80);let last=null;A.N.forEach(function(n){let b=null,bd=99;for(let x=28;x<=55;x++)if(x%12===n.pc&&Math.abs(x-(last==null?40:last))<bd){bd=Math.abs(x-(last==null?40:last));b=x;}last=b;setTimeout(function(){playNotes([b],beat/1000*.9);},n.beat*beat);});
   A.chs.forEach(function(ch,i){setTimeout(function(){playNotes(RX_TONES[ch.q].map(function(x){return 64+((ch.rp+x-4+12)%12);}),beat*3.6/1000);},i*4*beat);});}
 (function(){const _c=rxClick2;rxClick2=function(a,v,b){
@@ -16414,7 +16425,7 @@ document.addEventListener('change',function(e){const t=e.target.closest&&e.targe
 
 /* ═══ 🎼 Run en situation : Garden joue une boucle de 4 mesures, le run se place à la fin de la mesure 4 et doit ATTERRIR sur le 1 suivant ═══ */
 const RX_SIT={M:[[0,'maj7'],[5,'maj7'],[0,'maj7'],[7,'7']],m:[[0,'m7'],[5,'m7'],[0,'m7'],[7,'7']],bl:[[0,'7'],[5,'7'],[0,'7'],[7,'7']]};
-function rxSitWin(A){return Math.max(1,Math.ceil((A.N.length-1)/4));} /* nombre de temps du run en doubles-croches */
+function rxSitWin(A){return Math.max(1,Math.ceil((A.N.length-1)/(A.sub||4)));} /* nombre de temps du run en doubles-croches */
 function rxSitStart(){const S=RX.seq,A=S&&S.ns;if(!A||!A.sit)return;rxClkStopNs();const beat=60000/RX.nsBpm,key=S.key,L=RX_SIT[A.sit.ctx]||RX_SIT.M;
   A.sit.ch=L.map(function(x){return {rp:(key+x[0])%12,q:x[1]};});
   const C=A.clk={beat:beat,n:-4,next:performance.now()+400,tm:null,g0:0};
