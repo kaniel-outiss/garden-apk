@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.18 · Runs & main gauche — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.19 · Runs en situation — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -700,12 +700,13 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-sel{background:#1B2140;color:#E8ECF5;border:1px solid #2C3560;border-radius:10px;padding:6px 8px;font:inherit;font-size:13px;max-width:100%}
 .rx-cyw{background:#161B36;border:1px solid #2C3560;border-radius:12px;padding:10px 12px;margin:6px 0 10px;font-size:13.5px;line-height:1.45;color:#C9D1EE}.rx-cyw b{color:#F5C842;font-size:15px}.rx-cyw small{color:#7A85A8}
 .rx-ns{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.rx-ns span{display:flex;flex-direction:column;align-items:center;min-width:34px;padding:4px 5px;border-radius:8px;background:var(--bg3);color:#7A85A8;font-weight:800;font-size:14px}.rx-ns span small{font-size:10px;font-weight:700;opacity:.8}.rx-ns span.now{background:#F5C842;color:#12162B}.rx-ns span.done{color:#3ECF8E}
+.rx-sit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.rx-sbar{background:var(--bg3);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:4px;color:#C9D1EE}.rx-sbar.now{outline:2px solid #F5C842}.rx-sbar b{font-size:16px}.rx-sbar span{display:flex;gap:3px}.rx-sbar i{flex:1;height:8px;border-radius:4px;background:#2C3560}.rx-sbar i.w{background:#A78BFA66}.rx-sbar i.on{background:#F5C842}.rx-sbar small{font-size:10.5px;color:#A78BFA;font-weight:700}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.18 · runs & main gauche</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.19 · runs en situation</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16287,18 +16288,18 @@ document.addEventListener('change',function(e){const t=e.target.closest&&e.targe
 /* ═══════════ 〰 Runs & fills · 🎹 Main gauche — moteur commun « une note après l'autre », régularité et placement au métronome ═══════════ */
 const RX_DG=['1','♭2','2','♭3','3','4','♭5','5','♭6','6','♭7','7'];
 const RX_RUNS=[
- {id:'pM',nm:'Pentatonique majeure qui descend',sur:'I — fin de phrase, après la dernière syllabe',iv:[16,14,12,9,7,4,2,0],why:'3-2-1-6-5-3-2-1 : le run de base du gospel. Aucune note ne frotte, il marche sur le I et sur le IV.'},
- {id:'p123',nm:'1-2-3 : pentatonique par groupes de trois',sur:'I ou IV — pour monter vers le refrain',iv:[0,2,4,2,4,7,4,7,9,7,9,12],why:'Chaque groupe de 3 notes monte d’un cran dans la pentatonique : le « 1-2-3 » qu’on entend chez tous les organistes et pianistes gospel.'},
- {id:'blu',nm:'Blues qui descend (avec la ♭5)',sur:'I7 ou V7 — couleur soul, fin de shout',iv:[12,10,7,6,5,3,0],why:'1-♭7-5-♭5-4-♭3-1 : la « blue note » ♭5 glisse vers 4 et la ♭3 vers 1. C’est le run qui « sale » la phrase.'},
- {id:'b33',nm:'♭3 → 3 : la note qui pleure',sur:'I — sous la voix, entre deux phrases',iv:[3,4,7,9,12,9,7,4],why:'On frappe la ♭3 et on glisse tout de suite sur la 3 : la signature gospel. Puis 5-6-8 et retour.'},
- {id:'dsc6',nm:'6-5-3-♭3-2-1 : descente avec glissé',sur:'I — résolution douce en fin de chant',iv:[9,7,4,3,2,0],why:'La pentatonique majeure avec la ♭3 de passage entre 3 et 2 : la descente chromatique au bon endroit.'},
- {id:'pm',nm:'Pentatonique mineure qui descend',sur:'i, ou I7 en blues — chants mineurs, praise',iv:[15,12,10,7,5,3,0],why:'♭3-1-♭7-5-4-♭3-1 : sonne mineur sur un i, et « bluesy » sur un I7.'},
- {id:'p2o',nm:'Pentatonique sur deux octaves (montée)',sur:'V7 → I — grosse montée avant le dernier refrain',iv:[0,2,4,7,9,12,14,16,19,21,24],why:'Onze notes sans trou : c’est la vitesse et la régularité qui font l’effet.'},
- {id:'dim',nm:'Arpège diminué sur le V',sur:'V7 (♭9) → I — tension maximale avant la résolution',iv:[11,14,17,20,23,26,24],why:'7-2-4-♭6 : l’arpège de vii°7 = V7♭9 sans basse. On monte par tierces mineures et on retombe d’½ ton sur la tonique.'},
- {id:'chr',nm:'Approche chromatique de la 3',sur:'n’importe quel accord — entrer sur la 3 par en dessous',iv:[0,1,2,3,4,7,12],why:'1-♭2-2-♭3-3 puis 5-8 : on « rampe » vers la 3. Simple, toujours juste parce que ça finit sur une note de l’accord.'},
- {id:'turn',nm:'Gruppetto 3-2-1-♭7-1',sur:'I — petite broderie sur la tonique',iv:[4,2,0,-2,0,4,7],why:'On tourne autour de la tonique (au-dessus, en dessous) puis on remonte l’accord : la fioriture qui remplit un temps vide.'},
- {id:'hx',nm:'Hexatonique gospel (pentatonique + 4)',sur:'IV → I — passage plagal',iv:[12,9,7,5,4,2,0],why:'8-6-5-4-3-2-1 : la pentatonique avec la 4 en plus, qui annonce le IV.'},
- {id:'b6',nm:'Mineur : 5-♭6-5-4-♭3-2-1',sur:'V → i en mineur',iv:[7,8,7,5,3,2,0],why:'La ♭6 qui appuie sur la 5 : la couleur du mineur harmonique, très « cantique ».'}];
+ {id:'pM',ctx:'M',nm:'Pentatonique majeure qui descend',sur:'I — fin de phrase, après la dernière syllabe',iv:[16,14,12,9,7,4,2,0],why:'3-2-1-6-5-3-2-1 : le run de base du gospel. Aucune note ne frotte, il marche sur le I et sur le IV.'},
+ {id:'p123',ctx:'M',nm:'1-2-3 : pentatonique par groupes de trois',sur:'I ou IV — pour monter vers le refrain',iv:[0,2,4,2,4,7,4,7,9,7,9,12],why:'Chaque groupe de 3 notes monte d’un cran dans la pentatonique : le « 1-2-3 » qu’on entend chez tous les organistes et pianistes gospel.'},
+ {id:'blu',ctx:'bl',nm:'Blues qui descend (avec la ♭5)',sur:'I7 ou V7 — couleur soul, fin de shout',iv:[12,10,7,6,5,3,0],why:'1-♭7-5-♭5-4-♭3-1 : la « blue note » ♭5 glisse vers 4 et la ♭3 vers 1. C’est le run qui « sale » la phrase.'},
+ {id:'b33',ctx:'M',nm:'♭3 → 3 : la note qui pleure',sur:'I — sous la voix, entre deux phrases',iv:[3,4,7,9,12,9,7,4],why:'On frappe la ♭3 et on glisse tout de suite sur la 3 : la signature gospel. Puis 5-6-8 et retour.'},
+ {id:'dsc6',ctx:'M',nm:'6-5-3-♭3-2-1 : descente avec glissé',sur:'I — résolution douce en fin de chant',iv:[9,7,4,3,2,0],why:'La pentatonique majeure avec la ♭3 de passage entre 3 et 2 : la descente chromatique au bon endroit.'},
+ {id:'pm',ctx:'m',nm:'Pentatonique mineure qui descend',sur:'i, ou I7 en blues — chants mineurs, praise',iv:[15,12,10,7,5,3,0],why:'♭3-1-♭7-5-4-♭3-1 : sonne mineur sur un i, et « bluesy » sur un I7.'},
+ {id:'p2o',ctx:'M',nm:'Pentatonique sur deux octaves (montée)',sur:'V7 → I — grosse montée avant le dernier refrain',iv:[0,2,4,7,9,12,14,16,19,21,24],why:'Onze notes sans trou : c’est la vitesse et la régularité qui font l’effet.'},
+ {id:'dim',ctx:'M',nm:'Arpège diminué sur le V',sur:'V7 (♭9) → I — tension maximale avant la résolution',iv:[11,14,17,20,23,26,24],why:'7-2-4-♭6 : l’arpège de vii°7 = V7♭9 sans basse. On monte par tierces mineures et on retombe d’½ ton sur la tonique.'},
+ {id:'chr',ctx:'M',nm:'Approche chromatique de la 3',sur:'n’importe quel accord — entrer sur la 3 par en dessous',iv:[0,1,2,3,4,7,12],why:'1-♭2-2-♭3-3 puis 5-8 : on « rampe » vers la 3. Simple, toujours juste parce que ça finit sur une note de l’accord.'},
+ {id:'turn',ctx:'M',nm:'Gruppetto 3-2-1-♭7-1',sur:'I — petite broderie sur la tonique',iv:[4,2,0,-2,0,4,7],why:'On tourne autour de la tonique (au-dessus, en dessous) puis on remonte l’accord : la fioriture qui remplit un temps vide.'},
+ {id:'hx',ctx:'M',nm:'Hexatonique gospel (pentatonique + 4)',sur:'IV → I — passage plagal',iv:[12,9,7,5,4,2,0],why:'8-6-5-4-3-2-1 : la pentatonique avec la 4 en plus, qui annonce le IV.'},
+ {id:'b6',ctx:'m',nm:'Mineur : 5-♭6-5-4-♭3-2-1',sur:'V → i en mineur',iv:[7,8,7,5,3,2,0],why:'La ♭6 qui appuie sur la 5 : la couleur du mineur harmonique, très « cantique ».'}];
 const RX_LHP={
  oct:{nm:'Octaves',d:'fondamentale en bas, puis l’octave — la base de la main gauche gospel',b:[[0,'R'],[2,'R8']]},
  r5:{nm:'1 – 5 – 8 – approche',d:'la quinte et l’octave, puis une note à ½ ton de la basse suivante',b:[[0,'R'],[1,'5'],[2,'R8'],[3,'A']]},
@@ -16306,13 +16307,13 @@ const RX_LHP={
  ped:{nm:'Fondamentale + approche',d:'tenir la basse, et glisser d’½ ton juste avant le changement',b:[[0,'R'],[2,'R'],[3,'A']]},
  dsc:{nm:'1 – 8 – ♭7 – approche',d:'l’octave qui redescend par la 7 : très soul',b:[[0,'R'],[1,'R8'],[2,'7'],[3,'A']]}};
 const RX_NS_LO=48;
-function rxNsDef(){if(typeof rxCycDef==='function')rxCycDef();if(RX.runId==null)RX.runId='pM';if(RX.lhP==null)RX.lhP='oct';if(RX.lhCyc==null)RX.lhCyc='trn';if(RX.nsT==null)RX.nsT=0;if(RX.nsBpm==null)RX.nsBpm=70;if(RX.runSt==null)RX.runSt={};if(RX.lhApp==null)RX.lhApp='b';}
+function rxNsDef(){if(RX.runSit==null)RX.runSit=0;if(typeof rxCycDef==='function')rxCycDef();if(RX.runId==null)RX.runId='pM';if(RX.lhP==null)RX.lhP='oct';if(RX.lhCyc==null)RX.lhCyc='trn';if(RX.nsT==null)RX.nsT=0;if(RX.nsBpm==null)RX.nsBpm=70;if(RX.runSt==null)RX.runSt={};if(RX.lhApp==null)RX.lhApp='b';}
 function rxNsName(key,iv){const TN=RX_CYC_MAJ[key];try{return iv%12?spellIv(key,((iv%12)+12)%12,null,TN):TN;}catch(e){return RX_NM[(key+iv+120)%12];}}
 /* — un run dans une tonalité : notes absolues placées autour du do 3 — */
 function rxRunNew(){rxNsDef();RX._done=false;let R=RX.runId==='auto'?rxRunAuto():RX_RUNS.filter(function(r){return r.id===RX.runId;})[0];R=R||RX_RUNS[0];
   const key=rxCycKey();let base=60+key;const lo=Math.min.apply(null,R.iv),hi=Math.max.apply(null,R.iv);while(base+hi>91)base-=12;while(base+lo<55)base+=12;
   const N=R.iv.map(function(v){return {m:base+v,iv:v,lb:rxNsName(key,v),dg:RX_DG[((v%12)+12)%12],beat:null};});
-  return {ns:{N:N,k:0,t:[],bad:null,ko:0,run:R.id,mode:'run',sub:4,lo:RX_NS_LO,hi:96,kb:[48,96]},c:[{g:'run',q:R.id,rp:key}],i:0,key:key,title:R.nm+' — '+RX_CYC_MAJ[key]};}
+  return {ns:{sit:RX.runSit?{ctx:R.ctx||'M',reps:[]}:null,N:N,k:0,t:[],bad:null,ko:0,run:R.id,mode:'run',sub:4,lo:RX_NS_LO,hi:96,kb:[48,96]},c:[{g:'run',q:R.id,rp:key}],i:0,key:key,title:R.nm+' — '+RX_CYC_MAJ[key]};}
 function rxRunAuto(){let best=null,bs=-1;RX_RUNS.forEach(function(r){const s=RX.runSt['run|'+r.id];const sc=!s?1e9:1000/(s.nps||1)*(1+(s.dev||50)/40)/Math.sqrt(s.n);if(sc>bs){bs=sc;best=r;}});return best;}
 /* — la main gauche sur une grille : 1 mesure par accord — */
 function rxLhNew(){rxNsDef();RX._done=false;const P=RX_CYC.filter(function(p){return p.id===RX.lhCyc;})[0]||RX_CYC[0],key=rxCycKey(),pat=RX_LHP[RX.lhP]||RX_LHP.oct;
@@ -16330,12 +16331,13 @@ function rxLhNew(){rxNsDef();RX._done=false;const P=RX_CYC.filter(function(p){re
 function rxNsHeld(ns){const S=RX.seq,A=S.ns;if(!A||A.k>=A.N.length)return;const now=(typeof NOTE_T!=='undefined'&&NOTE_T)?NOTE_T:performance.now();
   const nw=ns.filter(function(m){return (A.prev||[]).indexOf(m)<0&&m>=A.lo&&m<=A.hi;});A.prev=ns.slice();if(!nw.length)return;
   nw.sort(function(a,b){return a-b;}).forEach(function(m){rxNsNote(m,now);});}
-function rxNsNote(m,now){const S=RX.seq,A=S.ns,e=A.N[A.k];if(!e)return;let ok;
+function rxNsNote(m,now){const S=RX.seq,A=S.ns;if(A.sit&&A.k>0&&A.clk&&now-A.t[A.t.length-1]>A.clk.beat*1.2){A.k=0;A.t=[];A.played=[];}const e=A.N[A.k];if(!e)return;let ok;
   if(A.mode==='run'){ok=A.k===0?((m%12)===(e.m%12)):(m-A.played[A.k-1]===e.m-A.N[A.k-1].m);}
   else{ok=(m%12)===e.pc&&(A.last==null||Math.abs(m-A.last)<=14);}
   if(!ok){A.bad=m;A.ko++;rxRender();return;}
   if(A.k===0){A.played=[];if(!RX.nsT)A.t0=now;}
   A.bad=null;A.played=A.played||[];A.played.push(m);A.t.push(now);A.last=m;A.k++;
+  if(A.k>=A.N.length&&A.sit){rxSitDone(S);return;}
   if(A.k>=A.N.length){rxClkStopNs();RX._done=true;rxNsStore(S);rxRender();rxAfter(true,S,function(){RX._done=false;rxNew();},3200);return;}
   rxRender();}
 /* — mesures : notes par seconde, régularité (écart à une grille régulière), placement au métronome — */
@@ -16363,8 +16365,9 @@ function rxNsBar(){rxNsDef();let h='<div class="rx-set">';
   else{h+='<span class="og-lb">Grille</span><select class="rx-sel" data-rxsel="lhc">'+[['jz','🎷 Cycles, jazz & gospel'],['mp','🌙 Mineur pop & ballades']].map(function(G){return '<optgroup label="'+G[1]+'">'+RX_CYC.filter(function(p){return (p.g||'jz')===G[0];}).map(function(p){return '<option value="'+p.id+'"'+(RX.lhCyc===p.id?' selected':'')+'>'+p.nm+'</option>';}).join('')+'</optgroup>';}).join('')+'</select></div><div class="rx-set"><span class="og-lb">Basse</span>'
     +Object.keys(RX_LHP).map(function(k){return '<button class="opill'+(RX.lhP===k?' on':'')+'" data-rx="lhp" data-v="'+k+'">'+RX_LHP[k].nm+'</button>';}).join('')
     +(RX_LHP[RX.lhP].b.some(function(b){return b[1]==='A';})?'<span class="og-lb" style="margin-left:8px">Approche</span>'+[['b','½ ton en dessous'],['h','½ ton au-dessus']].map(function(x){return '<button class="opill'+(RX.lhApp===x[0]?' on':'')+'" data-rx="lha" data-v="'+x[0]+'">'+x[1]+'</button>';}).join(''):'');}
-  h+='</div><div class="rx-set"><span class="og-lb">Rythme</span><button class="opill'+(RX.nsT?' on':'')+'" data-rx="nst">'+(RX.nsT?'🥁 au métronome':'🕊 à mon rythme')+'</button>'
-    +(RX.nsT?'<button class="opill" data-rx="nsb" data-v="-5">−</button><b style="min-width:52px;text-align:center">♩ '+RX.nsBpm+'</b><button class="opill" data-rx="nsb" data-v="5">＋</button>'+(RX.tab==='lh'?'<button class="opill'+(RX.nsCh!==0?' on':'')+'" data-rx="nsch">'+(RX.nsCh!==0?'🎹 accords joués':'🔇 sans accords')+'</button>':''):'')
+  if(RX.tab==='run')h+='<span class="og-lb" style="margin-left:8px">Mode</span>'+[[0,'〰 seul'],[1,'🎼 en situation']].map(function(x){return '<button class="opill'+((RX.runSit?1:0)===x[0]?' on':'')+'" data-rx="nsit" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('');
+  h+='</div><div class="rx-set"><span class="og-lb">Rythme</span>'+(RX.tab==='run'&&RX.runSit?'':'<button class="opill'+(RX.nsT?' on':'')+'" data-rx="nst">'+(RX.nsT?'🥁 au métronome':'🕊 à mon rythme')+'</button>')
+    +(RX.nsT||(RX.tab==='run'&&RX.runSit)?'<button class="opill" data-rx="nsb" data-v="-5">−</button><b style="min-width:52px;text-align:center">♩ '+RX.nsBpm+'</b><button class="opill" data-rx="nsb" data-v="5">＋</button>'+(RX.tab==='lh'?'<button class="opill'+(RX.nsCh!==0?' on':'')+'" data-rx="nsch">'+(RX.nsCh!==0?'🎹 accords joués':'🔇 sans accords')+'</button>':''):'')
     +'<span class="og-lb" style="margin-left:8px">Tonalité</span>'+[['q4','🔃 tour des quartes'],['rnd','🎲 hasard']].map(function(x){return '<button class="opill'+(RX.cycK===x[0]?' on':'')+'" data-rx="cyk" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
     +'<select class="rx-sel" data-rxsel="cyk"><option value="">fixe…</option>'+RX_NM.map(function(n,i){return '<option value="'+i+'"'+(String(RX.cycK)===String(i)?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div>';
   return h;}
@@ -16383,11 +16386,12 @@ function rxNsHTML(){const S=RX.seq;let h=rxNsBar();if(!S||!S.ns)return h+'<butto
       +(r.adev!=null?'<div class="rx-deg">au métronome : '+Math.round(r.adev)+' ms d’écart moyen, '+(Math.abs(r.lag)<12?'pile sur le temps':(r.lag<0?'tu es en avance de '+Math.round(-r.lag)+' ms':'tu traînes de '+Math.round(r.lag)+' ms'))+'</div>':'')
       +(A.ko?'<div class="rx-deg">'+A.ko+' fausse'+(A.ko>1?'s':'')+' note'+(A.ko>1?'s':'')+'</div>':'')+'</div>';}
   else if(A.bad!=null){const e=A.N[A.k];h+='<div class="rx-fb bad">✕ '+RX_NM[A.bad%12]+' — attendu <b>'+e.lb+'</b> ('+e.dg+')'+(A.mode==='lh'&&A.last!=null&&A.bad%12===e.pc?' : trop loin de la note d’avant, reste dans la même zone':'')+'</div>';}
-  else h+='<div class="rx-fb">'+(A.k===0?(RX.nsT?'Lance le métronome et attaque sur le 1.':'Joue la première note : '+A.N[0].lb+' ('+A.N[0].dg+')'):'note '+(A.k+1)+' / '+A.N.length+' : <b>'+A.N[A.k].lb+'</b> <small>'+A.N[A.k].dg+'</small>')+'</div>';
+  else h+='<div class="rx-fb">'+(A.k===0?(A.sit?'Lance l’accompagnement : ton run part à la fin de la mesure 4 (zone violette) et sa dernière note tombe sur le 1.':RX.nsT?'Lance le métronome et attaque sur le 1.':'Joue la première note : '+A.N[0].lb+' ('+A.N[0].dg+')'):'note '+(A.k+1)+' / '+A.N.length+' : <b>'+A.N[A.k].lb+'</b> <small>'+A.N[A.k].dg+'</small>')+'</div>';
   h+=(RX._wait&&RX._man?'<button class="btn" data-rx="next">▶ suivant</button>':'')+'</div>';
   h+=rxCyKb(marks,A.kb[0],A.kb[1]);
   const st=RX.runSt[A.mode+'|'+A.run];h+='<div class="rx-mini">'+(st?(st.nps?'record '+st.nps.toFixed(1)+' notes/s · ':'')+'régularité moyenne '+st.dev+' ms'+(st.adev!=null?' · au métronome '+st.adev+' ms':'')+' · '+st.n+' fois':'première fois')+'</div>';
-  h+='<div class="sd-ctl" style="margin-top:8px">'+(RX.nsT&&!A.clk?'<button class="btn" data-rx="nsgo">🥁 lancer le métronome</button>':'')+(A.clk?'<button class="opill" data-rx="nsstop">⏹ stop</button>':'')+'<button class="opill" data-rx="skip">⏭ autre tonalité</button><button class="opill'+(RX.names?' on':'')+'" data-rx="names">'+(RX.names?'🏷 notes affichées':'◇ degrés seuls')+'</button></div>';
+  if(A.sit)h+=rxSitHTML(A);
+  h+='<div class="sd-ctl" style="margin-top:8px">'+(A.sit&&!A.clk?'<button class="btn" data-rx="nsgo">🎼 lancer l’accompagnement</button>':'')+(!A.sit&&RX.nsT&&!A.clk?'<button class="btn" data-rx="nsgo">🥁 lancer le métronome</button>':'')+(A.clk?'<button class="opill" data-rx="nsstop">⏹ stop</button>':'')+'<button class="opill" data-rx="skip">⏭ autre tonalité</button><button class="opill'+(RX.names?' on':'')+'" data-rx="names">'+(RX.names?'🏷 notes affichées':'◇ degrés seuls')+'</button></div>';
   return h;}
 /* — écoute du modèle — */
 function rxNsPlay(){const S=RX.seq,A=S&&S.ns;if(!A||typeof playNotes!=='function')return;
@@ -16400,12 +16404,43 @@ function rxNsPlay(){const S=RX.seq,A=S&&S.ns;if(!A||typeof playNotes!=='function
   if(a==='nst'){RX.nsT=RX.nsT?0:1;rxSave();rxClkStopNs();rxNew();return true;}
   if(a==='nsb'){RX.nsBpm=Math.max(40,Math.min(200,RX.nsBpm+(+v)));rxSave();rxRender();return true;}
   if(a==='nsch'){RX.nsCh=RX.nsCh===0?1:0;rxSave();rxRender();return true;}
-  if(a==='nsgo'){const A=RX.seq&&RX.seq.ns;if(A){A.k=0;A.t=[];A.played=[];A.ko=0;A.last=null;rxClkStartNs();rxRender();}return true;}
+  if(a==='nsgo'){const A=RX.seq&&RX.seq.ns;if(A){A.k=0;A.t=[];A.played=[];A.ko=0;A.last=null;if(A.sit)rxSitStart();else rxClkStartNs();rxRender();}return true;}
+  if(a==='nsit'){RX.runSit=+v;rxSave();rxClkStopNs();rxNew();return true;}
   if(a==='nsstop'){rxClkStopNs();const A=RX.seq&&RX.seq.ns;if(A)A.clk=null;rxRender();return true;}
   if(a==='nsplay'){rxNsPlay();return true;}
   return _c(a,v,b);};})();
 document.addEventListener('change',function(e){const t=e.target.closest&&e.target.closest('[data-rxsel]');if(!t)return;const k=t.getAttribute('data-rxsel');
   if(k==='run'){RX.runId=t.value;rxSave();rxNew();}if(k==='lhc'){RX.lhCyc=t.value;rxSave();rxNew();}});
+
+/* ═══ 🎼 Run en situation : Garden joue une boucle de 4 mesures, le run se place à la fin de la mesure 4 et doit ATTERRIR sur le 1 suivant ═══ */
+const RX_SIT={M:[[0,'maj7'],[5,'maj7'],[0,'maj7'],[7,'7']],m:[[0,'m7'],[5,'m7'],[0,'m7'],[7,'7']],bl:[[0,'7'],[5,'7'],[0,'7'],[7,'7']]};
+function rxSitWin(A){return Math.max(1,Math.ceil((A.N.length-1)/4));} /* nombre de temps du run en doubles-croches */
+function rxSitStart(){const S=RX.seq,A=S&&S.ns;if(!A||!A.sit)return;rxClkStopNs();const beat=60000/RX.nsBpm,key=S.key,L=RX_SIT[A.sit.ctx]||RX_SIT.M;
+  A.sit.ch=L.map(function(x){return {rp:(key+x[0])%12,q:x[1]};});
+  const C=A.clk={beat:beat,n:-4,next:performance.now()+400,tm:null,g0:0};
+  const step=function(){if(C.off||RX.seq!==S||PAGE!=='rfx')return;const ctx=ac(),t=ctx.currentTime+.02;
+    if(C.n===0)C.g0=C.next;
+    const b=((C.n%16)+16)%16,down=b%4===0;
+    if(C.n<0)_metBlip(t,C.n===-4?1568:1046,.14);
+    else{_metBlip(t,down?1568:1046,down?.06:.035);
+      if(down){const ch=A.sit.ch[b/4],bar=beat*4/1000;if(typeof playNotes==='function'){playNotes([36+ch.rp],bar*.95);setTimeout(function(){playNotes(RX_TONES[ch.q].map(function(x){return 55+((ch.rp+x-7+12)%12);}),bar*.9);},15);}}}
+    C.n++;C.next+=beat;rxSitTick();C.tm=setTimeout(step,Math.max(5,C.next-performance.now()));};
+  C.tm=setTimeout(step,400);}
+function rxSitBars(A){const n=A.clk?A.clk.n-1:-1,cur=n>=0?Math.floor((n%16)/4):-1,bt=n>=0?n%4:-1,w=rxSitWin(A),key=RX.seq.key;
+  return (A.sit.ch||[]).map(function(ch,i){let nm=RX_CYC_MAJ[key];try{const off=(ch.rp-key+12)%12;if(off)nm=spellIv(key,off,null,RX_CYC_MAJ[key]);}catch(e){}
+    let beats='';for(let k=0;k<4;k++){const win=i===3&&k>=4-w;beats+='<i class="'+(win?'w':'')+(i===cur&&k===bt?' on':'')+'"></i>';}
+    return '<div class="rx-sbar'+(i===cur?' now':'')+'"><b>'+nm+(ch.q==='maj7'?'△7':(ch.q==='m7'?'m7':'7'))+'</b><span>'+beats+'</span>'+(i===3?'<small>〰 ton run → atterris sur le 1</small>':'')+'</div>';}).join('');}
+function rxSitHTML(A){const R=A.sit.reps,last=R[R.length-1];let h='<div class="rx-sit" id="rxSitBar">'+(A.sit.ch?rxSitBars(A):'<div class="hint">Garden joue 4 mesures en boucle (basse + accords + métronome). Ton run commence à la fin de la mesure 4 et sa dernière note tombe sur le 1 de la boucle suivante.</div>')+'</div>';
+  if(last)h+='<div class="rx-fb '+(last.good?'ok':'bad')+'">'+(last.good?'✓ ':'✕ ')+(Math.abs(last.land)<60?'atterrissage <b>pile sur le 1</b>':(last.land<0?'tu arrives <b>'+Math.round(-last.land)+' ms trop tôt</b>':'tu arrives <b>'+Math.round(last.land)+' ms trop tard</b>'))+' · régularité '+Math.round(last.dev)+' ms'+(last.ko?' · '+last.ko+' fausse(s) note(s)':'')+'</div>';
+  if(R.length>1){const ok=R.filter(function(r){return r.good;}).length;h+='<div class="rx-mini">'+R.length+' runs dans la boucle · '+ok+' bien atterris · atterrissage moyen '+Math.round(R.reduce(function(a,r){return a+Math.abs(r.land);},0)/R.length)+' ms</div>';}
+  return h;}
+function rxSitTick(){const el=document.getElementById('rxSitBar'),A=RX.seq&&RX.seq.ns;if(!el||!A||!A.sit||!A.sit.ch)return;el.innerHTML=rxSitBars(A);}
+function rxSitDone(S){const A=S.ns,C=A.clk,T=A.t;const r=rxNsCalc(A)||{dev:0};let land=0;
+  if(C&&C.g0){const cyc=C.beat*16,tl=T[T.length-1],k=Math.round((tl-C.g0)/cyc);land=tl-(C.g0+k*cyc);}
+  const rep={land:land,dev:r.dev,ko:A.ko,good:Math.abs(land)<90&&A.ko===0&&r.dev<70};A.sit.reps.push(rep);
+  const key='sit|'+A.run,s=RX.runSt[key]||{n:0};s.n++;s.land=s.land==null?Math.round(Math.abs(land)):Math.round(s.land*.7+Math.abs(land)*.3);s.ok=(s.ok||0)+(rep.good?1:0);RX.runSt[key]=s;
+  rxRecord(S.c[0],Math.abs(land),rep.good);rxSave();
+  A.k=0;A.t=[];A.played=[];A.ko=0;A.bad=null;rxRender();}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
