@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.26 · Dobbins IV — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.27 · voicings 3 notes — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -706,7 +706,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.26 · Dobbins IV</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.27 · voicings 3 notes</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16513,7 +16513,7 @@ const RX_CPL=[
 const RX_CPL_SL=[[0,'M',9,'m7',9,'I/6'],[2,'m',11,'ø7',11,'ii/7'],[2,'m',7,'9sus4',7,'ii/5'],[0,'M',4,'',null,'I/3'],[0,'M',7,'',null,'I/5'],[2,'m',5,'',null,'ii/4'],[0,'M',5,'△9 (sans 3)',5,'I/4'],[0,'M',2,'11 (=II9sus4)',2,'I/2'],[2,'o',7,'7♭9',7,'ii°/5'],[2,'o',10,'7',10,'ii°/♭7'],[2,'m',10,'△7',10,'ii/♭7'],[0,'M',10,'7/♭7',null,'I/♭7'],[2,'o',5,'m6',5,'ii°/4']];
 const RX_CPL_GR={2:'Ch. 2 — sections statiques',3:'Ch. 3 — couples + basses',4:'Ch. 4 — déplacer le couple',5:'Ch. 5 — mineur'};
 function rxCplList(){return RX.tab==='grs'?RX_GRS:RX_CPL;}function rxCplCur(){return RX.tab==='grs'?RX.grsId:RX.cplId;}
-function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées'],['g4','📙 Dobbins I — les 5 septièmes'],['g5','📙 Dobbins II — les septièmes altérées'],['g6','📙 Dobbins III — triades + 1 note'],['g7','📙 Dobbins IV — structures à 5 notes']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
+function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées'],['g4','📙 Dobbins I — les 5 septièmes'],['g5','📙 Dobbins II — les septièmes altérées'],['g6','📙 Dobbins III — triades + 1 note'],['g7','📙 Dobbins IV — structures à 5 notes'],['g8','📙 Dobbins IV — 3 notes tirées des 4']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
 function rxCplDef(){if(RX.grsId==null)RX.grsId='gL';if(typeof rxCycDef==='function')rxCycDef();if(RX.cplId==null)RX.cplId='gam6';if(RX.cplB==null)RX.cplB=0;if(RX.cplSt==null)RX.cplSt={};}
 function rxCplNm(key,off,TN){off=((off%12)+12)%12;try{return off?spellIv(key,off,null,TN):TN;}catch(e){return RX_NM[(key+off)%12];}}
 function rxCplNew(){rxCplDef();RX._done=false;const LST=rxCplList(),L=LST.filter(function(x){return x.id===rxCplCur();})[0]||LST[0],key=rxCycKey(),TN=(L.mn?RX_CYC_MIN:RX_CYC_MAJ)[key];
@@ -16522,8 +16522,8 @@ function rxCplNew(){rxCplDef();RX._done=false;const LST=rxCplList(),L=LST.filter
     steps=P.map(function(x){const rr=Math.floor(Math.random()*12),s=_C(rr-key+x[0],x[1],'',rr-key),c0=RX_CYC_MAJ[rr],sp=function(o){o=((o%12)+12)%12;try{return o?spellIv(rr,o,null,c0):c0;}catch(e){return RX_NM[(rr+o)%12];}};
       s.cn=c0+x[2];s.bnF=c0;s.tnF=sp(x[0])+RX_GQN[x[1]];s.sc=x[3]==null?null:sp(x[3])+' '+x[4];return s;});}
   else steps=L.steps();
-  steps.forEach(function(s){s.r=((s.r%12)+12)%12;if(s.b!=null)s.b=((s.b%12)+12)%12;s.pcs=RX_TRI[s.q].map(function(x){return (key+s.r+x)%12;});s.tn=((s.lb.charAt(0)==='♯'||s.sh)&&typeof NS!=='undefined'?NS[(key+s.r)%12]:rxCplNm(key,s.r,TN))+(RX_GQN[s.q]!=null?RX_GQN[s.q]:(s.q==='m'?'m':(s.q==='o'?'°':'')));if(s.b!=null)s.bn=rxCplNm(key,s.b,TN);if(s.top!=null)s.topn=rxCplNm(key,s.top,TN);
-    if(s.tnF)s.tn=s.tnF;if(s.bnF)s.bn=s.bnF;s.sym=s.tn+(s.b!=null&&s.b!==s.r?'/'+s.bn:'');});
+  steps.forEach(function(s){s.r=((s.r%12)+12)%12;if(s.b!=null)s.b=((s.b%12)+12)%12;s.pcs=(s.ivs||RX_TRI[s.q]).map(function(x){return (key+s.r+x)%12;});s.tn=((s.lb.charAt(0)==='♯'||s.sh)&&typeof NS!=='undefined'?NS[(key+s.r)%12]:rxCplNm(key,s.r,TN))+(RX_GQN[s.q]!=null?RX_GQN[s.q]:(s.q==='m'?'m':(s.q==='o'?'°':'')));if(s.b!=null)s.bn=rxCplNm(key,s.b,TN);if(s.top!=null)s.topn=rxCplNm(key,s.top,TN);
+    if(s.tnF)s.tn=s.tnF;if(s.om)s.tn+=' sans '+s.om;if(s.bnF)s.bn=s.bnF;s.sym=s.tn+(s.b!=null&&s.b!==s.r?'/'+s.bn:'');});
   return {cpl:{L:L,S:steps,k:0,bad:null,ko:0,t:[],t0:null,last:null,need:!!(L.bass||RX.cplB)},c:[{g:'cpl',q:L.id,rp:key}],i:0,key:key,title:L.nm+' — '+TN+(L.mn?'m':'')};}
 /* voicing modèle : la triade la plus proche de la précédente (ou avec la mélodie en haut) */
 function rxCplVoice(s,prev){const C=[];for(let lo=55;lo<=72;lo++){if(s.pcs.indexOf(lo%12)<0)continue;const v=[lo];for(let m=lo+1;v.length<s.pcs.length&&m<lo+12;m++)if(s.pcs.indexOf(m%12)>=0)v.push(m);if(v.length===s.pcs.length)C.push(v);}
@@ -16647,6 +16647,16 @@ RX_GRS.push(
  {id:'db4i',g:'g7',grip:1,src:_DOB4,nm:'Les structures à 5 notes, renversement par renversement',why:'Do-ré-mi-sol-la (la pentatonique = C6/9) : à la fois une gamme et un accord. Cinq notes = une position fondamentale et QUATRE renversements. Puis do m6/9, do△9, do m9(△7), do9 et do m9, chacun dans les 12 tons du cycle des quartes. Écoute quelle note crée la dissonance la plus forte, et où elle voudrait aller.',
   steps:_dobMulti([['P69','6/9'],['m69','m6/9'],['M9','△9'],['mM9','m9(△7)'],['D9','9'],['m9','m9']])},
  {id:'db4q',g:'g7',grip:1,quiz:'grip',items:RX_DOB4_Q,bass:1,src:_DOB4,nm:'Les 5 notes sur d’autres basses',why:'La même main de 5 notes, une autre basse : C6/9 sur ré = D9sus, sur la = Am7(add4), sur si♭ = B♭△7(♯11) avec la 6/9 ; C△9 sur la = Am11, sur ré = D13sus ; C9 sur la♭ = A♭△9(♯5 ♯11)… Main droite : les 5 notes (dans le renversement que tu veux), main gauche : la basse.'});
+
+/* — Dobbins IV : toute bonne structure de 4 notes contient 4 versions à 3 notes — */
+const RX_OM=[['la fondamentale','1'],['la 3ce','3'],['la 5te','5'],['la 7e','7']];
+function _c3(r,q,k,b){const iv=RX_TRI[q].filter(function(x,i){return i!==k;}),s=_C(r,q,(RX_GQN[q]||q)+' sans '+RX_OM[k][1],b);s.ivs=iv;s.om=RX_OM[k][1];return s;}
+const RX_C3Q=['M7','D7','m7','h7'];
+RX_GRS.push(
+ {id:'db3n',g:'g8',grip:1,src:_DOB4,nm:'Une 7e, quatre versions à 3 notes',why:'Dobbins : presque toute structure de 4 notes bien construite contient quatre versions à 3 notes — on enlève à tour de rôle la fondamentale, la 3ce, la 5te ou la 7e. Sans la 5te (1-3-7) c’est le « shell » ; sans la fondamentale (3-5-7) c’est la version qu’on pose au-dessus d’un bassiste. Pour chaque accord, joue les 4 versions dans l’ordre.',
+  steps:function(){const out=[];const q=RX_C3Q[Math.floor(Math.random()*RX_C3Q.length)];for(let j=0;j<3;j++){const r=(j*5)%12;for(let k=0;k<4;k++)out.push(_c3(r,q,k));}return out;}},
+ {id:'db3b',g:'g8',grip:1,bass:1,src:_DOB4,nm:'3 notes au-dessus de la basse',why:'La main gauche joue la fondamentale, la main droite seulement 3 notes : laquelle enlever ? Garden te le dit à chaque accord. Écoute comme le son change selon la note absente : sans la 5te, l’accord reste clair ; sans la 3ce, il devient ouvert, presque sus ; sans la 7e, il redevient une triade colorée par la basse.',
+  steps:function(){const out=[];for(let j=0;j<8;j++){const q=RX_C3Q[Math.floor(Math.random()*RX_C3Q.length)],r=Math.floor(Math.random()*12),k=Math.floor(Math.random()*4);out.push(_c3(r,q,k,r));}return out;}});
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
