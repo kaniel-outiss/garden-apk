@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.20 · Runs Cowling — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.21 · Couples gospel — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -706,7 +706,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.20 · runs Cowling</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.21 · couples gospel</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -15158,6 +15158,7 @@ function rxNew(){
   else if(t==='cyc'){RX.seq=rxCycNew();}
   else if(t==='run'){RX.seq=rxRunNew();}
   else if(t==='lh'){RX.seq=rxLhNew();}
+  else if(t==='cpl'){RX.seq=rxCplNew();}
   else if(t==='day'){rxDayStart();return;}
   else if(t==='eq'){RX.seq=rxEqNew();}
   else if(t==='sec'){RX.seq=rxSecNew();}
@@ -15179,6 +15180,7 @@ function rxHeld(ns){
   if(RX._wait){if(RX._man)return;if(!ns.length)RX._rel=true;else if(RX._rel)RX._wait();return;} /* résultat affiché : relâche puis rejoue pour passer */
   const S=RX.seq;
   if(RX._pend){if(ns.length===0){RX._pend=false;if(RX.tab!=='flash')RX._t=performance.now();}else return;}
+  if(S.cpl){rxCplHeld(ns);return;}
   if(S.ns){rxNsHeld(ns);return;}
   if(S.arp){rxArpHeld(ns);return;}
   if(S.eq){rxEqHeld(ns);return;}
@@ -15239,7 +15241,7 @@ function rxCircOpt(ch,S,live){
   return o;}
 
 /* ── rendu ── */
-const RX_TABS=[['day','📅 Séance du jour'],['form','👁 Forme'],['grip','🖐 Grip'],['tour','🔁 Tour des 12'],['deg','✋ Degrés'],['eq','🔀 Équivalences'],['sec','🎯 Dominantes sec.'],['ten','🎨 Tensions'],['mod','🌈 Modes'],['emp','🔄 Emprunts'],['sub','🔁 Substitutions'],['mdl','🚀 Modulations'],['pair','🔗 Voisin'],['cyc','✨ Belles grilles'],['run','〰 Runs & fills'],['lh','🎹 Main gauche'],['flash','⚡ Flash'],['grid','🎷 Grilles'],['heat','🎯 Niveaux & carte']];
+const RX_TABS=[['day','📅 Séance du jour'],['form','👁 Forme'],['grip','🖐 Grip'],['tour','🔁 Tour des 12'],['deg','✋ Degrés'],['eq','🔀 Équivalences'],['sec','🎯 Dominantes sec.'],['ten','🎨 Tensions'],['mod','🌈 Modes'],['emp','🔄 Emprunts'],['sub','🔁 Substitutions'],['mdl','🚀 Modulations'],['pair','🔗 Voisin'],['cyc','✨ Belles grilles'],['run','〰 Runs & fills'],['lh','🎹 Main gauche'],['cpl','🎶 Couples gospel'],['flash','⚡ Flash'],['grid','🎷 Grilles'],['heat','🎯 Niveaux & carte']];
 function rxRender(){
   const el=document.getElementById('rxRoot');if(!el)return;
   let h=rxDayBar()+rxNavHTML();
@@ -15251,6 +15253,7 @@ function rxRender(){
   if(RX.tab==='emp'&&typeof rxEmpHTML==='function'){el.innerHTML=h+rxEmpHTML();return;}
   if(RX.tab==='sub'&&typeof rxSubHTML==='function'){el.innerHTML=h+rxSubHTML();return;}
   if(RX.tab==='mdl'&&typeof rxMdlHTML==='function'){el.innerHTML=h+rxMdlHTML();return;}
+  if(RX.tab==='cpl'&&typeof rxCplHTML==='function'){el.innerHTML=h+rxCplHTML();return;}
   if((RX.tab==='run'||RX.tab==='lh')&&typeof rxNsHTML==='function'){el.innerHTML=h+rxNsHTML();return;}
   if(RX.tab==='cyc'&&typeof rxCycBar==='function'&&(RX.cycM==='arp')){el.innerHTML=h+rxCycBar()+rxArpHTML();return;}
   h+=(typeof rxCfgOpen==='function'?rxCfgOpen():'<div>')+'<div class="rx-set">';
@@ -15333,7 +15336,7 @@ function rxAlsoLine(S,L){if(!S||!S.reads||!S.formV)return '';const ans=L.ans.spl
   const pc=rxPcs(S.formV);return '<div class="rx-deg">mêmes notes, '+(all.length>1?'autres lectures justes':'autre lecture juste')+' : '+all.map(function(x){return '<b>'+(typeof rxSp==='function'?rxSp(L.ch.rp,x.rp-L.ch.rp):RX_NM[x.rp])+RX_QS[x.q]+'</b>'+(pc.indexOf(x.rp)<0?' (sans fondamentale)':'');}).join(' · ')+'</div>';}
 
 /* ── navigation à deux niveaux : 4 groupes, les sous-onglets du groupe choisi seulement ── */
-const RX_GROUPS=[['day','📅 Séance du jour',['day']],['kb','🖐 Clavier',['form','grip','tour','deg','pair','cyc','run','lh','flash','grid']],['th','🧠 Théorie',['eq','sec','emp','sub','mdl','ten','mod']],['heat','🎯 Niveaux',['heat']]];
+const RX_GROUPS=[['day','📅 Séance du jour',['day']],['kb','🖐 Clavier',['form','grip','tour','deg','pair','cyc','run','lh','cpl','flash','grid']],['th','🧠 Théorie',['eq','sec','emp','sub','mdl','ten','mod']],['heat','🎯 Niveaux',['heat']]];
 function rxGrpOf(t){for(let i=0;i<RX_GROUPS.length;i++)if(RX_GROUPS[i][2].indexOf(t)>=0)return RX_GROUPS[i][0];return 'kb';}
 function rxNavHTML(){const g=rxGrpOf(RX.tab),G=RX_GROUPS.filter(function(x){return x[0]===g;})[0],lb={};RX_TABS.forEach(function(t){lb[t[0]]=t[1];});
   let h='<div class="rx-tabs rx-grp">'+RX_GROUPS.map(function(x){return '<button class="'+(x[0]===g?'on':'')+'" data-rx="grp" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')+'</div>';
@@ -16452,6 +16455,94 @@ function rxSitDone(S){const A=S.ns,C=A.clk,T=A.t;const r=rxNsCalc(A)||{dev:0};le
   const key='sit|'+A.run,s=RX.runSt[key]||{n:0};s.n++;s.land=s.land==null?Math.round(Math.abs(land)):Math.round(s.land*.7+Math.abs(land)*.3);s.ok=(s.ok||0)+(rep.good?1:0);RX.runSt[key]=s;
   rxRecord(S.c[0],Math.abs(land),rep.good);rxSave();
   A.k=0;A.t=[];A.played=[];A.ko=0;A.bad=null;rxRender();}
+
+/* ═══════════ 🎶 Couples gospel — l'harmonie à trois voix du chœur (d'après Kurt Cowling, Gospel Piano, ch. 2 à 5)
+   main droite = une triade (3 notes, n'importe quel renversement) ; basse = notes sous le fa 2 ; parfois la note du dessus (mélodie) est imposée ═══════════ */
+const RX_TRI={M:[0,4,7],m:[0,3,7],o:[0,3,6]};
+const RX_CPL_SPLIT=53;
+function _C(r,q,lb,b,top){return {r:r,q:q,lb:lb,b:b==null?null:b,top:top==null?null:top};}
+const RX_CPL=[
+ {id:'gam6',g:2,nm:'La gamme gospel à 6 notes (I – ii)',why:'Le couple I – ii (do majeur + ré mineur) harmonise 6 des 7 notes de la gamme : seule la sensible manque. C’est la vraie base de l’harmonie vocale gospel (plus que la pentatonique). Ici la note du DESSUS est imposée : c’est la mélodie, les deux autres voix suivent en changeant de renversement.',
+  top:1,steps:function(){const T=[0,2,4,5,7,9,12,9,7,5,4,2,0];return T.map(function(t){const I=[0,4,7].indexOf(t%12)>=0;return _C(I?0:2,I?'M':'m',I?'I':'ii',null,t%12);});}},
+ {id:'cpl',g:2,nm:'Couple I – ii (voisin du dessus)',why:'Les trois voix de l’accord montent d’un degré (do-mi-sol → ré-fa-la) puis reviennent. On reste sur un seul accord (le I) mais ça bouge : change de renversement à chaque retour pour faire chanter la voix du haut.',steps:function(){return [_C(0,'M','I'),_C(2,'m','ii'),_C(0,'M','I'),_C(2,'m','ii'),_C(0,'M','I'),_C(2,'m','ii'),_C(0,'M','I')];}},
+ {id:'cplo',g:2,nm:'Couple I – ii° (couleur ballade)',why:'Même geste, mais le voisin est diminué (ré-fa-la♭ en do) : emprunté au mineur, il donne la couleur tendre des ballades.',steps:function(){return [_C(0,'M','I'),_C(2,'o','ii°'),_C(0,'M','I'),_C(2,'o','ii°'),_C(0,'M','I'),_C(2,'o','ii°'),_C(0,'M','I')];}},
+ {id:'bt',g:2,nm:'Backtracking : I – IV/I – I',why:'Dans une section sur un seul accord, la 3 et la 5 montent d’un degré (la fondamentale reste) : c’est le IV sur la basse du I, et on revient. Le IV tombe souvent sur les temps 2 ou 4. Ajoute le « crush » : glisse de la touche noire ½ ton sous la 3 ou la 5.',steps:function(){return [_C(0,'M','I',0),_C(5,'M','IV/I',0),_C(0,'M','I',0),_C(5,'M','IV/I',0),_C(0,'M','I',0)];},bass:1},
+ {id:'bt2',g:2,nm:'Backtracking à 2 niveaux : I – ♭VII – IV – I',why:'Le IV du IV : en fa, mi♭ puis si♭ puis fa. On recule de deux quintes avant de revenir, toujours sur la même basse.',steps:function(){return [_C(0,'M','I',0),_C(10,'M','♭VII/I',0),_C(5,'M','IV/I',0),_C(0,'M','I',0)];},bass:1},
+ {id:'bt3',g:2,nm:'Backtracking à 3 niveaux : I – ♭III – ♭VII – IV – I',why:'Trois quintes en arrière (la♭ – mi♭ – si♭ en fa) : très gospel, très « shout ».',steps:function(){return [_C(0,'M','I',0),_C(3,'M','♭III/I',0),_C(10,'M','♭VII/I',0),_C(5,'M','IV/I',0),_C(0,'M','I',0)];},bass:1},
+ {id:'bt7',g:2,nm:'Backtracking d’un accord de 7e (blues)',why:'Sur un I7, la main droite joue 3-5-♭7 (la triade diminuée de la 3ce) ; les trois voix montent ensemble vers la triade du IV, et reviennent.',steps:function(){return [_C(4,'o','I7',0),_C(5,'M','IV/I',0),_C(4,'o','I7',0),_C(5,'M','IV/I',0),_C(4,'o','I7',0)];},bass:1},
+ {id:'trio',g:2,nm:'Trio diatonique : I – ii – iii – ii – I',why:'Le voisin du voisin : trois triades parallèles dans la gamme. Sur la basse du I, le iii donne un I△7.',steps:function(){return [_C(0,'M','I',0),_C(2,'m','ii',0),_C(4,'m','iii',0),_C(2,'m','ii',0),_C(0,'M','I',0)];},bass:1},
+ {id:'trio7',g:2,nm:'Trio « bluesy » : I – ii – iii° – ii – I',why:'On baisse la 7 de la gamme : le iii devient diminué (fa♯-la-do en ré) et, sur la basse du I, ça sonne I7.',steps:function(){return [_C(0,'M','I',0),_C(2,'m','ii',0),_C(4,'o','iii° (=I7)',0),_C(2,'m','ii',0),_C(0,'M','I',0)];},bass:1},
+ {id:'trio3',g:2,nm:'Trio « crunchy » : I – ii – ♭III – ii – I',why:'3 et 7 baissées : la triade majeure sur ♭III donne, sur la basse du I, un Im7. Le contraste majeur / mineur, très gospel rapide.',steps:function(){return [_C(0,'M','I',0),_C(2,'m','ii',0),_C(3,'M','♭III (=Im7)',0),_C(2,'m','ii',0),_C(0,'M','I',0)];},bass:1},
+ {id:'triod',g:2,nm:'Trio diminué + passage chromatique',why:'ii° et iii° (deux triades diminuées) avec un diminué chromatique entre les deux (♯ii°) : la couleur ballade du ii° et la couleur bluesy du iii°, sur huit mesures d’un seul accord.',steps:function(){return [_C(0,'M','I',0),_C(2,'o','ii°',0),_C(3,'o','♯ii°',0),_C(4,'o','iii°',0),_C(2,'o','ii°',0),_C(0,'M','I',0)];},bass:1},
+ {id:'chrp',g:2,nm:'Parallèles chromatiques : I – ii – VII♮ – I',why:'On monte au voisin (ii) puis on revient au I par l’accord majeur ½ ton en dessous (ré majeur → mi♭ en mi♭) : tout bouge d’½ ton, la basse suit.',steps:function(){return [_C(0,'M','I',0),_C(2,'m','ii',2),_C(11,'M','VII (½ ton sous)',11),_C(0,'M','I',0),_C(1,'M','♭II (½ ton au-dessus)',1),_C(0,'M','I',0)];},bass:1},
+ {id:'slash',g:3,nm:'Couples + basses : les accords complets',why:'La main droite ne joue QUE le I ou le ii (ou ii°) ; c’est la basse qui fabrique l’accord : do/la = Am7, ré m/sol = G9sus4, ré°/sol = G7♭9… Lis le chiffrage, trouve la triade et la basse.',quiz:1,bass:1},
+ {id:'Vvi',g:4,nm:'Couple V – vi',why:'L’autre endroit de la gamme où une triade majeure a un voisin mineur : V – vi (sol – la m en do). On s’y installe pour harmoniser le vi et les accords qui l’entourent.',steps:function(){return [_C(7,'M','V'),_C(9,'m','vi'),_C(7,'M','V'),_C(9,'m','vi'),_C(7,'M','V')];}},
+ {id:'IVv',g:4,nm:'Couple IV – v (v rendu mineur)',why:'Sur le IV, le voisin naturel (V) est majeur : on le rend mineur le temps du couple (sol m en do… en fa : si♭ – do m).',steps:function(){return [_C(5,'M','IV'),_C(7,'m','v'),_C(5,'M','IV'),_C(7,'m','v'),_C(5,'M','IV')];}},
+ {id:'phr',g:3,nm:'Une phrase entière avec les couples',why:'Rien que des I et des ii à la main droite, mais une basse qui marche : I – ii – I/3 – ii/4 – ii/5 – I/6 – ii/7 – I, puis I/5 – IV/6 – V/7. L’oreille entend une vraie progression (I – I/3 – IV – V – I) : c’est le son gospel.',bass:1,steps:function(){return [_C(0,'M','I',0),_C(2,'m','ii',2),_C(0,'M','I/3',4),_C(2,'m','ii/4',5),_C(2,'m','ii/5 (V9sus)',7),_C(0,'M','I/6 (vi7)',9),_C(2,'m','ii/7 (viiø)',11),_C(0,'M','I',0),_C(0,'M','I/5',7),_C(5,'M','IV/6',9),_C(7,'M','V/7',11),_C(0,'M','I',0)];}},
+ {id:'mVII',g:5,mn:1,nm:'Mineur : couple i – VII',why:'En mineur, le même couple s’inverse : l’accord mineur est la tonique, le majeur est le VII (do m – si♭ en do mineur). Pas de sensible : son de mineur naturel.',steps:function(){return [_C(0,'m','i'),_C(10,'M','VII'),_C(0,'m','i'),_C(10,'M','VII'),_C(0,'m','i')];}},
+ {id:'mtri',g:5,mn:1,nm:'Mineur : trio i – ii° – vii°',why:'La tonique avec son voisin du dessus (ii°) et du dessous (vii°, la sensible) : on harmonise TOUTE la gamme mineure harmonique. Évite que la même voix chante ♭6 → 7 (seconde augmentée).',steps:function(){return [_C(0,'m','i'),_C(2,'o','ii°'),_C(0,'m','i'),_C(11,'o','vii°'),_C(0,'m','i'),_C(2,'o','ii°'),_C(11,'o','vii°'),_C(0,'m','i')];}},
+ {id:'mrel',g:5,mn:1,nm:'Mineur : couple III – iv (emprunt au relatif)',why:'Le couple I – ii du relatif majeur (do – ré m quand on est en la mineur) devient III – iv. On l’utilise au milieu d’une grille bien mineure.',steps:function(){return [_C(0,'m','i',0),_C(3,'M','III'),_C(5,'m','iv'),_C(3,'M','III'),_C(5,'m','iv'),_C(0,'m','i',0)];}}];
+/* les accords complets du chapitre 3 : triade de main droite (I, ii, ii°) + basse */
+const RX_CPL_SL=[[0,'M',9,'m7',9,'I/6'],[2,'m',11,'ø7',11,'ii/7'],[2,'m',7,'9sus4',7,'ii/5'],[0,'M',4,'',null,'I/3'],[0,'M',7,'',null,'I/5'],[2,'m',5,'',null,'ii/4'],[0,'M',5,'△9 (sans 3)',5,'I/4'],[0,'M',2,'11 (=II9sus4)',2,'I/2'],[2,'o',7,'7♭9',7,'ii°/5'],[2,'o',10,'7',10,'ii°/♭7'],[2,'m',10,'△7',10,'ii/♭7'],[0,'M',10,'7/♭7',null,'I/♭7'],[2,'o',5,'m6',5,'ii°/4']];
+const RX_CPL_GR={2:'Ch. 2 — sections statiques',3:'Ch. 3 — couples + basses',4:'Ch. 4 — déplacer le couple',5:'Ch. 5 — mineur'};
+function rxCplDef(){if(typeof rxCycDef==='function')rxCycDef();if(RX.cplId==null)RX.cplId='gam6';if(RX.cplB==null)RX.cplB=0;if(RX.cplSt==null)RX.cplSt={};}
+function rxCplNm(key,off,TN){off=((off%12)+12)%12;try{return off?spellIv(key,off,null,TN):TN;}catch(e){return RX_NM[(key+off)%12];}}
+function rxCplNew(){rxCplDef();RX._done=false;const L=RX_CPL.filter(function(x){return x.id===RX.cplId;})[0]||RX_CPL[0],key=rxCycKey(),TN=(L.mn?RX_CYC_MIN:RX_CYC_MAJ)[key];
+  let steps;if(L.quiz){const P=RX_CPL_SL.slice().sort(function(){return Math.random()-.5;}).slice(0,6);steps=P.map(function(x){const s=_C(x[0],x[1],x[5],x[2]);s.cn=x[4]!=null?rxCplNm(key,x[4],TN)+x[3]:null;return s;});}
+  else steps=L.steps();
+  steps.forEach(function(s){s.pcs=RX_TRI[s.q].map(function(x){return (key+s.r+x)%12;});s.tn=(s.lb.charAt(0)==='♯'&&typeof NS!=='undefined'?NS[(key+s.r)%12]:rxCplNm(key,s.r,TN))+(s.q==='m'?'m':(s.q==='o'?'°':''));if(s.b!=null)s.bn=rxCplNm(key,s.b,TN);if(s.top!=null)s.topn=rxCplNm(key,s.top,TN);
+    s.sym=s.tn+(s.b!=null&&s.b!==s.r?'/'+s.bn:'');});
+  return {cpl:{L:L,S:steps,k:0,bad:null,ko:0,t:[],t0:null,last:null,need:!!(L.bass||RX.cplB)},c:[{g:'cpl',q:L.id,rp:key}],i:0,key:key,title:L.nm+' — '+TN+(L.mn?'m':'')};}
+/* voicing modèle : la triade la plus proche de la précédente (ou avec la mélodie en haut) */
+function rxCplVoice(s,prev){const C=[];for(let lo=55;lo<=72;lo++){if(s.pcs.indexOf(lo%12)<0)continue;const v=[lo];for(let m=lo+1;v.length<3&&m<lo+12;m++)if(s.pcs.indexOf(m%12)>=0)v.push(m);if(v.length===3)C.push(v);}
+  let c=C;if(s.top!=null)c=C.filter(function(v){return v[2]%12===(RX.seq.key+s.top)%12;});if(!c.length)c=C;
+  if(!prev)return c.reduce(function(b,v){return Math.abs(v[1]-66)<Math.abs(b[1]-66)?v:b;},c[0]);
+  return c.reduce(function(b,v){const d=function(x){return Math.abs(x[0]-prev[0])+Math.abs(x[1]-prev[1])+Math.abs(x[2]-prev[2]);};return d(v)<d(b)?v:b;},c[0]);}
+function rxCplHeld(ns){const S=RX.seq,A=S.cpl;if(!A||A.k>=A.S.length)return;const s=A.S[A.k];
+  const rh=ns.filter(function(m){return m>=RX_CPL_SPLIT;}).sort(function(a,b){return a-b;}),lh=ns.filter(function(m){return m<RX_CPL_SPLIT;}).sort(function(a,b){return a-b;});
+  if(!rh.length){if(A.bad&&!ns.length){A.bad=null;}return;}
+  if(rh.length<3){rxCplLive(rh,lh);return;}
+  const pc=rh.map(function(m){return m%12;}),set=pc.filter(function(x,i){return pc.indexOf(x)===i;});
+  let ok=set.length===3&&set.every(function(x){return s.pcs.indexOf(x)>=0;});let why='';
+  if(!ok)why='ce n’est pas la triade '+s.tn;
+  if(ok&&s.top!=null&&rh[rh.length-1]%12!==(S.key+s.top)%12){ok=false;why='bonne triade, mais la mélodie (en haut) doit être '+s.topn;}
+  const bReq=A.need&&s.b!=null;
+  if(ok&&bReq){if(!lh.length){rxCplLive(rh,lh);A.wait=1;rxRender();return;}if(lh[0]%12!==(S.key+s.b)%12){ok=false;why='la basse doit être '+s.bn;}}
+  if(!ok){if(!A.bad||A.bad.k!==A.k){A.ko++;if(typeof rxRecord==='function')rxRecord({g:'cpl',q:A.L.id+'|'+s.lb,rp:S.key},0,false);}A.bad={k:A.k,why:why,rh:rh};rxRender();return;}
+  const now=(typeof NOTE_T!=='undefined'&&NOTE_T)?NOTE_T:performance.now();if(A.k===0)A.t0=now;else A.t.push(now-A.tp);A.tp=now;
+  A.last=rh;A.bad=null;A.wait=0;A.k++;
+  if(A.k>=A.S.length){RX._done=true;const ms=A.t.length?A.t.reduce(function(a,b){return a+b;},0)/A.t.length:0;const st=RX.cplSt[A.L.id]||{n:0};st.n++;st.ms=st.ms?Math.round(st.ms*.7+ms*.3):Math.round(ms);if(!st.best||ms<st.best)st.best=Math.round(ms);st.ko=(st.ko||0)+A.ko;RX.cplSt[A.L.id]=st;A.res={ms:ms};
+    if(typeof rxRecord==='function')rxRecord(S.c[0],ms,A.ko===0);rxSave();rxRender();rxAfter(true,S,function(){RX._done=false;rxNew();},2600);return;}
+  rxRender();}
+function rxCplLive(rh,lh){const el=document.getElementById('rxCplKb');if(!el)return;el.innerHTML=rxCplKb(rh.concat(lh));}
+function rxCplKb(live){const S=RX.seq,A=S.cpl,s=A.S[Math.min(A.k,A.S.length-1)],marks={};
+  if(RX.names&&!RX._done){const v=rxCplVoice(s,A.last);v.forEach(function(m){marks[m]={c:'#F5C842',t:'?'};});if(A.need&&s.b!=null){const b=36+((S.key+s.b)%12);marks[b]={c:'#A78BFA',t:'B'};}}
+  (live||[]).forEach(function(m){const ok=m<RX_CPL_SPLIT?(s.b==null||m%12===(S.key+s.b)%12):s.pcs.indexOf(m%12)>=0;marks[m]={c:ok?'#3ECF8E':'#EF4444',t:ok?'✓':'✕'};});
+  return rxCyKb(marks,36,84);}
+function rxCplHTML(){rxCplDef();const S=RX.seq;let h='<div class="rx-set"><span class="og-lb">Leçon</span><select class="rx-sel" data-rxsel="cpl">'+[2,3,4,5].map(function(g){return '<optgroup label="📘 '+RX_CPL_GR[g]+'">'+RX_CPL.filter(function(x){return x.g===g;}).map(function(x){const st=RX.cplSt[x.id];return '<option value="'+x.id+'"'+(RX.cplId===x.id?' selected':'')+'>'+x.nm+(st&&st.ms?' · '+(st.ms/1000).toFixed(1)+' s/acc.':'')+'</option>';}).join('')+'</optgroup>';}).join('')+'</select></div>'
+    +'<div class="rx-set"><span class="og-lb">Basse</span><button class="opill'+(RX.cplB?' on':'')+'" data-rx="cplb">'+(RX.cplB?'🎹 basse jugée partout':'🎹 basse jugée si la leçon l’exige')+'</button><span class="og-lb" style="margin-left:8px">Tonalité</span>'+[['q4','🔃 tour des quartes'],['rnd','🎲 hasard']].map(function(x){return '<button class="opill'+(RX.cycK===x[0]?' on':'')+'" data-rx="cyk" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
+    +'<select class="rx-sel" data-rxsel="cyk"><option value="">fixe…</option>'+RX_NM.map(function(n,i){return '<option value="'+i+'"'+(String(RX.cycK)===String(i)?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div>';
+  if(!S||!S.cpl)return h+'<button class="btn" data-rx="go">▶ Lancer</button>';const A=S.cpl,L=A.L;
+  h+='<div class="rx-cyw"><b>'+L.nm+'</b> <small>· d’après Kurt Cowling, Gospel Piano, '+RX_CPL_GR[L.g].split(' — ')[0]+'</small><div>'+L.why+'</div><div class="hint" style="margin:4px 0 0">💡 Main droite : 3 notes (la triade, dans le renversement que tu veux — le plus proche de la précédente). '+(A.need?'Main gauche : la basse indiquée, sous le fa 2.':'Main gauche libre.')+(L.top?' La note du HAUT est la mélodie imposée.':'')+'</div><div class="sd-ctl" style="margin-top:6px"><button class="opill" data-rx="cplplay">🔊 écouter le modèle</button></div></div>';
+  h+='<div class="rx-ttl">🎶 '+S.title+'</div><div class="rx-chain">'+A.S.map(function(s,i){return '<span class="'+(i<A.k?'done':(i===A.k&&!RX._done?'now':''))+'">'+(L.quiz?(s.cn||s.sym):'<small style="opacity:.7">'+s.lb+'</small> '+(RX.names||i<A.k?s.sym:'?'))+(s.top!=null&&RX.names?'<small style="opacity:.7"> ↑'+s.topn+'</small>':'')+'</span>';}).join('<b>→</b>')+'</div>';
+  const s=A.S[Math.min(A.k,A.S.length-1)];
+  h+='<div class="rx-fbtop">';
+  if(RX._done&&A.res)h+='<div class="rx-fb ok">✓ enchaînement fini — '+(A.res.ms/1000).toFixed(2)+' s par accord'+(A.ko?' · '+A.ko+' erreur'+(A.ko>1?'s':''):' · sans faute ✨')+'</div>';
+  else if(A.bad)h+='<div class="rx-fb bad">✕ '+A.bad.why+'<div class="rx-deg">attendu : main droite <b>'+s.tn+'</b> ('+s.pcs.map(function(p){return RX_NM[p];}).join(' – ')+')'+(A.need&&s.b!=null?' · basse <b>'+s.bn+'</b>':'')+(s.top!=null?' · mélodie en haut <b>'+s.topn+'</b>':'')+'</div></div>';
+  else if(A.wait)h+='<div class="rx-fb">✓ main droite juste — ajoute la basse <b>'+s.bn+'</b></div>';
+  else h+='<div class="rx-fb">'+(L.quiz?'Joue <b>'+(s.cn||s.sym)+'</b> avec un couple : quelle triade à droite, quelle basse ?':'Joue <b>'+s.lb+'</b>'+(RX.names?' = '+s.sym:'')+(s.top!=null?' avec <b>'+s.topn+'</b> en haut':''))+'</div>';
+  h+=(RX._wait&&RX._man?'<button class="btn" data-rx="next">▶ suivant</button>':'')+'</div>';
+  h+='<div id="rxCplKb">'+rxCplKb()+'</div>';
+  const st=RX.cplSt[L.id];h+='<div class="rx-mini">'+(st?'cette leçon : '+(st.ms/1000).toFixed(2)+' s/accord (record '+((st.best||0)/1000).toFixed(2)+') · '+st.n+' fois':'première fois')+'</div>';
+  h+='<div class="sd-ctl" style="margin-top:8px"><button class="opill" data-rx="skip">⏭ autre tonalité</button><button class="opill'+(RX.names?' on':'')+'" data-rx="names">'+(RX.names?'🏷 accords + voicing affichés':'◇ degrés seuls')+'</button></div>';
+  return h;}
+function rxCplPlay(){const S=RX.seq,A=S&&S.cpl;if(!A||typeof playNotes!=='function')return;let prev=null;const sp=900;
+  A.S.forEach(function(s,i){const v=rxCplVoice(s,prev);prev=v;const b=s.b!=null?36+((S.key+s.b)%12):36+((S.key+(A.L.mn?0:0))%12);setTimeout(function(){playNotes([b].concat(v),.95);},i*sp);});}
+(function(){const _c=rxClick2;rxClick2=function(a,v,b){
+  if(a==='cplb'){RX.cplB=RX.cplB?0:1;rxSave();rxNew();return true;}
+  if(a==='cplplay'){rxCplPlay();return true;}
+  return _c(a,v,b);};})();
+document.addEventListener('change',function(e){const t=e.target.closest&&e.target.closest('[data-rxsel="cpl"]');if(!t)return;RX.cplId=t.value;rxSave();rxNew();});
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
