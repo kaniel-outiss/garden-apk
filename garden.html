@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.16 · Belles grilles — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.17 · Belles grilles — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -704,7 +704,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.16 · belles grilles</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.17 · belles grilles</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16148,11 +16148,31 @@ const RX_CYC=[
   why:'Chaque accord descend d’une quinte vers le suivant sans quitter la gamme : i – iv – ♭VII – ♭III – ♭VI – iiø – V – i. Deux II-V-I collés : ♭VII7 → ♭III△ (vers le relatif majeur) puis iiø → V7 → i.'},
  {id:'cM',nm:'Cycle des quintes — majeur',ex:'Fly Me to the Moon, All the Things You Are, beaucoup de louanges',c:[[0,'maj7'],[5,'maj7'],[11,'m7b5'],[4,'7'],[9,'m7'],[2,'m7'],[7,'7'],[0,'maj7']],
   why:'Le même chemin vu depuis le majeur : I – IV – viiø – III7 – vi – ii – V – I. Le III7 (au lieu de iii) est la dominante du vi : c’est ce qui donne la couleur « qui tire ».'},
+ {id:'cmd',nm:'Cycle des quintes — mineur, ii diminué',ex:'version « Melody Sound » en sol♯ mineur, gospel, boléro',mn:1,c:[[0,'m7'],[5,'m7'],[10,'7'],[3,'maj7'],[8,'maj7'],[2,'dim7'],[7,'7'],[0,'m7']],
+  why:'Le même cycle, mais le iiø devient ii°7 (en la mineur : si ré fa la♭). Ce la♭ = sol♯, la sensible : l’accord est en fait le vii°7 de la tonique, un V7♭9 sans basse. Résultat : deux dominantes d’affilée (ii°7 → V7 → i), l’arrivée est plus dramatique.'},
+ {id:'mp1',g:'mp',nm:'i – III – VII – iv',ex:'Am – C – G – Dm · émotion douce, ballade',mn:1,c:[[0,'m7'],[3,'maj7'],[10,'7'],[5,'m7']],
+  why:'On monte vers le relatif majeur (III) puis on glisse au ♭VII et au iv : aucune dominante, la tristesse reste suspendue, la boucle repart sans fin.'},
+ {id:'mp2',g:'mp',nm:'i – III – VII – VI',ex:'Em – G – D – C · « bright sad », indie',mn:1,c:[[0,'m7'],[3,'maj7'],[10,'7'],[8,'maj7']],
+  why:'Trois accords majeurs après le i : c’est le mineur qui sonne lumineux. La basse descend du ♭VII au ♭VI avant de retomber sur le i.'},
+ {id:'mp3',g:'mp',nm:'i – iv – VI – V',ex:'Dm – Gm – B♭ – A · mineur dramatique classique',mn:1,c:[[0,'m7'],[5,'m7'],[8,'maj7'],[7,'7']],
+  why:'Le V est majeur (mineur harmonique : do♯ en ré mineur) : la sensible tire fort vers le i. Le ♭VI juste avant fait une descente d’½ ton (si♭ → la) à la basse.'},
+ {id:'mp4',g:'mp',nm:'i – v – VI – VII',ex:'Bm – F♯m – G – A · pop mineure moderne',mn:1,c:[[0,'m7'],[7,'m7'],[8,'maj7'],[10,'7']],
+  why:'Le v est mineur (pas de sensible) : pas de tension, juste une montée de basse ♭VI → ♭VII → i (sol, la, si) qui relance la boucle. (Le tableau écrit « V » : c’est un v mineur.)'},
+ {id:'mp5',g:'mp',nm:'i – v – VI – v',ex:'Am – Em – F – Em · doux, hanté, ballades',mn:1,c:[[0,'m7'],[7,'m7'],[8,'maj7'],[7,'m7']],
+  why:'La basse fait la → mi → fa → mi : le fa qui frotte contre le mi (½ ton) donne la couleur « hantée ». Le v mineur évite toute résolution franche.'},
+ {id:'mp6',g:'mp',nm:'i – VI – iv – V7',ex:'Em – C – Am – B7 · sombre puis forte résolution',mn:1,c:[[0,'m7'],[8,'maj7'],[5,'m7'],[7,'7']],
+  why:'♭VI et iv préparent, le V7 (avec la sensible ré♯ en mi mineur) résout avec force sur le i. (Le tableau écrit « N » : c’est un iv, pas une napolitaine — la napolitaine serait F.)'},
+ {id:'mp7',g:'mp',nm:'i – III – VII – IV (dorien)',ex:'Dm – F – C – G · rêveur, éclaircies majeures',mn:1,c:[[0,'m7'],[3,'maj7'],[10,'maj7'],[5,'7']],
+  why:'Le IV majeur (sol si ré en ré mineur) vient du mode dorien : la 6te majeure (si♮) éclaire le mineur. (Le tableau écrit « I » pour C : c’est le ♭VII.)'},
+ {id:'mp9',g:'mp',nm:'i – iv – VI – VII',ex:'G♯m – C♯m – E – F♯ · R&B / pop mineure',mn:1,c:[[0,'m7'],[5,'m7'],[8,'maj7'],[10,'7']],
+  why:'La basse monte iv → ♭VI → ♭VII → i : la boucle remonte vers la tonique au lieu d’y tomber, très fluide.'},
+ {id:'mp10',g:'mp',nm:'i – VII – IV – v (dorien)',ex:'Bm – A – E – F♯m · pop-rock émotionnel',mn:1,c:[[0,'m7'],[10,'maj7'],[5,'7'],[7,'m7']],
+  why:'♭VII puis IV majeur (dorien, sol♯ en si mineur) : deux accords majeurs lumineux, puis le v mineur ramène au i sans sensible. (Le tableau écrit « II » pour E : c’est le IV.)'},
  {id:'dom',nm:'Dominantes en cascade',ex:'Sweet Georgia Brown, Charleston, finales gospel « shout »',c:[[4,'7'],[9,'7'],[2,'7'],[7,'7'],[0,'maj7']],
   why:'Que des 7 de dominante qui tombent de quinte en quinte : III7 – VI7 – II7 – V7 – I. Le 3 de chaque accord descend d’½ ton pour devenir la 7 du suivant.'},
  {id:'tt',nm:'Descente chromatique par tritons',ex:'gospel, ballades jazz, intros de Don Moen',c:[[4,'m7'],[3,'7'],[2,'m7'],[1,'7'],[0,'maj7']],
   why:'iii – ♭III7 – ii – ♭II7 – I : les dominantes sont remplacées par leur substitut tritonique, la basse descend d’½ ton à chaque accord.'},
- {id:'dim',nm:'Montée gospel par diminués',ex:'cantiques, gospel traditionnel, « How Great Thou Art » réharmonisé',c:[[0,'maj7'],[1,'dim7'],[2,'m7'],[3,'dim7'],[4,'m7'],[9,'7'],[2,'m7'],[7,'7']],
+ {id:'dim',st:{1:0,3:1},nm:'Montée gospel par diminués',ex:'cantiques, gospel traditionnel, « How Great Thou Art » réharmonisé',c:[[0,'maj7'],[1,'dim7'],[2,'m7'],[3,'dim7'],[4,'m7'],[9,'7'],[2,'m7'],[7,'7']],
   why:'I – ♯I° – ii – ♯II° – iii – VI7 – ii – V : un diminué glisse entre deux degrés et pousse la basse d’½ ton vers le haut.'},
  {id:'plg',nm:'IV – iv : le retour plagal mineur',ex:'ballades worship, soul, Beatles',c:[[5,'maj7'],[5,'m7'],[4,'m7'],[9,'7'],[2,'m7'],[7,'7'],[0,'maj7']],
   why:'IV△ devient iv m7 (emprunt au mineur : le la devient la♭), puis on retombe sur iii – VI7 – ii – V – I. La note qui descend d’½ ton fait tout le charme.'},
@@ -16162,7 +16182,7 @@ const RX_CYC=[
   why:'Un II-V-I, puis le I devient m7 et sert de ii au II-V-I suivant, un ton plus bas. Trois tonalités en neuf accords.'},
  {id:'trn',nm:'Turnaround I – VI7 – ii – V',ex:'Rhythm Changes, Blue Moon, la fin de presque tous les standards',c:[[0,'maj7'],[9,'7'],[2,'m7'],[7,'7']],
   why:'Le vi devient VI7 (dominante du ii) : quatre accords en cycle des quintes qui relancent la forme.'},
- {id:'and',nm:'Cadence andalouse',ex:'flamenco, « Hit the Road Jack », ballades mineures',c:[[0,'m7'],[10,'7'],[8,'maj7'],[7,'7']],
+ {id:'and',g:'mp',nm:'Cadence andalouse : i – VII – VI – V',ex:'Cm – B♭ – A♭ – G · cinématographique, flamenco, « Hit the Road Jack »',c:[[0,'m7'],[10,'7'],[8,'maj7'],[7,'7']],
   why:'i – ♭VII – ♭VI – V7 : la basse descend la, sol, fa, mi. Le V7 majeur (mi sol♯ si ré) crée la tension qui ramène au i.'},
  {id:'neo',nm:'Neo-soul : ii – V7sus – I – vi',ex:'neo-soul, worship moderne, gospel contemporain',c:[[2,'m7'],[7,'7sus'],[0,'maj7'],[9,'m7']],
   why:'Le V7sus4 garde la fondamentale du ii en haut : la tension se résout en douceur, sans triton.'},
@@ -16173,6 +16193,7 @@ const RX_CYC=[
 const RX_ARP_T={rl:{lb:'rootless 3-5-7-9',iv:{maj7:[4,7,11,2],m7:[3,7,10,2],'7':[4,7,10,2],m7b5:[3,6,10,0],dim7:[0,3,6,9],'7sus':[5,7,10,2]},dg:{maj7:['3','5','7','9'],m7:['♭3','5','♭7','9'],'7':['3','5','♭7','9'],m7b5:['♭3','♭5','♭7','1'],dim7:['1','♭3','♭5','𝄫7'],'7sus':['4','5','♭7','9']}},
   t4:{lb:'accord 1-3-5-7',iv:RX_TONES,dg:{maj7:['1','3','5','7'],m7:['1','♭3','5','♭7'],'7':['1','3','5','♭7'],m7b5:['1','♭3','♭5','♭7'],dim7:['1','♭3','♭5','𝄫7'],'7sus':['1','4','5','♭7']}}};
 const RX_ARP_SPLIT=53; /* sous fa 2 : la main gauche (basse) est ignorée */
+const RX_CYC_MAJ=['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],RX_CYC_MIN=['C','C♯','D','E♭','E','F','F♯','G','G♯','A','B♭','B'];
 function rxCycDef(){if(RX.cyc==null)RX.cyc='cm';if(RX.cycM==null)RX.cycM='ch';if(RX.cycK==null)RX.cycK='q4';if(RX.cycKi==null)RX.cycKi=9;if(RX.cycA==null)RX.cycA='rl';if(RX.cycSt==null)RX.cycSt={};}
 function rxCycOk(P,g){return P.c.every(function(x){return g==='q4'?!!RX_GRIPS.q4.quart[x[1]]:(g==='poly'?!!RX_GRIPS.poly.ust[x[1]]:true);});}
 function rxCycPick(){rxCycDef();if(RX.cyc!=='auto')return RX_CYC.filter(function(p){return p.id===RX.cyc;})[0]||RX_CYC[0];
@@ -16181,8 +16202,10 @@ function rxCycPick(){rxCycDef();if(RX.cyc!=='auto')return RX_CYC.filter(function
 function rxCycKey(){rxCycDef();if(RX.cycK==='rnd')return Math.floor(Math.random()*12);if(RX.cycK==='q4'){const k=RX.cycKi;RX.cycKi=(RX.cycKi+5)%12;rxSave();return k;}return +RX.cycK;}
 function rxCycNew(){rxCycDef();RX._done=false;const P=rxCycPick(),key=rxCycKey(),g=RX.grip;
   const c=P.c.map(function(x){const ch={g:RX.cycM==='arp'?'arp':g,q:x[1],rp:(key+x[0])%12};if(RX.cycM!=='arp'&&g==='poly'){const L=RX_GRIPS.poly.ust[x[1]]||[];if(L.length)ch.ust=x[1]==='7'&&L.length>1?L[1]:L[0];}return ch;});
-  const S={c:c,i:0,costs:[],times:[],cyc:P.id,key:key,title:P.nm+' — '+RX_NM[key]+(P.mn?'m':'')};
-  if(RX.cycM==='arp'){S.arp={dir:1,got:[],last:null,bad:null,t0:null,vl:[],ko:0,prev:[]};c.forEach(function(ch){ch.g='arp'+RX.cycA;});}
+  const TN=(P.mn?RX_CYC_MIN:RX_CYC_MAJ)[key],ST=Object.assign({},typeof IV_STEP!=='undefined'?IV_STEP:{},P.st||{});
+  c.forEach(function(ch,i){const off=P.c[i][0];let r=TN;try{if(off&&typeof spellIv==='function')r=spellIv(key,off,ST[off],TN);}catch(e){}ch.nm=r+(typeof rxQName==='function'?rxQName(ch):RX_QS[ch.q]);});
+  const S={c:c,i:0,costs:[],times:[],cyc:P.id,key:key,title:P.nm+' — '+TN+(P.mn?'m':'')};
+  if(RX.cycM==='arp'){S.arp={dir:1,got:[],last:null,bad:null,t0:null,vl:[],ko:0,prev:[]};c.forEach(function(ch){ch.g='arp'+RX.cycA;ch.nm=ch.nm.replace(/9|13|11/g,'7').replace('77','7');});}
   return S;}
 /* — enchaînement fini : temps par accord pour la grille (sert au choix « auto ») — */
 function rxCycStore(S){if(!S||!S.cyc||S._st)return;S._st=1;const T=S.times.filter(function(x){return x>0;});if(!T.length)return;const ms=T.reduce(function(a,b){return a+b;},0)/T.length,k=S.cyc+'|'+(S.arp?'arp':'ch');
@@ -16215,7 +16238,7 @@ function rxCyKb(marks,lo,hi){lo=lo||48;hi=hi||84;const W=18,BK=[1,3,6,8,10],wh=[
 function rxCyNm(m,ch){return (typeof nnK==='function'?nnK(m%12,ch.rp):RX_NM[m%12]);}
 /* — barre de choix, commune aux deux modes — */
 function rxCycBar(){rxCycDef();const P=rxCycPick();
-  let h='<div class="rx-set"><span class="og-lb">Grille</span><select class="rx-sel" data-rxsel="cyc"><option value="auto"'+(RX.cyc==='auto'?' selected':'')+'>🎲 auto — la moins maîtrisée</option>'+RX_CYC.map(function(p){const ok=RX.cycM==='arp'||rxCycOk(p,RX.grip),s=RX.cycSt[p.id+'|'+RX.cycM];return '<option value="'+p.id+'"'+(RX.cyc===p.id?' selected':'')+(ok?'':' disabled')+'>'+p.nm+(s?' · '+(s.ms/1000).toFixed(1)+' s/acc.':'')+(ok?'':' (pas avec ce grip)')+'</option>';}).join('')+'</select></div>'
+  let h='<div class="rx-set"><span class="og-lb">Grille</span><select class="rx-sel" data-rxsel="cyc"><option value="auto"'+(RX.cyc==='auto'?' selected':'')+'>🎲 auto — la moins maîtrisée</option>'+[['jz','🎷 Cycles, jazz & gospel'],['mp','🌙 Mineur pop & ballades']].map(function(G){return '<optgroup label="'+G[1]+'">'+RX_CYC.filter(function(p){return (p.g||'jz')===G[0];}).map(function(p){const ok=RX.cycM==='arp'||rxCycOk(p,RX.grip),s=RX.cycSt[p.id+'|'+RX.cycM];return '<option value="'+p.id+'"'+(RX.cyc===p.id?' selected':'')+(ok?'':' disabled')+'>'+p.nm+(s?' · '+(s.ms/1000).toFixed(1)+' s/acc.':'')+(ok?'':' (pas avec ce grip)')+'</option>';}).join('')+'</optgroup>';}).join('')+'</select></div>'
    +'<div class="rx-set"><span class="og-lb">Jeu</span>'+[['ch','🖐 accords'],['arp','〰 arpèges ↗↘']].map(function(x){return '<button class="opill'+(RX.cycM===x[0]?' on':'')+'" data-rx="cym" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
    +(RX.cycM==='arp'?'<span class="og-lb" style="margin-left:8px">Notes</span>'+Object.keys(RX_ARP_T).map(function(k){return '<button class="opill'+(RX.cycA===k?' on':'')+'" data-rx="cya" data-v="'+k+'">'+RX_ARP_T[k].lb+'</button>';}).join(''):'')
    +'<span class="og-lb" style="margin-left:8px">Tonalité</span>'+[['q4','🔃 tour des quartes'],['rnd','🎲 hasard']].map(function(x){return '<button class="opill'+(RX.cycK===x[0]?' on':'')+'" data-rx="cyk" data-v="'+x[0]+'">'+x[1]+'</button>';}).join('')
@@ -16226,7 +16249,7 @@ function rxCycBar(){rxCycDef();const P=rxCycPick();
   return h;}
 /* — vue arpèges — */
 function rxArpHTML(){const S=RX.seq;if(!S||!S.arp)return '<button class="btn" data-rx="go">▶ Lancer</button>';const A=S.arp,ch=S.c[Math.min(S.i,S.c.length-1)],T=RX_ARP_T[RX.cycA]||RX_ARP_T.rl;
-  let h='<div class="rx-ttl">🎷 '+S.title+'</div><div class="rx-chain">'+S.c.map(function(c,i){return '<span class="'+(i<S.i?'done':(i===S.i?'now':''))+'">'+(i%2?'↘ ':'↗ ')+rxName(c).split(' · ')[0]+'</span>';}).join('<b>→</b>')+'</div>';
+  let h='<div class="rx-ttl">🎷 '+S.title+'</div><div class="rx-chain">'+S.c.map(function(c,i){return '<span class="'+(i<S.i?'done':(i===S.i?'now':''))+'">'+(i%2?'↘ ':'↗ ')+(c.nm||rxName(c).split(' · ')[0])+'</span>';}).join('<b>→</b>')+'</div>';
   const pcs=rxArpPcs(ch),dg=T.dg[ch.q]||[];
   const path=S.i<S.c.length?rxArpPath(ch,A.got.length?null:A.last,A.dir):[];
   const marks={};if(A.done&&!A.got.length)A.done.forEach(function(m){marks[m]={c:'#5B6390'};});
@@ -16235,7 +16258,7 @@ function rxArpHTML(){const S=RX.seq;if(!S||!S.arp)return '<button class="btn" da
   h+='<div class="rx-fbtop">';
   if(RX._done){const vl=A.vl.length?A.vl.reduce(function(a,b){return a+b;},0)/A.vl.length:0;h+='<div class="rx-fb ok">✓ grille finie — '+(S.times.reduce(function(a,b){return a+b;},0)/S.times.length/1000).toFixed(2)+' s par accord · '+A.ko+' fausse'+(A.ko>1?'s':'')+' note'+(A.ko>1?'s':'')+(A.vl.length?' · liaison moyenne '+vl.toFixed(1)+' demi-ton'+(vl>1?'s':'')+(vl<=2?' ✨':' (vise 1 ou 2)'):'')+'</div>';}
   else if(A.bad!=null)h+='<div class="rx-fb bad">✕ '+rxCyNm(A.bad,ch)+' — '+(A.got.length?'la note suivante '+(A.dir>0?'au-dessus':'en dessous')+' est '+rxCyNm(rxArpStep(A.got[A.got.length-1],pcs,A.dir),ch):'commence sur une note de l’accord : '+pcs.map(function(p,i){return rxCyNm(p,ch)+' ('+dg[i]+')';}).join(' · '))+'</div>';
-  else h+='<div class="rx-fb">'+(A.dir>0?'↗ monte':'↘ descends')+' <b>'+rxName(ch).split(' · ')[0]+'</b> : '+(RX.names?pcs.map(function(p,i){return rxCyNm(p,ch)+' <small>'+dg[i]+'</small>';}).join(' · '):dg.join(' · '))+(A.last!=null&&!A.got.length?'<div class="rx-deg">pars près de '+rxCyNm(A.last,ch)+(RX.names&&path[0]!=null?' → '+rxCyNm(path[0],ch):'')+'</div>':'')+'</div>';
+  else h+='<div class="rx-fb">'+(A.dir>0?'↗ monte':'↘ descends')+' <b>'+(ch.nm||rxName(ch).split(' · ')[0])+'</b> : '+(RX.names?pcs.map(function(p,i){return rxCyNm(p,ch)+' <small>'+dg[i]+'</small>';}).join(' · '):dg.join(' · '))+(A.last!=null&&!A.got.length?'<div class="rx-deg">pars près de '+rxCyNm(A.last,ch)+(RX.names&&path[0]!=null?' → '+rxCyNm(path[0],ch):'')+'</div>':'')+'</div>';
   h+=(RX._wait&&RX._man?'<button class="btn" data-rx="next">▶ suivant</button>':'')+'</div>';
   h+=rxCyKb(marks);
   const k=RX.cycSt[S.cyc+'|arp'];
