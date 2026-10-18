@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.24 · Dobbins — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.25 · Dobbins II-III — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -706,7 +706,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.24 · Dobbins</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.25 · Dobbins II-III</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16484,8 +16484,8 @@ function rxSitDone(S){const A=S.ns,C=A.clk,T=A.t;const r=rxNsCalc(A)||{dev:0};le
 
 /* ═══════════ 🎶 Couples gospel — l'harmonie à trois voix du chœur (d'après Kurt Cowling, Gospel Piano, ch. 2 à 5)
    main droite = une triade (3 notes, n'importe quel renversement) ; basse = notes sous le fa 2 ; parfois la note du dessus (mélodie) est imposée ═══════════ */
-const RX_TRI={M:[0,4,7],m:[0,3,7],o:[0,3,6],L:[0,4,6,11],M7:[0,4,7,11],m7:[0,3,7,10],h7:[0,3,6,10],d7:[0,3,6,9],dM:[0,3,6,11],D7:[0,4,7,10]};
-const RX_GQN={D7:'7',L:' lydien',M7:'△7',m7:'m7',h7:'ø7',d7:'°7',dM:'°(△7)'};
+const RX_TRI={M:[0,4,7],m:[0,3,7],o:[0,3,6],L:[0,4,6,11],M7:[0,4,7,11],m7:[0,3,7,10],h7:[0,3,6,10],d7:[0,3,6,9],dM:[0,3,6,11],D7:[0,4,7,10],Ap:[0,4,8,11],P7:[0,4,8,10],F7:[0,4,6,10],S7:[0,5,7,10],mM:[0,3,7,11],a9:[0,2,4,7],a4:[0,4,5,7],a4s:[0,4,6,7],a9s:[0,3,4,7],m9a:[0,2,3,7],m4a:[0,3,5,7],o9:[0,2,3,6],o4:[0,3,5,6]};
+const RX_GQN={Ap:'△♯5',P7:'7♯5',F7:'7♭5',S7:'7sus',mM:'m△7',a9:' add9',a4:' add4',a4s:' add♯4',a9s:' add♯9',m9a:'m add9',m4a:'m add4',o9:'° add9',o4:'° add4',D7:'7',L:' lydien',M7:'△7',m7:'m7',h7:'ø7',d7:'°7',dM:'°(△7)'};
 const RX_CPL_SPLIT=53;
 function _C(r,q,lb,b,top){return {r:r,q:q,lb:lb,b:b==null?null:b,top:top==null?null:top};}
 const RX_CPL=[
@@ -16513,7 +16513,7 @@ const RX_CPL=[
 const RX_CPL_SL=[[0,'M',9,'m7',9,'I/6'],[2,'m',11,'ø7',11,'ii/7'],[2,'m',7,'9sus4',7,'ii/5'],[0,'M',4,'',null,'I/3'],[0,'M',7,'',null,'I/5'],[2,'m',5,'',null,'ii/4'],[0,'M',5,'△9 (sans 3)',5,'I/4'],[0,'M',2,'11 (=II9sus4)',2,'I/2'],[2,'o',7,'7♭9',7,'ii°/5'],[2,'o',10,'7',10,'ii°/♭7'],[2,'m',10,'△7',10,'ii/♭7'],[0,'M',10,'7/♭7',null,'I/♭7'],[2,'o',5,'m6',5,'ii°/4']];
 const RX_CPL_GR={2:'Ch. 2 — sections statiques',3:'Ch. 3 — couples + basses',4:'Ch. 4 — déplacer le couple',5:'Ch. 5 — mineur'};
 function rxCplList(){return RX.tab==='grs'?RX_GRS:RX_CPL;}function rxCplCur(){return RX.tab==='grs'?RX.grsId:RX.cplId;}
-function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées'],['g4','📙 Bill Dobbins — les 5 septièmes']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
+function rxCplGroups(){return RX.tab==='grs'?[['g1','🧩 Les grips et leurs accords'],['g2','🧩 ii – V – I – VI avec les grips'],['g3','🧩 Grips diminuées'],['g4','📙 Dobbins I — les 5 septièmes'],['g5','📙 Dobbins II — les septièmes altérées'],['g6','📙 Dobbins III — triades + 1 note']]:[2,3,4,5].map(function(g){return [g,'📘 '+RX_CPL_GR[g]];});}
 function rxCplDef(){if(RX.grsId==null)RX.grsId='gL';if(typeof rxCycDef==='function')rxCycDef();if(RX.cplId==null)RX.cplId='gam6';if(RX.cplB==null)RX.cplB=0;if(RX.cplSt==null)RX.cplSt={};}
 function rxCplNm(key,off,TN){off=((off%12)+12)%12;try{return off?spellIv(key,off,null,TN):TN;}catch(e){return RX_NM[(key+off)%12];}}
 function rxCplNew(){rxCplDef();RX._done=false;const LST=rxCplList(),L=LST.filter(function(x){return x.id===rxCplCur();})[0]||LST[0],key=rxCycKey(),TN=(L.mn?RX_CYC_MIN:RX_CYC_MAJ)[key];
@@ -16614,6 +16614,26 @@ RX_GRS.push(
  {id:'dbm',g:'g4',grip:1,src:_DOB,nm:'Les m7, renversement par renversement',why:'Même travail sur les m7 : en 1er renversement, la fondamentale tombe sous le pouce de la main gauche ou le petit doigt de la main droite.',steps:_dobInv('m7','m7')},
  {id:'dbh',g:'g4',grip:1,src:_DOB,nm:'Les ø7, renversement par renversement',why:'Même travail sur les demi-diminués. Pour l’écriture, Dobbins conseille de passer aux dièses après si♭ ou même fa.',steps:_dobInv('h7','ø7')},
  {id:'dbUS',g:'g4',grip:1,quiz:'grip',items:RX_DOB_Q,bass:1,src:_DOB,nm:'Une 7e de base sur une autre basse : 33 accords nouveaux',why:'Le cœur du livre : do△7 (do-mi-sol-si) sur la = Am9, sur fa = F△9♯11, sur ré = D13sus, sur la♭ = A♭△7♯5♯9… Les 5 septièmes de base, posées sur d’autres basses, donnent 33 accords « nouveaux » sans apprendre un seul voicing de plus. Chante ou entends la basse même quand tu ne la joues pas.'});
+
+/* — Dobbins, chapitres II et III — */
+function _dobMulti(list){const K='dob_'+list[0][0];return function(){const st=RX[K]||{i:-1,q:-1};st.i=(st.i+1)%4;if(st.i===0||st.q<0)st.q=(st.q+1)%list.length;RX[K]=st;rxSave();
+  const it=list[st.q],inv=st.i,L=['fondamentale','1er renv.','2e renv.','3e renv.'][inv],out=[];for(let k=0;k<12;k++){const s=_C((k*5)%12,it[0],it[1]+' · '+L);s.inv=inv;out.push(s);}return out;};}
+const RX_DOB2_Q=[[3,'Ap','m9(△7)'],[6,'Ap','m11(♭5)'],[10,'Ap','13(♭5 ♯11)'],[4,'Ap','+(♯9)'],[7,'Ap','m△7(♯11)'],[3,'L','m6/9'],[10,'L','13'],[4,'L','7(♯5 ♯9)'],
+ [6,'P7','9(♭5)'],[10,'P7','ø9'],[4,'P7','9(♯5)'],[7,'P7','m11(△7)'],[11,'P7','m6(△7)'],[6,'F7','7(♭5)'],[10,'F7','9(♯5)'],
+ [9,'S7','6/9'],[4,'S7','6/9(△7)'],[11,'S7','6(△7 ♯11)'],[5,'S7','m7(add4)'],[10,'S7','7sus(♯5 ♯9)'],[3,'S7','7(♯5 ♭9) sans 3'],
+ [3,'mM','m9(♭5)'],[7,'mM','9(♯11)'],[10,'mM','13sus(♭9)'],[1,'mM','+(♭9)'],[4,'mM','△7(♯9)'],[10,'dM','13(♭9)'],[4,'dM','7(♯9)'],[7,'dM','7(♭9 ♯11)']];
+const RX_DOB3_Q=[[2,'a9','6/9(♭5)'],[3,'a9','m7(add4)'],[4,'a9','△7(♯5 ♯11)'],[7,'a9','△6/9'],[2,'a4','6/9(♯11)'],[5,'a4','13sus'],[7,'a4','△9'],[10,'a4','m11'],[11,'a4','△7(♯9 ♯11)'],
+ [1,'a4s','7sus(♭5 ♭9)'],[3,'a4s','m7(add6)'],[10,'a4s','9(add11)'],[3,'a9s','m7(♯11)'],[6,'a9s','13(♭5 ♭9)'],[11,'a9s','m9(△7 ♯11)'],
+ [3,'m9a','ø(add4)'],[4,'m9a','△7(♯11)'],[7,'m9a','13'],[10,'m9a','7sus(♭9)'],[4,'m4a','△6'],[7,'m4a','9 sans 3'],[9,'m4a','6/9'],[11,'m4a','△9(♯11)'],
+ [4,'o9','7(♯11)'],[7,'o9','13(♭9) sans 3'],[10,'o9','7(♭9)'],[4,'o4','13'],[7,'o4','7(♭9) sans 3'],[10,'o4','7(♯9 ♭9)']];
+const _DOB2='d’après Bill Dobbins, A Creative Approach to Jazz Piano Harmony, ch. II',_DOB3='d’après Bill Dobbins, A Creative Approach to Jazz Piano Harmony, ch. III';
+RX_GRS.push(
+ {id:'db2i',g:'g5',grip:1,src:_DOB2,nm:'Les 7 septièmes altérées, renversement par renversement',why:'△♯5, △♭5 (= la grip lydienne), 7♯5, 7♭5, 7sus, m△7 et °△7. Même routine qu’au chapitre I : un type, les 12 tons dans le cycle des quartes, le même renversement ; la fois suivante le renversement suivant, puis le type suivant. Ces accords contiennent des intervalles nouveaux (tons entiers entre 3 et ♭5, entre ♯5 et 7, entre sus4 et 5) : beaucoup de formes nouvelles sous la main.',
+  steps:_dobMulti([['Ap','△♯5'],['L','△♭5'],['P7','7♯5'],['F7','7♭5'],['S7','7sus'],['mM','m△7'],['dM','°△7']])},
+ {id:'db2q',g:'g5',grip:1,quiz:'grip',items:RX_DOB2_Q,bass:1,src:_DOB2,nm:'Les septièmes altérées sur d’autres basses',why:'do△♯5 sur la = Am9(△7), do7sus sur mi♭ = E♭6/9, do m△7 sur ré = D13sus♭9, do7♯5 sur ré = Dø9… Plus chromatiques que celles du chapitre I : écoute bien où chaque note veut aller.'},
+ {id:'db3q',g:'g6',grip:1,quiz:'grip',items:RX_DOB3_Q,bass:1,src:_DOB3,nm:'Triades + une note (add9, add4, add♯4…) sur d’autres basses',why:'Une triade majeure, mineure ou diminuée avec une 2de ou une 4te ajoutée : do add9 sur fa = F△6/9, do add4 sur sol = G13sus, do m add9 sur fa = F13, do° add4 sur la♭ = A♭13… Plus dissonantes : si une position sonne trop dur, essaie le renversement voisin. Elles sonnent très bien en drop 2 avec un bassiste.'},
+ {id:'db3i',g:'g6',grip:1,src:_DOB3,nm:'add9, add4, m add9… renversement par renversement',why:'Chaque structure dans les 12 tons du cycle des quartes, renversement après renversement : familiarise la main et l’oreille avec ces formes avant de les poser sur une basse.',
+  steps:_dobMulti([['a9',' add9'],['a4',' add4'],['m9a','m add9'],['m4a','m add4'],['a4s',' add♯4'],['o9','° add9']])});
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
