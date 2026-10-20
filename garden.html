@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Garden 🌱 v12.27 · voicings 3 notes — Laboratoire de musique jouée</title>
+<title>Garden 🌱 v12.28 · explications animées — Laboratoire de musique jouée</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -701,12 +701,21 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .rx-cyw{background:#161B36;border:1px solid #2C3560;border-radius:12px;padding:10px 12px;margin:6px 0 10px;font-size:13.5px;line-height:1.45;color:#C9D1EE}.rx-cyw b{color:#F5C842;font-size:15px}.rx-cyw small{color:#7A85A8}
 .rx-ns{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.rx-ns span{display:flex;flex-direction:column;align-items:center;min-width:34px;padding:4px 5px;border-radius:8px;background:var(--bg3);color:#7A85A8;font-weight:800;font-size:14px}.rx-ns span small{font-size:10px;font-weight:700;opacity:.8}.rx-ns span.now{background:#F5C842;color:#12162B}.rx-ns span.done{color:#3ECF8E}
 .rx-sit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.rx-sbar{background:var(--bg3);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:4px;color:#C9D1EE}.rx-sbar.now{outline:2px solid #F5C842}.rx-sbar b{font-size:16px}.rx-sbar span{display:flex;gap:3px}.rx-sbar i{flex:1;height:8px;border-radius:4px;background:#2C3560}.rx-sbar i.w{background:#A78BFA66}.rx-sbar i.on{background:#F5C842}.rx-sbar small{font-size:10.5px;color:#A78BFA;font-weight:700}
+.rx-st{position:fixed;inset:0;z-index:9999;background:radial-gradient(ellipse at 50% 35%,#141a33 0%,#07090f 75%);overflow:auto;display:flex;justify-content:center}
+.st-in{width:100%;max-width:560px;padding:22px 16px 30px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:#E8ECF5}
+.st-lab{font-size:11px;letter-spacing:4px;color:#8A93B8;font-weight:800}.st-lab.g{color:#F5C842}
+.st-tt{font-size:30px;font-weight:900;letter-spacing:.5px;line-height:1.05;text-shadow:0 0 18px rgba(255,255,255,.25)}.st-tt.g{color:#F5C842;text-shadow:0 0 22px rgba(245,200,66,.55)}
+.st-chain{font-size:13px;color:#5B6390;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;font-weight:700}.st-chain span.on{font-weight:900;font-size:15px}.st-chain b{color:#323A60}
+.st-c{animation:stIn .45s ease}.st-poly{transition:all .4s}@keyframes stIn{from{opacity:.25;transform:scale(.97)}to{opacity:1;transform:none}}
+.st-kb{width:100%;max-width:520px}.st-cap{font-size:18px;font-weight:700;line-height:1.4;max-width:460px;min-height:76px;animation:stIn .6s ease}
+.st-dots{display:flex;gap:5px}.st-dots i{width:7px;height:7px;border-radius:4px;background:#2C3560}.st-dots i.on{background:#F5C842;width:18px}
+.st-ctl{display:flex;gap:8px;margin-top:6px}.st-ctl button{background:#1B2140;color:#E8ECF5;border:1px solid #2C3560;border-radius:12px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">🌱 Garden <span class="sub">v12.27 · voicings 3 notes</span></div>
+  <div class="logo">🌱 Garden <span class="sub">v12.28 · explications animées</span></div>
   <div class="midi-zone">
     <button class="btn gold" id="btnMidi" onclick="initMidi()">🎹 Connecter MIDI</button>
     <span class="midi-dot" id="midiDot"></span><span id="midiLabel">Aucun appareil</span>
@@ -16266,7 +16275,7 @@ function rxCycBar(){rxCycDef();const P=rxCycPick();
    +'<select class="rx-sel" data-rxsel="cyk"><option value="">fixe…</option>'+RX_NM.map(function(n,i){return '<option value="'+i+'"'+(String(RX.cycK)===String(i)?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div>';
   const S=RX.seq,PP=S&&S.cyc?RX_CYC.filter(function(p){return p.id===S.cyc;})[0]:P;
   h+='<div class="rx-cyw"><b>'+PP.nm+'</b> <small>· '+PP.ex+'</small><div>'+PP.why+'</div>'+(RX.cycM==='ch'?'<div class="hint" style="margin:4px 0 0">💡 Garde les notes communes, bouge d’½ ton : la 7 d’un accord descend vers la 3 du suivant.</div>':'<div class="hint" style="margin:4px 0 0">💡 Un accord monte, le suivant descend, en démarrant sur la note la plus proche de celle où tu t’es arrêté (½ ton ou 1 ton) : la ligne coule toute seule. Main gauche libre pour la basse (sous le fa 2, ignorée).</div>')
-   +'<div class="sd-ctl" style="margin-top:6px"><button class="opill" data-rx="cyplay">🔊 écouter '+(RX.cycM==='arp'?'l’arpège modèle':'la grille')+'</button></div></div>';
+   +'<div class="sd-ctl" style="margin-top:6px"><button class="opill" data-rx="cyplay">🔊 écouter '+(RX.cycM==='arp'?'l’arpège modèle':'la grille')+'</button><button class="opill" data-rx="cystory" style="border-color:#F5C842">🎬 regarder l’explication</button></div></div>';
   return h;}
 /* — vue arpèges — */
 function rxArpHTML(){const S=RX.seq;if(!S||!S.arp)return '<button class="btn" data-rx="go">▶ Lancer</button>';const A=S.arp,ch=S.c[Math.min(S.i,S.c.length-1)],T=RX_ARP_T[RX.cycA]||RX_ARP_T.rl;
@@ -16657,6 +16666,68 @@ RX_GRS.push(
   steps:function(){const out=[];const q=RX_C3Q[Math.floor(Math.random()*RX_C3Q.length)];for(let j=0;j<3;j++){const r=(j*5)%12;for(let k=0;k<4;k++)out.push(_c3(r,q,k));}return out;}},
  {id:'db3b',g:'g8',grip:1,bass:1,src:_DOB4,nm:'3 notes au-dessus de la basse',why:'La main gauche joue la fondamentale, la main droite seulement 3 notes : laquelle enlever ? Garden te le dit à chaque accord. Écoute comme le son change selon la note absente : sans la 5te, l’accord reste clair ; sans la 3ce, il devient ouvert, presque sus ; sans la 7e, il redevient une triade colorée par la basse.',
   steps:function(){const out=[];for(let j=0;j<8;j++){const q=RX_C3Q[Math.floor(Math.random()*RX_C3Q.length)],r=Math.floor(Math.random()*12),k=Math.floor(Math.random()*4);out.push(_c3(r,q,k,r));}return out;}});
+
+/* ═══════════ 🎬 L'EXPLICATION ANIMÉE d'une belle grille : cercle + clavier + son + légendes, scène par scène ═══════════ */
+const ST_HUE=['#F5B342','#FF7EB6','#7FD1A0','#5FC3E4','#A78BFA','#F7D154','#FF9F6B','#62E0C8','#8FB3FF','#F27C7C','#B7E36A','#E79CFF'];
+function stName(key,pc){try{return nnK(pc,ST&&ST.P&&ST.P.mn?(key+3)%12:key);}catch(e){return RX_NM[pc];}}
+function stCirc(S,sc){const W=300,c=W/2,R=104,Q5=sc.cm==='q5',key=S.key;
+  const POS=function(pc){return Q5?((pc*7)%12+12)%12:((pc%12)+12)%12;},P=function(pc,r){const a=(-90+POS(pc)*30)*Math.PI/180;return [c+Math.cos(a)*(r||R),c+Math.sin(a)*(r||R)];};
+  const ch=S.C[sc.i],col=ST_HUE[sc.i%ST_HUE.length],pcs=ch.pcs;
+  let s='<circle cx="'+c+'" cy="'+c+'" r="'+R+'" fill="none" stroke="#232A48" stroke-width="2"/>';
+  for(let pc=0;pc<12;pc++){const q=P(pc),t=P(pc,R+22),on=pcs.indexOf(pc)>=0,inK=S.scale.indexOf(pc)>=0;
+    s+='<text x="'+t[0]+'" y="'+(t[1]+4)+'" text-anchor="middle" font-size="12" font-weight="800" fill="'+(on?'#fff':(inK?'#9AA3C7':'#454D72'))+'">'+stName(key,pc)+'</text>';
+    s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="'+(inK?5:3)+'" fill="'+(inK?ST_HUE[pc]:'#2C3560')+'"/>';}
+  const ps=pcs.slice().sort(function(a,b){return POS(a)-POS(b);});
+  s+='<polygon class="st-poly" points="'+ps.map(function(p){return P(p).join(',');}).join(' ')+'" fill="'+col+'" fill-opacity=".18" stroke="'+col+'" stroke-width="3" stroke-linejoin="round" style="filter:drop-shadow(0 0 8px '+col+')"/>';
+  pcs.forEach(function(pc){const q=P(pc);s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="9" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1.6"/>';});
+  if(sc.root||sc.arrow){const q=P(ch.rp,R+3);s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="5.5" fill="#fff"/><text x="'+(q[0]+10)+'" y="'+(q[1]-8)+'" font-size="8" font-weight="800" fill="#fff" letter-spacing="1">FOND.</text>';}
+  if(sc.arrow&&S.C[sc.i+1]){const n=S.C[sc.i+1],a=P(ch.rp,R+14),b=P(n.rp,R+14);s+='<path d="M'+a.join(',')+' A '+(R+14)+' '+(R+14)+' 0 0 '+(((POS(n.rp)-POS(ch.rp)+12)%12)<6?1:0)+' '+b.join(',')+'" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-dasharray="4 4"/><circle cx="'+b[0]+'" cy="'+b[1]+'" r="4" fill="#fff" fill-opacity=".8"/>';}
+  if(sc.tri){s+='<rect x="'+(c-36)+'" y="'+(c+22)+'" width="72" height="18" rx="9" fill="none" stroke="#F27C7C" stroke-width="1.5"/><text x="'+c+'" y="'+(c+35)+'" text-anchor="middle" font-size="10" font-weight="900" fill="#F27C7C" letter-spacing="1.5">TRITON</text>';}
+  s+='<text x="'+c+'" y="'+(c+9)+'" text-anchor="middle" font-size="28" font-weight="900" fill="#fff">'+ch.nm+'</text>';
+  if(Q5||sc.cm==='q5')s+='<text x="'+c+'" y="'+(W-4)+'" text-anchor="middle" font-size="9" fill="#7A85A8" letter-spacing="2">CERCLE DES QUINTES</text>';
+  return '<svg class="st-c" viewBox="0 0 '+W+' '+W+'" width="'+W+'" style="max-width:86vw">'+s+'</svg>';}
+function stVoice(ch,prev){const v=ch.pcs.map(function(pc){let m=60+((pc-0+12)%12);if(m>71)m-=12;return m;}).sort(function(a,b){return a-b;});return v;}
+function stPlay(ch){if(typeof playNotes!=='function')return;try{playNotes([36+ch.rp].concat(stVoice(ch)),1.2);}catch(e){}}
+function stKb(S,sc){const ch=S.C[sc.i],marks={};const v=stVoice(ch);v.forEach(function(m){marks[m]={c:ST_HUE[m%12]};});marks[36+ch.rp+12]={c:'#fff',t:'B'};return rxCyKb(marks,48,84);}
+/* — construction des scènes — */
+function stBuild(P){const key=P.mn?9:0;const mk=function(x,q){const rp=(key+x[0])%12,qq=q||x[1];let nm=RX_CYC_MAJ[rp];try{nm=x[0]?spellIv(key,x[0],null,(P.mn?RX_CYC_MIN:RX_CYC_MAJ)[key]):(P.mn?RX_CYC_MIN:RX_CYC_MAJ)[key];}catch(e){}
+    return {rp:rp,q:qq,pcs:RX_TONES[qq].map(function(t){return (rp+t)%12;}),nm:nm+(RX_QS[qq]||'')};};
+  const C=P.c.map(function(x){return mk(x);}),scale=(P.mn?[0,2,3,5,7,8,10,11]:[0,2,4,5,7,9,11]).map(function(x){return (key+x)%12;});
+  const S={P:P,key:key,C:C,scale:scale,sc:[]},n=C.length,chain=C.map(function(c){return c.nm;}).join(' – ');
+  const fifths=C.slice(0,-1).filter(function(c,i){return (C[i+1].rp-c.rp+12)%12===5;}).length,cyc=fifths>=Math.max(2,Math.floor((n-1)*.6));
+  const tag=(P.ex||'').split('·')[0].split(',').slice(0,3).join(' · ').toUpperCase();
+  S.sc.push({lab:tag||'GOSPEL · JAZZ · POP',title:P.nm.toUpperCase(),i:0,cap:'Une grille qu’on entend partout : '+(P.ex||'')+'.',gold:1,play:1,dur:4200});
+  S.sc.push({lab:cyc?'ELLE TOMBE PAR QUINTES':'LA GRILLE',title:cyc?'PAS À PAS VERS LA MAISON':'ÉCOUTE-LA',seq:1,cap:'Écoute : '+chain+'.',dur:0});
+  if(cyc){
+    S.sc.push({lab:'POURQUOI ÇA MARCHE',title:'UNE QUINTE PLUS BAS',i:Math.min(1,n-2),arrow:1,cap:'Pourquoi on ne peut plus s’arrêter ? Chaque fondamentale tombe d’une quinte : le mouvement le plus fort de l’harmonie.',play:1,dur:5200});
+    S.sc.push({lab:'POURQUOI ÇA MARCHE',title:'COMME V → I',i:n-2,arrow:1,cap:'C’est exactement le geste V → I, la cadence qui termine presque toutes les chansons.',play:1,next:1,dur:5200});
+    S.sc.push({lab:'POURQUOI ÇA MARCHE',title:'DES DOMINOS',seq:1,arrow:1,cap:'Alors chaque accord sonne comme le V du suivant. Une rangée de dominos.',dur:0});
+    S.sc.push({lab:'LE CERCLE DES QUINTES',title:'UN VOISIN À LA FOIS',seq:1,cm:'q5',root:1,cap:'Range le cercle par quintes : la grille en fait simplement le tour, un voisin après l’autre.',dur:0});
+    const tt=C.slice(0,-1).map(function(c,i){return (C[i+1].rp-c.rp+12)%12===6?i:-1;}).filter(function(i){return i>=0;})[0];
+    if(tt!=null)S.sc.push({lab:'LA SEULE EXCEPTION',title:C[tt].nm.replace(/[△ø°m7]+$/,'')+' → '+C[tt+1].nm.replace(/[△ø°m7]+$/,''),i:tt,cm:'q5',arrow:1,tri:1,cap:'Un seul pas triche : '+stName(key,C[tt].rp)+' → '+stName(key,C[tt+1].rp)+' est un triton, pour que la chaîne reste dans la tonalité.',play:1,next:1,dur:5600});
+    const R=C.slice(Math.max(0,n-5)).map(function(c,i,a){return i<a.length-1?mk([(c.rp-key+12)%12],'7'):c;});
+    S.sc.push({lab:'TOUT EN SEPTIÈMES',title:'LE RAGTIME',seq:1,alt:R,cm:'q5',root:1,cap:'Rends chaque accord dominant (7) : tu obtiens le son du ragtime. '+R.map(function(c){return c.nm;}).join(', ')+'…',dur:0});
+    S.sc.push({lab:'L’ESSENCE',title:'L’ÉLAN',i:0,cm:'q5',arrow:1,gold:1,cap:'Chaque accord pointe vers le suivant. Ce n’est pas que de l’harmonie… c’est de l’élan.',play:1,dur:5200});}
+  else{S.sc.push({lab:'POURQUOI ÇA MARCHE',title:'L’IDÉE',i:Math.min(1,n-1),root:1,cap:P.why,play:1,dur:Math.min(12000,3000+P.why.length*45)});
+    S.sc.push({lab:'ENCORE UNE FOIS',title:P.nm.toUpperCase(),seq:1,cm:'q5',root:1,cap:'La même grille sur le cercle des quintes : regarde comment les fondamentales se déplacent.',gold:1,dur:0});}
+  return S;}
+/* — le lecteur — */
+let ST=null;
+function stOpen(P){stClose();ST=stBuild(P);ST.k=0;ST.on=true;const o=document.createElement('div');o.id='rxSt';o.className='rx-st';document.body.appendChild(o);
+  o.onclick=function(e){const b=e.target.closest('[data-st]');if(!b)return;const a=b.dataset.st;if(a==='x')stClose();if(a==='prev'){ST.k=Math.max(0,ST.k-1);stScene();}if(a==='next'){ST.k=Math.min(ST.sc.length-1,ST.k+1);stScene();}if(a==='pp'){ST.on=!ST.on;if(ST.on)stScene();else{clearTimeout(ST.tm);stDraw();}}};stScene();}
+function stClose(){if(ST)clearTimeout(ST.tm);ST=null;const o=document.getElementById('rxSt');if(o)o.remove();}
+function stScene(){if(!ST)return;clearTimeout(ST.tm);const sc=ST.sc[ST.k];const list=sc.alt||ST.C;
+  const nextScene=function(){if(!ST||!ST.on)return;if(ST.k<ST.sc.length-1){ST.k++;stScene();}else{ST.on=false;stDraw();}};
+  if(sc.seq){let j=0;const step=function(){if(!ST||ST.sc[ST.k]!==sc)return;sc.i=j;stDraw(list);stPlay(list[j]);j++;if(j<list.length)ST.tm=setTimeout(step,1250);else ST.tm=setTimeout(nextScene,2200);};step();return;}
+  stDraw(list);if(sc.play)stPlay(list[sc.i]);if(sc.next&&list[sc.i+1])setTimeout(function(){if(ST&&ST.sc[ST.k]===sc){stPlay(list[sc.i+1]);}},1300);
+  if(ST.on)ST.tm=setTimeout(nextScene,sc.dur||4000);}
+function stDraw(list){const o=document.getElementById('rxSt');if(!o||!ST)return;const sc=ST.sc[ST.k];list=list||sc.alt||ST.C;const S={C:list,key:ST.key,scale:ST.scale};
+  o.innerHTML='<div class="st-in"><div class="st-lab'+(sc.gold?' g':'')+'">'+sc.lab+'</div><div class="st-tt'+(sc.gold?' g':'')+'">'+sc.title+'</div>'
+    +'<div class="st-chain">'+list.map(function(c,i){return '<span'+(i===sc.i?' style="color:'+ST_HUE[i%ST_HUE.length]+'" class="on"':'')+'>'+c.nm+'</span>';}).join('<b>–</b>')+'</div>'
+    +stCirc(S,sc)+'<div class="st-kb">'+stKb(S,sc)+'</div><div class="st-cap">'+sc.cap+'</div>'
+    +'<div class="st-dots">'+ST.sc.map(function(x,i){return '<i class="'+(i===ST.k?'on':'')+'"></i>';}).join('')+'</div>'
+    +'<div class="st-ctl"><button data-st="prev">⏮</button><button data-st="pp">'+(ST.on?'⏸':'▶')+'</button><button data-st="next">⏭</button><button data-st="x">✕ fermer</button></div></div>';}
+(function(){const _c=rxClick2;rxClick2=function(a,v,b){if(a==='cystory'){const S=RX.seq;const P=RX_CYC.filter(function(p){return p.id===(S&&S.cyc?S.cyc:RX.cyc);})[0]||RX_CYC[0];stOpen(P);return true;}return _c(a,v,b);};})();
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
