@@ -25,6 +25,11 @@ jobs:
         run: |
           sed -i 's#<application#<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />\n    <application android:requestLegacyExternalStorage="true"#' android/app/src/main/AndroidManifest.xml
           grep -n "EXTERNAL_STORAGE\|requestLegacy" android/app/src/main/AndroidManifest.xml
+      - name: Partage Android vers Garden (chants ChordPro / texte)
+        run: |
+          cp android-src/MainActivity.java android/app/src/main/java/com/pianotools/garden/MainActivity.java
+          perl -0pi -e 's#(<category android:name="android.intent.category.LAUNCHER" />\s*</intent-filter>)#$1\n<intent-filter><action android:name="android.intent.action.SEND" /><category android:name="android.intent.category.DEFAULT" /><data android:mimeType="text/*" /></intent-filter>\n<intent-filter><action android:name="android.intent.action.SEND" /><category android:name="android.intent.category.DEFAULT" /><data android:mimeType="application/*" /></intent-filter>\n<intent-filter><action android:name="android.intent.action.VIEW" /><category android:name="android.intent.category.DEFAULT" /><data android:scheme="content" /><data android:mimeType="text/*" /></intent-filter>\n<intent-filter><action android:name="android.intent.action.VIEW" /><category android:name="android.intent.category.DEFAULT" /><data android:scheme="content" /><data android:mimeType="application/octet-stream" /></intent-filter>#' android/app/src/main/AndroidManifest.xml
+          grep -c "intent.action.SEND" android/app/src/main/AndroidManifest.xml
       - name: Clé de signature fixe (mises à jour sans désinstaller)
         env:
           GARDEN_KEYSTORE: ${{ secrets.GARDEN_KEYSTORE }}
