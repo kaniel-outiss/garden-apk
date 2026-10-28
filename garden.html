@@ -729,6 +729,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .sg-st{font-size:14px;font-weight:700;color:#C9D1EE}
 @media (orientation:landscape) and (max-height:520px){.sg-ly .l1{font-size:18px;line-height:1.9}.sg-ly .l2{display:none}.sg-in{gap:5px;padding:6px 10px}}
 .sg-q{flex:1;min-width:160px;background:#12162B;color:#E8ECF5;border:1px solid #2C3560;border-radius:10px;padding:8px 10px;font:inherit;font-size:15px}
+.sg-big{font-size:16px!important;padding:10px 16px!important}
 </style>
 </head>
 <body>
@@ -16934,7 +16935,7 @@ function sgEl(){let o=document.getElementById('sgOv');if(!o){o=document.createEl
 function sgDraw(){const o=sgEl();if(SG.view==='gd'){o.innerHTML=sgGdHTML();sgGdList();const q=document.getElementById('sgQ');if(q){q.value=SG.q||'';q.focus();}return;}if(SG.view==='lib'){o.innerHTML=sgLibHTML();return;}if(SG.view==='paste'){o.innerHTML=sgPasteHTML();const t=document.getElementById('sgTa');if(t){t.value=SG.paste;t.focus();}return;}o.innerHTML=sgSongHTML();}
 function sgLibHTML(){return '<div class="sg-in"><div class="sg-hd"><b>🎵 Mes chants</b><span style="flex:1"></span><button data-sg="x">✕</button></div>'
   +'<div class="sg-hint">Importe un chant en ChordPro (.cho, accords entre crochets <code>[Am]</code>) ou en grille texte (accords au-dessus des paroles). Garden trouve la tonalité, les sections, et le chemin le plus court entre les voicings. Les paroles restent sur cet appareil.</div>'
-  +'<div class="sg-row"><label class="sg-btn">📂 Mes fichiers<input type="file" id="sgFile" accept=".cho,.chopro,.chordpro,.crd,.pro,.txt,text/plain" style="display:none"></label><button class="sg-btn" data-sg="paste">📋 Coller</button><button class="sg-btn on" data-sg="gd">🎷 Depuis Garden</button><button class="sg-btn" data-sg="demo">✨ Exemple (Amazing Grace)</button></div>'
+  +'<div class="sg-row"><label class="sg-btn on sg-big">📂 Importer / Ouvrir des fichiers<input type="file" id="sgFile" multiple style="display:none"></label><button class="sg-btn" data-sg="paste">📋 Coller</button><button class="sg-btn" data-sg="gd">🎷 Depuis Garden</button><button class="sg-btn" data-sg="demo">✨ Exemple (Amazing Grace)</button></div>'
   +'<div class="sg-list">'+(SG.list.length?SG.list.map(function(x){let k='';try{const S=sgParse(x.txt);k=sgName((S.key.pc+(x.tr||0))%12,S.key)+(S.key.mn?'m':'');}catch(e){}return '<div class="sg-it"><button data-sg="open" data-v="'+x.id+'"><b>'+(x.t||'Sans titre').replace(/</g,'&lt;')+'</b><small>'+k+'</small></button><button data-sg="del" data-v="'+x.id+'">🗑</button></div>';}).join(''):'<div class="sg-hint">Aucun chant pour l’instant.</div>')+'</div></div>';}
 function sgPasteHTML(){return '<div class="sg-in"><div class="sg-hd"><b>📋 Coller un chant</b><span style="flex:1"></span><button data-sg="lib">← retour</button></div><textarea id="sgTa" class="sg-ta" placeholder="{title: Mon chant}\n{key: G}\n[G]Paroles avec [C]accords…\n\nou\n\nG        C\nParoles en dessous"></textarea><div class="sg-row"><button class="sg-btn on" data-sg="addp">✓ Ajouter</button></div></div>';}
 function sgSongHTML(){const C=SG.cur,S=C.S,e=C.evs[SG.i],p=C.path[SG.i],nx=C.path[SG.i+1]||(SG.play?C.path[0]:null),ln=S.secs[e.si].lines[e.li],nl=sgNextLine(e);
@@ -16977,7 +16978,7 @@ function sgClick(ev){const b=ev.target.closest('[data-sg]');if(!b)return;const a
   if(a==='fam'){SG.fam=v;sgSave();sgBuild();sgDraw();return;}
   if(a==='zone'){const d=+v;if(SG.zone[0]+d>=36&&SG.zone[1]+d<=96){SG.zone=[SG.zone[0]+d,SG.zone[1]+d];sgSave();sgBuild();sgDraw();}return;}
   if(a==='tr'){SG.cur.it.tr=((SG.cur.it.tr||0)+(+v)+12)%12;sgSave();sgBuild();sgDraw();return;}}
-function sgChange(ev){const t=ev.target;if(t.id==='sgFile'&&t.files&&t.files[0]){const f=t.files[0],r=new FileReader();r.onload=function(){sgAdd(String(r.result),f.name.replace(/\.[^.]+$/,''));};r.readAsText(f);return;}
+function sgChange(ev){const t=ev.target;if(t.id==='sgFile'&&t.files&&t.files.length){sgFiles(Array.from(t.files));t.value='';return;}
   if(t.dataset&&t.dataset.sgs==='key'&&SG.cur){SG.cur.it.tr=+t.value;sgSave();sgBuild();sgDraw();}}
 function sgShow(){SG.view=SG.cur?'song':'lib';sgDraw();if(!SG.poll)SG.poll=setInterval(sgPoll,70);}
 function sgClose(){SG.play=false;clearTimeout(SG.tm);clearInterval(SG.poll);SG.poll=null;const o=document.getElementById('sgOv');if(o)o.remove();}
@@ -16985,7 +16986,7 @@ window.ffImport=function(txt){sgShow();sgAdd(txt);};if(window.__ffShared)setTime
 const SG_DEMO='{title: Amazing Grace}\n{key: G}\n{c: Couplet 1}\nA[G]mazing [G7]grace, how [C]sweet the [G]sound\nThat [G]saved a [Em]wretch like [D]me\nI [G]once was [G7]lost, but [C]now am [G]found\nWas [Em]blind, but [D7]now I [G]see\n{c: Couplet 2}\n’Twas [G]grace that [G7]taught my [C]heart to [G]fear\nAnd [G]grace my [Em]fears re[D]lieved\nHow [G]precious [G7]did that [C]grace ap[G]pear\nThe [Em]hour I [D7]first be[G]lieved\n';
 /* — entrée : la page Répertoire, et le Réflexe — */
 (function(){if(typeof repertRender!=='function')return;const _r=repertRender;repertRender=function(){_r.apply(this,arguments);const fb=document.getElementById('rpFilters');if(!fb||document.getElementById('sgEntry'))return;
-  const d=document.createElement('div');d.id='sgEntry';d.className='sg-entry';d.innerHTML='<button class="btn" id="sgGo">🎵 Mes chants — importer un ChordPro et le jouer au plus court</button><span class="hint" style="margin:0">'+SG.list.length+' chant'+(SG.list.length>1?'s':'')+'</span>';fb.parentNode.insertBefore(d,fb);document.getElementById('sgGo').onclick=sgShow;};})();
+  const d=document.createElement('div');d.id='sgEntry';d.className='sg-entry';d.innerHTML='<button class="btn" id="sgGo">🎵 Mes chants — importer un ChordPro et le jouer au plus court</button><label class="btn g" style="cursor:pointer">📂 Importer des fichiers<input type="file" id="sgFile2" multiple style="display:none"></label><span class="hint" style="margin:0">'+SG.list.length+' chant'+(SG.list.length>1?'s':'')+'</span>';fb.parentNode.insertBefore(d,fb);document.getElementById('sgGo').onclick=sgShow;document.getElementById('sgFile2').onchange=function(){const fs=Array.from(this.files||[]);this.value='';if(fs.length){sgShow();sgFiles(fs);}};};})();
 
 /* — 🎷 importer depuis Garden : les 1364 grilles des Standards et les grilles du Répertoire, converties en ChordPro — */
 function sgGdHTML(){if(!SG.gsrc)SG.gsrc='std';return '<div class="sg-in"><div class="sg-hd"><b>🎷 Importer depuis Garden</b><span style="flex:1"></span><button data-sg="lib">← retour</button></div>'
@@ -17010,6 +17011,15 @@ function sgGdAdd(id){const ex=SG.list.filter(function(x){return x.src===id;})[0]
   else{const all=(typeof REPERT_LIB!=='undefined'?REPERT_LIB:[]).concat((RPU&&RPU.user)||[]);const g=all.filter(function(x){return 'r:'+x.id===id;})[0];if(!g)return;txt=sgRepTxt(g);t=g.lb;}
   let S;try{S=sgParse(txt);}catch(e){alert('Cette grille n’a pas pu être convertie : '+e.message);return;}
   const it={id:'s'+Date.now().toString(36),t:t,txt:txt,tr:0,src:id};SG.list.unshift(it);sgSave();sgOpen(it.id);}
+
+/* — import de plusieurs fichiers depuis la mémoire de l'appareil (.cho, .chopro, .crd, .pro, .txt…) — */
+function sgFiles(fs){let ok=0,ko=[],last=null,n=fs.length;const done=function(){if(--n>0)return;sgSave();
+    if(ok===1&&last){sgOpen(last);}else{SG.view='lib';sgDraw();}
+    const msg=(ok?ok+' chant'+(ok>1?'s':'')+' importé'+(ok>1?'s':''):'Aucun chant importé')+(ko.length?' · non lus : '+ko.slice(0,4).join(', ')+(ko.length>4?'…':''):'');try{toast(msg);}catch(e){alert(msg);}};
+  fs.forEach(function(f){if(f.size>2e6||/\.(pdf|jpe?g|png|mp3|mp4|docx?)$/i.test(f.name)){ko.push(f.name);done();return;}const r=new FileReader();
+    r.onload=function(){const txt=String(r.result);let S;try{S=sgParse(txt);}catch(e){ko.push(f.name);done();return;}
+      const it={id:'s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:S.title!=='Sans titre'?S.title:f.name.replace(/\.[^.]+$/,''),txt:txt,tr:0};SG.list.unshift(it);ok++;last=it.id;done();};
+    r.onerror=function(){ko.push(f.name);done();};r.readAsText(f);});}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
