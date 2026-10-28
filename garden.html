@@ -728,6 +728,7 @@ rect.sd-hit{cursor:pointer}rect.sd-hit:hover{fill:rgba(245,200,66,.07)}rect.sd-h
 .sg-kb{border-radius:12px;transition:box-shadow .2s}.sg-kb.ok{box-shadow:0 0 0 3px #3ECF8E}.sg-kb.ko{box-shadow:0 0 0 3px #EF4444}
 .sg-st{font-size:14px;font-weight:700;color:#C9D1EE}
 @media (orientation:landscape) and (max-height:520px){.sg-ly .l1{font-size:18px;line-height:1.9}.sg-ly .l2{display:none}.sg-in{gap:5px;padding:6px 10px}}
+.sg-q{flex:1;min-width:160px;background:#12162B;color:#E8ECF5;border:1px solid #2C3560;border-radius:10px;padding:8px 10px;font:inherit;font-size:15px}
 </style>
 </head>
 <body>
@@ -16844,7 +16845,7 @@ function sgSave(){try{localStorage.setItem(SG_KEY,JSON.stringify(SG.list));}catc
   try{localStorage.setItem(SG_KEY+'_pref',JSON.stringify({fam:SG.fam,tempo:SG.tempo,zone:SG.zone}));}catch(e){}}
 /* — accords — */
 const SG_PC={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-const SG_RX=/^\(?([A-G](?:#|b|♯|♭)?)((?:maj|min|mi|m|M|dim|aug|sus|add|ø|°|o|Δ|△|\+|-|[0-9]|#|b|♯|♭|\(|\)|\/(?=[0-9]))*)(?:\/([A-G](?:#|b|♯|♭)?))?\)?\*?$/;
+const SG_RX=/^\(?([A-G](?:#|b|♯|♭)?)((?:maj|min|mi|no|omit|m|M|dim|aug|sus|add|ø|°|o|Δ|△|\+|-|[0-9]|#|b|♯|♭|\(|\)|\/(?=[0-9]))*)(?:\/([A-G](?:#|b|♯|♭)?))?\)?\*?$/;
 const SG_Q={maj:[0,4,7],min:[0,3,7],dim:[0,3,6],aug:[0,4,8],sus4:[0,5,7],sus2:[0,2,7],maj7:[0,4,7,11],m7:[0,3,7,10],'7':[0,4,7,10],m7b5:[0,3,6,10],dim7:[0,3,6,9],mM7:[0,3,7,11],m6:[0,3,7,9],'6':[0,4,7,9],'7sus4':[0,5,7,10],'7#5':[0,4,8,10]};
 function sgPc(n){let p=SG_PC[n[0]];if(/[#♯]/.test(n.slice(1)))p++;if(/[b♭]/.test(n.slice(1)))p--;return (p+12)%12;}
 function sgQual(s){s=(s||'').replace(/[()]/g,'');
@@ -16929,11 +16930,11 @@ function sgKb(cur,nxt,root,live){const lo=36,hi=84,W=20,BK=[1,3,6,8,10],wh=[];fo
     const bx1=xOf(cur.bass),bx2=xOf(nxt.bass);if(bx1!==bx2)s+='<path d="M'+bx1+','+(T+H+6)+' L'+bx2+','+(T+H+6)+'" stroke="#A78BFA" stroke-width="2" stroke-dasharray="4 3"/>';}
   return '<svg viewBox="0 0 '+(wh.length*W)+' '+(T+H+12)+'" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;max-height:30vh">'+s+'</svg>';}
 /* — affichage — */
-function sgEl(){let o=document.getElementById('sgOv');if(!o){o=document.createElement('div');o.id='sgOv';o.className='sg';document.body.appendChild(o);o.addEventListener('click',sgClick);o.addEventListener('change',sgChange);o.addEventListener('input',function(e){if(e.target.id==='sgTa')SG.paste=e.target.value;});}return o;}
-function sgDraw(){const o=sgEl();if(SG.view==='lib'){o.innerHTML=sgLibHTML();return;}if(SG.view==='paste'){o.innerHTML=sgPasteHTML();const t=document.getElementById('sgTa');if(t){t.value=SG.paste;t.focus();}return;}o.innerHTML=sgSongHTML();}
+function sgEl(){let o=document.getElementById('sgOv');if(!o){o=document.createElement('div');o.id='sgOv';o.className='sg';document.body.appendChild(o);o.addEventListener('click',sgClick);o.addEventListener('change',sgChange);o.addEventListener('input',function(e){if(e.target.id==='sgTa')SG.paste=e.target.value;if(e.target.id==='sgQ'){SG.q=e.target.value;sgGdList();}});}return o;}
+function sgDraw(){const o=sgEl();if(SG.view==='gd'){o.innerHTML=sgGdHTML();sgGdList();const q=document.getElementById('sgQ');if(q){q.value=SG.q||'';q.focus();}return;}if(SG.view==='lib'){o.innerHTML=sgLibHTML();return;}if(SG.view==='paste'){o.innerHTML=sgPasteHTML();const t=document.getElementById('sgTa');if(t){t.value=SG.paste;t.focus();}return;}o.innerHTML=sgSongHTML();}
 function sgLibHTML(){return '<div class="sg-in"><div class="sg-hd"><b>🎵 Mes chants</b><span style="flex:1"></span><button data-sg="x">✕</button></div>'
   +'<div class="sg-hint">Importe un chant en ChordPro (.cho, accords entre crochets <code>[Am]</code>) ou en grille texte (accords au-dessus des paroles). Garden trouve la tonalité, les sections, et le chemin le plus court entre les voicings. Les paroles restent sur cet appareil.</div>'
-  +'<div class="sg-row"><label class="sg-btn">📂 Mes fichiers<input type="file" id="sgFile" accept=".cho,.chopro,.chordpro,.crd,.pro,.txt,text/plain" style="display:none"></label><button class="sg-btn" data-sg="paste">📋 Coller</button><button class="sg-btn" data-sg="demo">✨ Exemple (Amazing Grace)</button></div>'
+  +'<div class="sg-row"><label class="sg-btn">📂 Mes fichiers<input type="file" id="sgFile" accept=".cho,.chopro,.chordpro,.crd,.pro,.txt,text/plain" style="display:none"></label><button class="sg-btn" data-sg="paste">📋 Coller</button><button class="sg-btn on" data-sg="gd">🎷 Depuis Garden</button><button class="sg-btn" data-sg="demo">✨ Exemple (Amazing Grace)</button></div>'
   +'<div class="sg-list">'+(SG.list.length?SG.list.map(function(x){let k='';try{const S=sgParse(x.txt);k=sgName((S.key.pc+(x.tr||0))%12,S.key)+(S.key.mn?'m':'');}catch(e){}return '<div class="sg-it"><button data-sg="open" data-v="'+x.id+'"><b>'+(x.t||'Sans titre').replace(/</g,'&lt;')+'</b><small>'+k+'</small></button><button data-sg="del" data-v="'+x.id+'">🗑</button></div>';}).join(''):'<div class="sg-hint">Aucun chant pour l’instant.</div>')+'</div></div>';}
 function sgPasteHTML(){return '<div class="sg-in"><div class="sg-hd"><b>📋 Coller un chant</b><span style="flex:1"></span><button data-sg="lib">← retour</button></div><textarea id="sgTa" class="sg-ta" placeholder="{title: Mon chant}\n{key: G}\n[G]Paroles avec [C]accords…\n\nou\n\nG        C\nParoles en dessous"></textarea><div class="sg-row"><button class="sg-btn on" data-sg="addp">✓ Ajouter</button></div></div>';}
 function sgSongHTML(){const C=SG.cur,S=C.S,e=C.evs[SG.i],p=C.path[SG.i],nx=C.path[SG.i+1]||(SG.play?C.path[0]:null),ln=S.secs[e.si].lines[e.li],nl=sgNextLine(e);
@@ -16966,7 +16967,7 @@ function sgAdd(txt,name){let S;try{S=sgParse(txt);}catch(e){alert(e.message);ret
 function sgClick(ev){const b=ev.target.closest('[data-sg]');if(!b)return;const a=b.dataset.sg,v=b.dataset.v;
   if(a==='x'){sgClose();return;}if(a==='lib'){SG.play=false;clearTimeout(SG.tm);SG.view='lib';sgDraw();return;}if(a==='paste'){SG.view='paste';sgDraw();return;}
   if(a==='addp'){const t=(document.getElementById('sgTa')||{}).value||SG.paste;if(t.trim()){SG.paste='';sgAdd(t);}return;}
-  if(a==='demo'){sgAdd(SG_DEMO);return;}if(a==='open'){sgOpen(v);return;}
+  if(a==='demo'){sgAdd(SG_DEMO);return;}if(a==='gd'){SG.view='gd';sgDraw();if((typeof STD==='undefined'||!STD||!STD.length)&&typeof stdLoad==='function')Promise.resolve(stdLoad()).then(function(){if(SG.view==='gd')sgGdList();});return;}if(a==='gdsrc'){SG.gsrc=v;sgGdList();document.querySelectorAll('[data-sg=gdsrc]').forEach(function(x){x.classList.toggle('on',x.dataset.v===v);});return;}if(a==='gdadd'){sgGdAdd(v);return;}if(a==='open'){sgOpen(v);return;}
   if(a==='del'){if(confirm('Supprimer ce chant ?')){SG.list=SG.list.filter(function(x){return x.id!==v;});sgSave();sgDraw();}return;}
   if(!SG.cur)return;
   if(a==='go'){if(+v>=0)sgGo(+v,true);return;}if(a==='sec'){const i=SG.cur.evs.findIndex(function(x){return x.si===+v;});if(i>=0)sgGo(i,true);return;}
@@ -16985,6 +16986,30 @@ const SG_DEMO='{title: Amazing Grace}\n{key: G}\n{c: Couplet 1}\nA[G]mazing [G7]
 /* — entrée : la page Répertoire, et le Réflexe — */
 (function(){if(typeof repertRender!=='function')return;const _r=repertRender;repertRender=function(){_r.apply(this,arguments);const fb=document.getElementById('rpFilters');if(!fb||document.getElementById('sgEntry'))return;
   const d=document.createElement('div');d.id='sgEntry';d.className='sg-entry';d.innerHTML='<button class="btn" id="sgGo">🎵 Mes chants — importer un ChordPro et le jouer au plus court</button><span class="hint" style="margin:0">'+SG.list.length+' chant'+(SG.list.length>1?'s':'')+'</span>';fb.parentNode.insertBefore(d,fb);document.getElementById('sgGo').onclick=sgShow;};})();
+
+/* — 🎷 importer depuis Garden : les 1364 grilles des Standards et les grilles du Répertoire, converties en ChordPro — */
+function sgGdHTML(){if(!SG.gsrc)SG.gsrc='std';return '<div class="sg-in"><div class="sg-hd"><b>🎷 Importer depuis Garden</b><span style="flex:1"></span><button data-sg="lib">← retour</button></div>'
+  +'<div class="sg-row"><button class="'+(SG.gsrc==='std'?'on':'')+'" data-sg="gdsrc" data-v="std">🎷 Standards & œuvres</button><button class="'+(SG.gsrc==='rep'?'on':'')+'" data-sg="gdsrc" data-v="rep">📚 Répertoire</button><input id="sgQ" class="sg-q" placeholder="🔎 titre, style, recueil…" autocomplete="off"></div>'
+  +'<div class="sg-list" id="sgGdL"></div><div class="sg-hint">Les grilles de Garden n’ont pas de paroles : le chant s’affiche mesure par mesure, avec ses sections.</div></div>';}
+function sgNorm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function sgGdItems(){const q=sgNorm(SG.q).trim();let out=[];
+  if(SG.gsrc==='std'){if(typeof STD==='undefined'||!STD||!STD.length)return null;const bk=typeof SD_BOOK!=='undefined'?SD_BOOK:{};
+    STD.forEach(function(S){const book=(S.id||'').split('_')[0],hay=sgNorm(S.title+' '+(S.style||'')+' '+(bk[book]||'')+' '+(S.key||''));if(!q||q.split(/\s+/).every(function(w){return hay.indexOf(w)>=0;}))out.push({id:'s:'+S.ix,t:S.title,sub:(S.key||'')+(S.minor&&!/m$/.test(S.key||'')?'m':'')+' · '+(S.style||'')+(bk[book]?' · '+bk[book]:'')});});}
+  else{const all=(typeof REPERT_LIB!=='undefined'?REPERT_LIB:[]).concat((typeof RPU!=='undefined'&&RPU.user)||[]);all.forEach(function(g){const hay=sgNorm(g.lb+' '+(g.style||'')+' '+(g.mood||[]).join(' '));if(!q||q.split(/\s+/).every(function(w){return hay.indexOf(w)>=0;}))out.push({id:'r:'+g.id,t:g.lb,sub:(g.style||'')+' · '+g.st.map(function(x){return x[2];}).join('–')});});}
+  return out;}
+function sgGdList(){const el=document.getElementById('sgGdL');if(!el)return;const L=sgGdItems();if(L==null){el.innerHTML='<div class="sg-hint">Chargement des grilles…</div>';return;}
+  const have=SG.list.map(function(x){return x.src;});el.innerHTML=(L.length?'':'<div class="sg-hint">Rien trouvé.</div>')+L.slice(0,80).map(function(x){const got=have.indexOf(x.id)>=0;return '<div class="sg-it"><button data-sg="gdadd" data-v="'+x.id+'"><b>'+x.t.replace(/</g,'&lt;')+'</b><small>'+(got?'✓ déjà dans Mes chants · ':'')+x.sub.replace(/</g,'&lt;')+'</small></button></div>';}).join('')+(L.length>80?'<div class="sg-hint">'+L.length+' résultats — précise la recherche.</div>':'');}
+function sgStdTxt(S){const sym=function(c){if(c.nc)return null;return (c.txt||'').replace(/\s+/g,'');};let t='{title: '+S.title+'}\n{key: '+(S.key||'C')+'}\n';
+  const secs=S.secs&&S.secs.length?S.secs:[{lbl:'Grille',bars:S.bars.map(function(b,i){return i;})}];
+  secs.forEach(function(sc){t+='{c: '+(sc.lbl||'Section')+'}\n';let line=[];sc.bars.forEach(function(bi,k){const b=S.bars[bi];if(!b)return;const cs=(b.ch||[]).map(function(ci){return sym(S.ch[ci]);}).filter(Boolean);line.push(cs.length?cs.map(function(x){return '['+x+']';}).join(' '):'—');if(line.length===4||k===sc.bars.length-1){t+=line.join(' | ')+'\n';line=[];}});});return t;}
+function sgRepTxt(g){const k=typeof KEY!=='undefined'?KEY.pc:0;const nm=function(rp){return typeof nn==='function'?nn(rp):SG_FL[rp];};
+  const sym=function(st){const rp=((k+st[0])%12+12)%12;return nm(rp)+(typeof PSYM!=='undefined'&&PSYM[st[1]]!=null?PSYM[st[1]]:st[1]);};
+  return '{title: '+g.lb+'}\n{key: '+nm(k)+'}\n{c: Grille}\n'+g.st.map(function(st){return '['+sym(st).replace(/Δ/g,'maj').replace(/△/g,'maj')+'] '+st[2];}).join('  ')+'\n';}
+function sgGdAdd(id){const ex=SG.list.filter(function(x){return x.src===id;})[0];if(ex){sgOpen(ex.id);return;}let txt='',t='';
+  if(id.indexOf('s:')===0){const S=STD.filter(function(x){return String(x.ix)===id.slice(2);})[0];if(!S)return;txt=sgStdTxt(S);t=S.title;}
+  else{const all=(typeof REPERT_LIB!=='undefined'?REPERT_LIB:[]).concat((RPU&&RPU.user)||[]);const g=all.filter(function(x){return 'r:'+x.id===id;})[0];if(!g)return;txt=sgRepTxt(g);t=g.lb;}
+  let S;try{S=sgParse(txt);}catch(e){alert('Cette grille n’a pas pu être convertie : '+e.message);return;}
+  const it={id:'s'+Date.now().toString(36),t:t,txt:txt,tr:0,src:id};SG.list.unshift(it);sgSave();sgOpen(it.id);}
 
 if(PAGE==='std')stdRender();
 /* la Boussole et les jeux profitent du corpus dès qu'il est prêt (décompression en tâche de fond) */
